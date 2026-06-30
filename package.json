@@ -10,6 +10,7 @@
     "dev": "astro dev",
     "start": "astro dev",
     "build": "astro check && astro build",
+    "postbuild": "node scripts/postbuild-assetsignore.mjs",
     "preview": "astro preview",
     "check": "astro check",
     "sync": "astro sync",
