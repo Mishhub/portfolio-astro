@@ -1,0 +1,119 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Container from "@/components/ui/Container.astro";
+import PageHeader from "@/components/layout/PageHeader.astro";
+import Breadcrumbs from "@/components/layout/Breadcrumbs.astro";
+import Card from "@/components/ui/Card.astro";
+import Badge from "@/components/ui/Badge.astro";
+import Button from "@/components/ui/Button.astro";
+import Reveal from "@/components/ui/Reveal.astro";
+import ContactCTA from "@/components/sections/ContactCTA.astro";
+import { Icon } from "astro-icon/components";
+import { CERTIFICATIONS, type Certification } from "@/data/certifications";
+import { breadcrumbSchema } from "@/lib/seo";
+
+const origin = Astro.site!.origin;
+
+const jsonLd = breadcrumbSchema([
+  { name: "Home", url: `${origin}/` },
+  { name: "Certifications", url: `${origin}/certifications` },
+]);
+
+const title = "Certifications & Courses — Web, Blockchain & AI";
+const description =
+  "Professional courses and certifications spanning full-stack web development, Ethereum & Solidity, React Native and AI engineering.";
+
+/** Map a credential's status to the right Badge variant + label. */
+const statusMeta: Record<
+  NonNullable<Certification["status"]>,
+  { variant: "success" | "brand"; label: string }
+> = {
+  earned: { variant: "success", label: "Earned" },
+  "in-progress": { variant: "brand", label: "In progress" },
+};
+
+/** A credential link is only real when present and not the placeholder "#". */
+const hasCredentialLink = (cert: Certification): boolean =>
+  Boolean(cert.credentialUrl && cert.credentialUrl !== "#");
+---
+
+<BaseLayout title={title} description={description} jsonLd={jsonLd}>
+  <PageHeader
+    eyebrow="Certifications"
+    title="Courses & credentials"
+    lead="Courses and certifications I've completed or am actively working through — spanning full-stack web development, Ethereum & Solidity, React Native and, currently, AI engineering."
+  >
+    <Breadcrumbs
+      slot="breadcrumbs"
+      items={[{ name: "Home", href: "/" }, { name: "Certifications" }]}
+    />
+  </PageHeader>
+
+  <section class="py-16 sm:py-24">
+    <Container size="wide">
+      <ul class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        {
+          CERTIFICATIONS.map((cert, i) => {
+            const status = cert.status ? statusMeta[cert.status] : null;
+            const showLink = hasCredentialLink(cert);
+            return (
+              <Reveal delay={i * 80} as="li">
+                <Card class="flex h-full flex-col">
+                  <div class="flex items-start justify-between gap-3">
+                    <span
+                      class="flex size-10 shrink-0 items-center justify-center rounded-xl border border-border bg-subtle/50 text-muted-foreground"
+                      aria-hidden="true"
+                    >
+                      <Icon name="lucide:badge-check" class="size-5" />
+                    </span>
+                    {status && (
+                      <Badge variant={status.variant} size="sm">
+                        {status.label}
+                      </Badge>
+                    )}
+                  </div>
+
+                  <h2 class="mt-5 text-base font-semibold leading-snug tracking-tight text-foreground text-balance">
+                    {cert.name}
+                  </h2>
+                  <p class="mt-1.5 text-sm text-muted-foreground">{cert.issuer}</p>
+
+                  {cert.issued && (
+                    <dl class="mt-5 text-sm">
+                      <div class="flex items-center gap-2 text-muted-foreground">
+                        <dt class="sr-only">Issued</dt>
+                        <Icon
+                          name="lucide:calendar"
+                          class="size-3.5 shrink-0 opacity-70"
+                          aria-hidden="true"
+                        />
+                        <dd>{cert.issued}</dd>
+                      </div>
+                    </dl>
+                  )}
+
+                  {showLink && (
+                    <div class="mt-6 flex grow items-end">
+                      <Button
+                        href={cert.credentialUrl}
+                        external
+                        variant="outline"
+                        size="sm"
+                        aria-label={`View credential for ${cert.name}`}
+                      >
+                        View credential
+                        <Icon name="lucide:external-link" aria-hidden="true" />
+                      </Button>
+                    </div>
+                  )}
+                </Card>
+              </Reveal>
+            );
+          })
+        }
+      </ul>
+    </Container>
+  </section>
+
+  <ContactCTA />
+</BaseLayout>

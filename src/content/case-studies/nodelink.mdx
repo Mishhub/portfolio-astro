@@ -1,0 +1,104 @@
+---
+title: "NodeLink — A Compliant DePIN Reward Ecosystem"
+description: "How NodeLink composes KYC/AML, e-signatures, OAuth2/OIDC identity, BullMQ background jobs and real-time updates into one compliant, observable NestJS backend."
+summary: "Composing KYC/AML, e-signatures, OAuth2/OIDC identity, durable queues and real-time updates into one compliant NestJS backend."
+year: "2025 — Present"
+role: "Senior Full Stack Developer"
+problemSpace: "FinTech · Web3 (DePIN)"
+tags: ["NestJS", "OAuth2 / OIDC", "Compliance", "Real-Time"]
+stack: ["NestJS", "PostgreSQL", "Redis", "BullMQ", "Socket.IO", "MinIO", "SumSub", "BoldSign"]
+metrics:
+  - { value: "KYC / AML", label: "Compliant onboarding" }
+  - { value: "OAuth2 / OIDC", label: "Centralized identity" }
+  - { value: "Horizontal", label: "Real-time scaling" }
+relatedProject: "nodelink"
+featured: true
+order: 1
+---
+
+import Figure from "@/components/ui/Figure.astro";
+import Callout from "@/components/ui/Callout.astro";
+import NodeLinkArchitectureDiagram from "@/components/diagrams/NodeLinkArchitectureDiagram.astro";
+
+## Context
+
+NodeLink is a reward ecosystem for decentralized physical infrastructure
+networks — a DePIN-style platform where users participate and earn. That domain
+carries obligations most products don't: every participant must clear **KYC/AML**,
+agreements must be captured as **legally-binding e-signatures**, identity has to
+be centralized and secure, and rewards need to update in **real time**. The
+engineering problem was to fold all of that into a single backend that stays
+reliable, auditable and horizontally scalable.
+
+## Architecture
+
+The system is a NestJS 11 service over PostgreSQL, with Redis doing triple duty —
+cache, BullMQ job queue, and the pub/sub backbone for real-time delivery.
+Compliance providers integrate asynchronously over webhooks; files live in
+MinIO behind signed URLs.
+
+<Figure diagram caption="NodeLink composes identity, compliance, storage, queues and real-time delivery around a NestJS core.">
+  <NodeLinkArchitectureDiagram />
+</Figure>
+
+Keeping the API thin and pushing slow or third-party-dependent work onto BullMQ
+queues is what lets the request path stay fast while compliance happens in the
+background.
+
+## Identity & access
+
+Authentication is a centralized **OAuth2 / OpenID Connect** layer using the
+authorization code flow with **PKCE** and scoped access. The API issues **JWT
+access, refresh and ID tokens**, so every downstream call carries a verifiable,
+scoped identity and sessions can be refreshed and revoked cleanly.
+
+## The compliance flow
+
+Onboarding is a sequence of asynchronous, independently-retryable steps:
+
+1. A user authenticates through OAuth2/OIDC and receives scoped JWTs.
+2. **SumSub** drives KYC/AML — the backend creates applicants, mints access
+   tokens, and reacts to webhook callbacks as verification progresses.
+3. **BullMQ** schedules document-expiry re-checks so compliance never silently
+   lapses.
+4. **BoldSign** handles e-signatures from templates; embedded signing links are
+   cached in Redis, and webhook callbacks sync document status against pool and
+   compliance requirements.
+5. Uploaded documents are stored in **MinIO** with configurable buckets and
+   signed URLs.
+
+<Callout type="insight" title="Webhooks are the real integration surface">
+  KYC and e-signature providers are asynchronous by nature. The reliability of
+  the whole platform comes down to idempotent webhook handlers and durable
+  re-check jobs — not the happy-path API call.
+</Callout>
+
+## Scaling
+
+Real-time reward updates run over **Socket.IO** with a **Redis-backed adapter**,
+so socket sessions are shared across instances and the real-time layer scales
+horizontally rather than being pinned to a single node. Background work scales
+the same way: BullMQ workers are stateless and pull from Redis, so throughput is
+a function of how many workers are running.
+
+## Observability & monitoring
+
+Background jobs are visible through **Bull Board**; application errors and traces
+flow into **Sentry**; and **OpenObserve** provides logs and an audit trail across
+the system. Because compliance events (KYC status changes, signed documents) are
+auditable, the platform can answer "what happened to this user, and when" — a
+hard requirement in a regulated domain.
+
+## Security
+
+Service access is gated by scoped JWTs from the OIDC layer; file access is never
+direct — only via short-lived signed URLs from MinIO; and PKCE protects the
+authorization code exchange for public clients. Compliance state is driven by
+verified provider webhooks rather than client claims.
+
+## Outcome
+
+NodeLink turns a set of demanding, regulated requirements — KYC/AML, e-signatures,
+secure identity and real-time rewards — into one coherent, observable NestJS
+backend. The design keeps the request path fast, the compliance path durable, and
+the real-time and background layers independently scalable.

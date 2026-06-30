@@ -1,0 +1,133 @@
+---
+title: "My First Production RAG Pipeline"
+description: "Chunking, embeddings, retrieval, grounding, and the evaluation step I skipped first. An honest field report from shipping retrieval-augmented generation."
+publishDate: 2025-05-14
+category: "AI Engineering"
+tags: ["rag", "embeddings", "llm", "retrieval", "evaluation"]
+featured: true
+---
+
+import Callout from "@/components/ui/Callout.astro";
+
+I came to AI engineering from a backend background, and my mental model of
+retrieval-augmented generation was embarrassingly simple: embed some documents,
+shove the nearest ones into the prompt, get grounded answers. The demo worked in
+an afternoon. The production version took weeks, and almost none of that time was
+spent on the model. This is the field report I wish I'd read first — written in
+the spirit of learning in public, mistakes included.
+
+The premise of RAG is sound: instead of fine-tuning a model on your data, you
+retrieve relevant context at query time and let the model reason over it. It keeps
+answers current, lets you cite sources, and reduces hallucination *when the
+retrieval is good*. That last clause is the whole game, and it's the part the
+demos skip.
+
+## Chunking is where quality is won or lost
+
+My first instinct was to split documents every 1,000 characters. That destroyed
+meaning — sentences cut mid-thought, tables severed from their headers, a
+function signature in one chunk and its explanation in the next.
+
+What worked better was chunking on **semantic boundaries** — headings, paragraphs,
+list items — with a modest overlap so context isn't lost at the seams. Chunk size
+is a real tradeoff: too small and a chunk lacks the context to be useful; too
+large and you retrieve a wall of mostly-irrelevant text that dilutes the signal
+and burns tokens.
+
+```ts
+// overlap preserves context that would otherwise be cut at a boundary
+function chunk(text: string, size = 800, overlap = 150): string[] {
+  const out: string[] = [];
+  for (let i = 0; i < text.length; i += size - overlap) {
+    out.push(text.slice(i, i + size));
+  }
+  return out;
+}
+```
+
+<Callout type="note" title="Carry metadata on every chunk">
+  Store the source document, section heading, and a stable id alongside each
+  chunk. You need it to cite sources back to the user, and you'll need it again
+  when you debug why a wrong chunk got retrieved.
+</Callout>
+
+## Embeddings and retrieval
+
+Each chunk becomes a vector via an embedding model, and the vectors go in a vector
+store. At query time, you embed the question with the *same* model and pull the
+nearest neighbors by cosine similarity.
+
+```ts
+const queryVec = await embed(question);
+const hits = await vectorStore.search(queryVec, { topK: 5 });
+```
+
+Two things bit me here. First, you must embed queries and documents with the same
+model — mixing them produces a meaningless similarity space. Second, pure vector
+search misses exact-keyword matches: someone searching for an error code or a
+product SKU wants a lexical hit, not a "semantically similar" paragraph. Adding
+keyword (BM25) retrieval alongside the vector search — **hybrid retrieval** — fixed
+a whole class of "why didn't it find the obvious doc" complaints.
+
+## Grounding: make the model cite, and let it say no
+
+The generation step is the easy part, but the prompt design matters more than I
+expected. Two instructions did most of the work: tell the model to answer *only*
+from the provided context, and explicitly permit it to say it doesn't know.
+
+```ts
+const prompt = `Answer using ONLY the context below.
+If the context doesn't contain the answer, say you don't know.
+Cite the source id for each claim.
+
+Context:
+${hits.map((h) => `[${h.id}] ${h.text}`).join("\n\n")}
+
+Question: ${question}`;
+```
+
+That "say you don't know" line is the difference between a system people trust and
+one that confidently fabricates. A grounded "I don't have that information" is a
+correct answer.
+
+## The step I skipped: evaluating retrieval
+
+Here's my real lesson. I spent the first week tuning the generation prompt while
+the actual problem was that retrieval was handing the model the wrong chunks. A
+perfect prompt over bad context produces a fluent, well-cited wrong answer. If you
+only eval end-to-end, you can't tell whether a bad answer is a retrieval failure
+or a generation failure — and they have completely different fixes.
+
+So I built a small labeled set: real questions paired with the chunks that *should*
+be retrieved. Then I measured retrieval directly with **recall@k** — of the chunks
+that should have come back in the top k, how many did?
+
+```ts
+function recallAtK(retrieved: string[], relevant: Set<string>): number {
+  const found = retrieved.filter((id) => relevant.has(id)).length;
+  return relevant.size === 0 ? 1 : found / relevant.size;
+}
+```
+
+<Callout type="tip" title="Evaluate the retriever before the generator">
+  Bad answers are usually a retrieval problem, not a model problem. Measure
+  recall@k on a labeled set first. Only once the right chunks reliably reach the
+  prompt is it worth tuning generation.
+</Callout>
+
+Watching recall@k move told me, concretely, whether smaller chunks, more overlap,
+or hybrid retrieval helped. It turned vibes-based tweaking into something I could
+actually iterate on.
+
+## What I'd tell past me
+
+RAG is mostly a retrieval and data problem wearing an AI hat. The model is the
+least interesting part of a working pipeline. If I were starting over: build a
+labeled eval set on day one, get chunking and hybrid retrieval right before
+touching the prompt, force citations, and let the system decline to answer.
+
+I'm still early on this journey, and I'm sure there are sharper techniques —
+reranking, query rewriting, better chunkers — I haven't earned the right to have
+opinions on yet. But the lesson that's held up across every iteration is this:
+ground the model in good context, prove the context is good with numbers, and the
+hard part of "AI" turns out to be old-fashioned engineering discipline.

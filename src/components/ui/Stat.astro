@@ -1,0 +1,18 @@
+---
+import { cn } from "@/lib/utils";
+
+/** Single headline metric: a large value over a quiet label. */
+interface Props {
+  value: string;
+  label: string;
+  class?: string;
+}
+const { value, label, class: className } = Astro.props;
+---
+
+<div class={cn("flex flex-col gap-1", className)}>
+  <dt class="order-2 text-sm text-muted-foreground">{label}</dt>
+  <dd class="order-1 font-mono text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
+    {value}
+  </dd>
+</div>

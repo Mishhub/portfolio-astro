@@ -1,0 +1,289 @@
+---
+import { Icon } from "astro-icon/components";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Container from "@/components/ui/Container.astro";
+import PageHeader from "@/components/layout/PageHeader.astro";
+import Breadcrumbs from "@/components/layout/Breadcrumbs.astro";
+import Button from "@/components/ui/Button.astro";
+import Social from "@/components/layout/Social.astro";
+import { SITE } from "@/config/site";
+import { breadcrumbSchema } from "@/lib/seo";
+
+const origin = Astro.site!.origin;
+
+const jsonLd = breadcrumbSchema([
+  { name: "Home", url: `${origin}/` },
+  { name: "Contact", url: `${origin}/contact` },
+]);
+
+const title = "Contact — Let's Build Something That Scales";
+const description =
+  "Get in touch about senior or staff engineering roles, consulting or a technical conversation. Reach me by email, LinkedIn or the contact form.";
+
+// Shared input/textarea styling — hairline border, muted surface, visible focus ring.
+const fieldClass =
+  "w-full rounded-lg border border-input bg-subtle/40 px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/70 transition-colors focus-visible:outline-none focus-visible:border-foreground/20 focus-visible:ring-2 focus-visible:ring-ring";
+---
+
+<BaseLayout title={title} description={description} jsonLd={jsonLd}>
+  <PageHeader
+    eyebrow="Contact"
+    title="Get in touch"
+    lead={`I'm ${SITE.availability.toLowerCase()}. Whether you're hiring for senior or staff engineering, weighing up a system-design problem, or just want to compare notes — send a message and I'll get back to you, usually within a day or two.`}
+  >
+    <Breadcrumbs slot="breadcrumbs" items={[{ name: "Home", href: "/" }, { name: "Contact" }]} />
+  </PageHeader>
+
+  <section class="py-16 sm:py-24">
+    <Container size="wide">
+      <div class="grid gap-12 lg:grid-cols-[1.3fr_1fr] lg:gap-16">
+        {/* LEFT — contact form. */}
+        <div data-reveal>
+          <h2 class="text-2xl font-semibold tracking-tight text-foreground">Send a message</h2>
+          <p class="mt-2 text-sm leading-relaxed text-muted-foreground">
+            The more context you can share about the role or problem, the better I can reply.
+          </p>
+
+          {/*
+            ⚠️ PLACEHOLDER ACTION — replace the form `action` below with your own
+            backend endpoint before going live. Two common options:
+              • Formspree:  action="https://formspree.io/f/your-form-id"
+              • Resend:     point `action` at your own /api route that calls Resend.
+            As shipped, this form has NO backend and will not deliver messages.
+          */}
+          <form
+            action="https://formspree.io/f/your-form-id"
+            method="POST"
+            novalidate
+            class="mt-8 space-y-5"
+            data-contact-form
+          >
+            <div>
+              <label for="name" class="block text-sm font-medium text-foreground">
+                Name <span class="text-brand" aria-hidden="true">*</span>
+              </label>
+              <input
+                id="name"
+                name="name"
+                type="text"
+                required
+                autocomplete="name"
+                placeholder="Ada Lovelace"
+                class={fieldClass}
+                aria-describedby="name-error"
+              />
+              <p
+                id="name-error"
+                data-error-for="name"
+                class="mt-1.5 hidden text-xs text-warning"
+                role="alert"
+              >
+                Please enter your name.
+              </p>
+            </div>
+
+            <div>
+              <label for="email" class="block text-sm font-medium text-foreground">
+                Email <span class="text-brand" aria-hidden="true">*</span>
+              </label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                required
+                autocomplete="email"
+                placeholder="you@company.com"
+                class={fieldClass}
+                aria-describedby="email-error"
+              />
+              <p
+                id="email-error"
+                data-error-for="email"
+                class="mt-1.5 hidden text-xs text-warning"
+                role="alert"
+              >
+                Please enter a valid email address.
+              </p>
+            </div>
+
+            <div>
+              <label for="message" class="block text-sm font-medium text-foreground">
+                Message <span class="text-brand" aria-hidden="true">*</span>
+              </label>
+              <textarea
+                id="message"
+                name="message"
+                required
+                rows="6"
+                placeholder="A few lines about the role, team or problem you have in mind…"
+                class={fieldClass}
+                aria-describedby="message-error"></textarea>
+              <p
+                id="message-error"
+                data-error-for="message"
+                class="mt-1.5 hidden text-xs text-warning"
+                role="alert"
+              >
+                Please add a short message.
+              </p>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-4">
+              <Button type="submit" variant="primary" size="lg">
+                <Icon name="lucide:send" aria-hidden="true" />
+                Send message
+              </Button>
+              <span
+                data-form-status
+                role="status"
+                aria-live="polite"
+                class="hidden text-sm text-muted-foreground"
+              ></span>
+            </div>
+
+            <p
+              class="flex items-start gap-2 rounded-lg border border-border bg-subtle/40 px-3.5 py-3 text-xs leading-relaxed text-muted-foreground"
+            >
+              <Icon
+                name="lucide:info"
+                class="mt-0.5 size-3.5 shrink-0 text-muted-foreground"
+                aria-hidden="true"
+              />
+              <span>
+                This form needs a backend to deliver mail. Until one is connected, please reach me
+                directly by <a
+                  href={`mailto:${SITE.email}`}
+                  class="font-medium text-foreground underline-offset-4 hover:underline">email</a
+                >.
+              </span>
+            </p>
+          </form>
+        </div>
+
+        {/* RIGHT — direct channels. */}
+        <aside class="lg:border-l lg:border-border lg:pl-12" data-reveal>
+          <h2 class="text-2xl font-semibold tracking-tight text-foreground">Other ways to reach me</h2>
+
+          <dl class="mt-8 space-y-7">
+            <div class="flex items-start gap-3.5">
+              <span
+                class="mt-0.5 inline-flex size-9 shrink-0 items-center justify-center rounded-lg border border-border bg-subtle/40 text-muted-foreground"
+              >
+                <Icon name="lucide:mail" class="size-4" aria-hidden="true" />
+              </span>
+              <div>
+                <dt class="text-sm font-medium text-foreground">Email</dt>
+                <dd class="mt-1">
+                  <a
+                    href={`mailto:${SITE.email}`}
+                    class="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                  >
+                    {SITE.email}
+                  </a>
+                </dd>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-3.5">
+              <span
+                class="mt-0.5 inline-flex size-9 shrink-0 items-center justify-center rounded-lg border border-border bg-subtle/40 text-muted-foreground"
+              >
+                <Icon name="lucide:map-pin" class="size-4" aria-hidden="true" />
+              </span>
+              <div>
+                <dt class="text-sm font-medium text-foreground">Location</dt>
+                <dd class="mt-1 text-sm text-muted-foreground">{SITE.location}</dd>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-3.5">
+              <span
+                class="mt-0.5 inline-flex size-9 shrink-0 items-center justify-center rounded-lg border border-border bg-subtle/40 text-muted-foreground"
+              >
+                <Icon name="lucide:circle-dot" class="size-4" aria-hidden="true" />
+              </span>
+              <div>
+                <dt class="text-sm font-medium text-foreground">Availability</dt>
+                <dd class="mt-1.5 inline-flex items-center gap-2 text-sm text-foreground">
+                  <span class="relative flex size-2">
+                    <span
+                      class="absolute inline-flex size-full animate-ping rounded-full bg-success opacity-60"
+                    ></span>
+                    <span class="relative inline-flex size-2 rounded-full bg-success"></span>
+                  </span>
+                  {SITE.availability}
+                </dd>
+              </div>
+            </div>
+          </dl>
+
+          <div class="mt-9 border-t border-border pt-8">
+            <h3 class="text-sm font-medium text-foreground">Find me online</h3>
+            <Social withLabels class="mt-4 !flex-col !items-start !gap-3 sm:!gap-3" />
+          </div>
+        </aside>
+      </div>
+    </Container>
+  </section>
+</BaseLayout>
+
+<script>
+  // Lightweight client-side validation. The form still requires a real backend
+  // (Formspree / Resend) to actually deliver mail — see the action placeholder.
+  const form = document.querySelector<HTMLFormElement>("[data-contact-form]");
+  if (form) {
+    const status = form.querySelector<HTMLElement>("[data-form-status]");
+    const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    const fieldById = (id: string) => form.querySelector<HTMLInputElement | HTMLTextAreaElement>(`#${id}`);
+    const errorFor = (id: string) => form.querySelector<HTMLElement>(`[data-error-for="${id}"]`);
+
+    const setError = (id: string, show: boolean) => {
+      const field = fieldById(id);
+      const error = errorFor(id);
+      if (!field || !error) return;
+      error.classList.toggle("hidden", !show);
+      field.setAttribute("aria-invalid", show ? "true" : "false");
+      if (show) field.classList.add("border-warning/60");
+      else field.classList.remove("border-warning/60");
+    };
+
+    const validate = (id: string) => {
+      const field = fieldById(id);
+      if (!field) return true;
+      const value = field.value.trim();
+      let ok = value.length > 0;
+      if (ok && id === "email") ok = emailRe.test(value);
+      setError(id, !ok);
+      return ok;
+    };
+
+    // Clear an error as soon as the visitor starts fixing the field.
+    for (const id of ["name", "email", "message"]) {
+      fieldById(id)?.addEventListener("input", () => {
+        if (fieldById(id)?.getAttribute("aria-invalid") === "true") validate(id);
+      });
+    }
+
+    form.addEventListener("submit", (event) => {
+      const results = ["name", "email", "message"].map(validate);
+      if (results.includes(false)) {
+        event.preventDefault();
+        const firstInvalid = ["name", "email", "message"].find((id) => !validate(id));
+        if (firstInvalid) fieldById(firstInvalid)?.focus();
+        if (status) {
+          status.textContent = "Please fix the highlighted fields.";
+          status.classList.remove("hidden");
+        }
+        return;
+      }
+      // Valid input: let the browser submit to the configured endpoint. If the
+      // placeholder action is still in place, the request will simply fail —
+      // the inline note tells visitors to email directly in the meantime.
+      if (status) {
+        status.textContent = "Sending…";
+        status.classList.remove("hidden");
+      }
+    });
+  }
+</script>

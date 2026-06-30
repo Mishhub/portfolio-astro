@@ -1,0 +1,47 @@
+---
+import { SITE } from "@/config/site";
+import { cn } from "@/lib/utils";
+
+/**
+ * Professional headshot with an initials fallback. Drop a real photo at
+ * `src` (e.g. an imported asset or /public path) to replace the monogram.
+ */
+interface Props {
+  src?: string;
+  alt?: string;
+  size?: "sm" | "md" | "lg" | "xl";
+  class?: string;
+}
+
+const { src, alt = `Portrait of ${SITE.name}`, size = "lg", class: className } = Astro.props;
+
+const sizes = {
+  sm: "size-10 text-sm",
+  md: "size-14 text-lg",
+  lg: "size-20 text-2xl",
+  xl: "size-28 text-3xl",
+};
+---
+
+<div
+  class={cn(
+    "relative shrink-0 overflow-hidden rounded-2xl border border-border bg-subtle",
+    "ring-1 ring-border ring-offset-2 ring-offset-background",
+    sizes[size],
+    className,
+  )}
+>
+  {
+    src ? (
+      <img src={src} alt={alt} class="size-full object-cover" loading="eager" decoding="async" />
+    ) : (
+      <div
+        class="grid size-full place-items-center font-semibold tracking-tight text-muted-foreground"
+        aria-label={alt}
+        role="img"
+      >
+        {SITE.initials}
+      </div>
+    )
+  }
+</div>

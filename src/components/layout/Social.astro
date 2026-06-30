@@ -1,0 +1,44 @@
+---
+import { Icon } from "astro-icon/components";
+import { SOCIALS } from "@/config/site";
+import { cn } from "@/lib/utils";
+
+/** Row of social icon links. */
+interface Props {
+  class?: string;
+  /** Show text handles next to icons (used in the footer/contact). */
+  withLabels?: boolean;
+}
+const { class: className, withLabels = false } = Astro.props;
+
+const iconFor: Record<string, string> = {
+  github: "lucide:github",
+  linkedin: "lucide:linkedin",
+  mail: "lucide:mail",
+  twitter: "lucide:twitter",
+  rss: "lucide:rss",
+  stackoverflow: "simple-icons:stackoverflow",
+};
+---
+
+<ul class={cn("flex items-center", withLabels ? "flex-col gap-3 sm:flex-row sm:gap-6" : "gap-1", className)}>
+  {
+    SOCIALS.map((s) => (
+      <li>
+        <a
+          href={s.href}
+          target={s.icon === "mail" ? undefined : "_blank"}
+          rel={s.icon === "mail" ? undefined : "noopener noreferrer"}
+          class={cn(
+            "inline-flex items-center gap-2 rounded-lg text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+            withLabels ? "text-sm" : "size-10 justify-center hover:bg-muted",
+          )}
+          aria-label={s.label}
+        >
+          <Icon name={iconFor[s.icon]} class="size-[1.15rem]" />
+          {withLabels && <span>{s.handle ?? s.label}</span>}
+        </a>
+      </li>
+    ))
+  }
+</ul>

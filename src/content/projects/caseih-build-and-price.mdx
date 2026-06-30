@@ -1,0 +1,61 @@
+---
+title: "CaseIH Build & Price"
+summary: "A componentized, server-rendered configurator for CaseIH agricultural machinery, built from scratch and reused across 5+ region-specific deployments."
+description: "CaseIH Build & Price — a React 18 + GraphQL/Apollo configurator with a Storybook-driven component library, Styled Components theming and SSR for SEO, reused across 5+ region-specific deployments."
+year: "2022 — 2023"
+role: "Senior Full Stack Developer"
+status: "live"
+featured: false
+order: 4
+domain: "Frontend · Configurator"
+problem: "A product configurator for agricultural machinery has to render fast, rank well in search, and serve several regions — each with its own catalogue, branding and rules — without forking the codebase per market. Building that as a one-off SPA leaves SEO and per-region maintenance as expensive afterthoughts."
+solution: "A React 18 application built from scratch as a modular component library — documented in Storybook, themed with Styled Components, fed by a GraphQL/Apollo data layer and rendered server-side for SEO and first-paint. The same components are composed into 5+ region-specific deployments rather than duplicated per market."
+architecture: "React 18 with server-side rendering for SEO and faster page loads; a Storybook-driven component library themed via Styled Components for responsive, per-region branding; GraphQL with Apollo Client as the typed data layer; Jest for unit tests and GitHub CI/CD with reproducible dev environments for the build pipeline."
+contributions:
+  - "Built the configurator from scratch in React 18, structured as a reusable component library documented in Storybook."
+  - "Used Styled Components for theme management and responsive UI, so region-specific branding is a theme rather than a fork."
+  - "Modelled the data layer in GraphQL with Apollo Client for typed, declarative queries against the configurator catalogue."
+  - "Implemented server-side rendering to improve SEO and reduce page-load time on a content- and image-heavy product surface."
+  - "Designed components for modularity and reuse across 5+ region-specific deployments."
+  - "Added Jest unit tests and optimized bundle performance to keep the configurator fast as it grew."
+  - "Configured GitHub CI/CD workflows and custom, reproducible developer environments for the build pipeline."
+technologies:
+  - "React 18"
+  - "GraphQL"
+  - "Apollo Client"
+  - "Storybook"
+  - "Styled Components"
+  - "Jest"
+  - "GitHub Actions"
+  - "SSR"
+challenges:
+  - "Serving 5+ regions — each with its own catalogue and branding — from one component library without per-market forks."
+  - "Making a content- and image-heavy configurator both SEO-friendly and fast on first paint via SSR."
+  - "Keeping bundle size and render performance in check as the configurator and its component surface grew."
+impact:
+  - "One Storybook-driven component library is reused across 5+ region-specific deployments instead of duplicated per market."
+  - "Server-side rendering improved SEO and page-load time on a heavy product surface."
+  - "Jest coverage and CI/CD on GitHub kept the component library releasable and regressions visible."
+metrics:
+  - { value: "5+", label: "Region deployments" }
+  - { value: "SSR", label: "SEO & first paint" }
+  - { value: "Storybook", label: "Component library" }
+lessons:
+  - "Theming with Styled Components turns multi-region branding into configuration instead of forked code."
+  - "A Storybook-documented component library is what makes reuse across many deployments actually hold up."
+links:
+  caseStudy: "caseih-build-and-price"
+---
+
+CaseIH Build & Price is a configurator for agricultural machinery, built at
+Coolshop from scratch in React 18. Rather than a single-market SPA, it was
+designed as a Storybook-documented component library: regions differ by theme
+and catalogue, not by codebase. Styled Components carries per-region branding,
+GraphQL/Apollo provides the typed data layer, and server-side rendering keeps a
+heavy, image-rich product surface fast and indexable.
+
+The same components compose into 5+ region-specific deployments, with Jest unit
+tests and GitHub CI/CD keeping the library releasable as it grows. The linked
+case study walks through the component-library and theming model, the GraphQL
+data layer, the SSR setup for SEO, and how reuse across regions was kept
+maintainable.

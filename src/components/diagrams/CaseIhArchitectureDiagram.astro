@@ -1,0 +1,101 @@
+---
+/**
+ * Architecture diagram for the CaseIH Build & Price case study.
+ *
+ * Diagrams live as standalone .astro components (not inline in MDX) so they can
+ * use scoped <style>, stay zero-JS, and adapt to light/dark via currentColor.
+ */
+---
+
+<svg
+  viewBox="0 0 820 360"
+  class="diagram mx-auto h-auto w-full max-w-3xl text-foreground"
+  role="img"
+  aria-label="CaseIH Build & Price frontend architecture: a browser request hits the SSR layer, which runs the React 18 app with Apollo Client. The app queries a GraphQL API for catalogue data. A shared, Storybook-documented component library — themed with Styled Components — composes into 5+ region-specific deployments, each applying its own theme and catalogue."
+>
+  <defs>
+    <marker id="ci-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0 0L10 5L0 10z" fill="currentColor" fill-opacity="0.5"></path>
+    </marker>
+  </defs>
+
+  <rect class="box" x="24" y="150" width="120" height="58" rx="10"></rect>
+  <text class="lbl" x="84" y="176" text-anchor="middle">Browser</text>
+  <text class="sub" x="84" y="193" text-anchor="middle">crawler · user</text>
+
+  <rect class="box accent" x="196" y="142" width="180" height="74" rx="10"></rect>
+  <text class="lbl" x="286" y="170" text-anchor="middle">SSR layer</text>
+  <text class="sub" x="286" y="188" text-anchor="middle">React 18 · Apollo</text>
+  <text class="sub" x="286" y="204" text-anchor="middle">hydration · SEO</text>
+
+  <rect class="store" x="430" y="150" width="150" height="58" rx="9"></rect>
+  <text class="lbl" x="505" y="176" text-anchor="middle">GraphQL API</text>
+  <text class="sub" x="505" y="193" text-anchor="middle">catalogue data</text>
+
+  <rect class="box" x="196" y="270" width="180" height="58" rx="10"></rect>
+  <text class="lbl" x="286" y="296" text-anchor="middle">Component library</text>
+  <text class="sub" x="286" y="313" text-anchor="middle">Storybook · Styled</text>
+
+  <rect class="box" x="624" y="58" width="172" height="46" rx="10"></rect>
+  <text class="lbl" x="642" y="82">Region A</text>
+  <text class="sub" x="642" y="98">theme · catalogue</text>
+
+  <rect class="box" x="624" y="124" width="172" height="46" rx="10"></rect>
+  <text class="lbl" x="642" y="148">Region B</text>
+  <text class="sub" x="642" y="164">theme · catalogue</text>
+
+  <rect class="box" x="624" y="190" width="172" height="46" rx="10"></rect>
+  <text class="lbl" x="642" y="214">Region C</text>
+  <text class="sub" x="642" y="230">theme · catalogue</text>
+
+  <rect class="box" x="624" y="256" width="172" height="46" rx="10"></rect>
+  <text class="lbl" x="642" y="280">Region 5+</text>
+  <text class="sub" x="642" y="296">theme · catalogue</text>
+
+  <path class="edge" d="M144 179H194" marker-end="url(#ci-arrow)"></path>
+  <path class="edge" d="M376 179H428" marker-end="url(#ci-arrow)"></path>
+  <path class="edge" d="M286 270V222" marker-end="url(#ci-arrow)"></path>
+  <path class="edge" d="M376 296 Q500 296 622 280" marker-end="url(#ci-arrow)"></path>
+  <path class="edge" d="M376 290 Q500 250 622 214" marker-end="url(#ci-arrow)"></path>
+  <path class="edge" d="M376 284 Q500 200 622 148" marker-end="url(#ci-arrow)"></path>
+  <path class="edge" d="M376 278 Q500 150 622 82" marker-end="url(#ci-arrow)"></path>
+</svg>
+
+<style>
+  .box {
+    fill: color-mix(in oklch, currentColor 6%, transparent);
+    stroke: currentColor;
+    stroke-opacity: 0.35;
+    stroke-width: 1.5;
+  }
+  .box.accent {
+    fill: color-mix(in oklch, var(--brand) 12%, transparent);
+    stroke: var(--brand);
+    stroke-opacity: 0.5;
+  }
+  .store {
+    fill: color-mix(in oklch, currentColor 10%, transparent);
+    stroke: currentColor;
+    stroke-opacity: 0.4;
+    stroke-width: 1.5;
+  }
+  .lbl {
+    fill: currentColor;
+    font:
+      600 13px ui-sans-serif,
+      system-ui;
+  }
+  .sub {
+    fill: currentColor;
+    fill-opacity: 0.6;
+    font:
+      11px ui-monospace,
+      monospace;
+  }
+  .edge {
+    stroke: currentColor;
+    stroke-opacity: 0.4;
+    stroke-width: 1.5;
+    fill: none;
+  }
+</style>

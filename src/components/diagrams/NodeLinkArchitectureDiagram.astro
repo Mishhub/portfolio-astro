@@ -1,0 +1,100 @@
+---
+/**
+ * Architecture diagram for the NodeLink case study.
+ *
+ * Diagrams live as standalone .astro components (not inline in MDX) so they can
+ * use scoped <style>, stay zero-JS, and adapt to light/dark via currentColor.
+ */
+---
+
+<svg
+  viewBox="0 0 820 360"
+  class="diagram mx-auto h-auto w-full max-w-3xl text-foreground"
+  role="img"
+  aria-label="NodeLink architecture: a client authenticates through OAuth2/OIDC to a NestJS API backed by PostgreSQL. The API stores files in MinIO, runs background jobs on Redis with BullMQ, and pushes real-time updates over Socket.IO using a Redis-backed adapter. SumSub (KYC/AML) and BoldSign (e-signatures) integrate via webhooks."
+>
+  <defs>
+    <marker id="nl-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0 0L10 5L0 10z" fill="currentColor" fill-opacity="0.5"></path>
+    </marker>
+  </defs>
+
+  <rect class="box" x="24" y="150" width="116" height="58" rx="10"></rect>
+  <text class="lbl" x="82" y="176" text-anchor="middle">Client</text>
+  <text class="sub" x="82" y="193" text-anchor="middle">web · mobile</text>
+
+  <rect class="box accent" x="190" y="142" width="170" height="74" rx="10"></rect>
+  <text class="lbl" x="275" y="170" text-anchor="middle">NestJS API</text>
+  <text class="sub" x="275" y="188" text-anchor="middle">OAuth2 / OIDC · JWT</text>
+  <text class="sub" x="275" y="204" text-anchor="middle">authorization code · PKCE</text>
+
+  <rect class="store" x="60" y="270" width="120" height="46" rx="9"></rect>
+  <text class="lbl" x="120" y="298" text-anchor="middle">MinIO</text>
+
+  <rect class="store" x="200" y="270" width="120" height="46" rx="9"></rect>
+  <text class="lbl" x="260" y="293" text-anchor="middle">PostgreSQL</text>
+  <text class="sub" x="260" y="308" text-anchor="middle">core data</text>
+
+  <rect class="store" x="340" y="270" width="140" height="46" rx="9"></rect>
+  <text class="lbl" x="410" y="293" text-anchor="middle">Redis · BullMQ</text>
+  <text class="sub" x="410" y="308" text-anchor="middle">jobs · cache · pub/sub</text>
+
+  <rect class="box" x="560" y="74" width="220" height="50" rx="10"></rect>
+  <text class="lbl" x="578" y="98">SumSub</text>
+  <text class="sub" x="578" y="114">KYC / AML · webhooks</text>
+
+  <rect class="box" x="560" y="150" width="220" height="50" rx="10"></rect>
+  <text class="lbl" x="578" y="174">BoldSign</text>
+  <text class="sub" x="578" y="190">e-signatures · webhooks</text>
+
+  <rect class="box" x="560" y="266" width="220" height="50" rx="10"></rect>
+  <text class="lbl" x="578" y="290">Socket.IO</text>
+  <text class="sub" x="578" y="306">real-time · Redis adapter</text>
+
+  <path class="edge" d="M140 179H188" marker-end="url(#nl-arrow)"></path>
+  <path class="edge" d="M255 216V250 H120 V268" marker-end="url(#nl-arrow)"></path>
+  <path class="edge" d="M275 216V268" marker-end="url(#nl-arrow)"></path>
+  <path class="edge" d="M300 216 Q360 240 410 268" marker-end="url(#nl-arrow)"></path>
+  <path class="edge" d="M360 168 Q460 120 558 99" marker-end="url(#nl-arrow)"></path>
+  <path class="edge" d="M360 179H558" marker-end="url(#nl-arrow)"></path>
+  <path class="edge" d="M480 293 Q520 293 558 291" marker-end="url(#nl-arrow)"></path>
+</svg>
+
+<style>
+  .box {
+    fill: color-mix(in oklch, currentColor 6%, transparent);
+    stroke: currentColor;
+    stroke-opacity: 0.35;
+    stroke-width: 1.5;
+  }
+  .box.accent {
+    fill: color-mix(in oklch, var(--brand) 12%, transparent);
+    stroke: var(--brand);
+    stroke-opacity: 0.5;
+  }
+  .store {
+    fill: color-mix(in oklch, currentColor 10%, transparent);
+    stroke: currentColor;
+    stroke-opacity: 0.4;
+    stroke-width: 1.5;
+  }
+  .lbl {
+    fill: currentColor;
+    font:
+      600 13px ui-sans-serif,
+      system-ui;
+  }
+  .sub {
+    fill: currentColor;
+    fill-opacity: 0.6;
+    font:
+      11px ui-monospace,
+      monospace;
+  }
+  .edge {
+    stroke: currentColor;
+    stroke-opacity: 0.4;
+    stroke-width: 1.5;
+    fill: none;
+  }
+</style>

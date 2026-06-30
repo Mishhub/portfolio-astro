@@ -1,0 +1,70 @@
+---
+import Logo from "./Logo.astro";
+import ThemeToggle from "./ThemeToggle.tsx";
+import MobileNav from "./MobileNav.tsx";
+import Button from "@/components/ui/Button.astro";
+import { NAV, RESUME_PATH } from "@/config/site";
+import { cn } from "@/lib/utils";
+
+const path = Astro.url.pathname.replace(/\/$/, "") || "/";
+const primary = NAV.filter((item) => !item.secondary);
+
+const isActive = (href: string) =>
+  href === "/" ? path === "/" : path === href || path.startsWith(`${href}/`);
+---
+
+<header
+  id="site-header"
+  class="sticky top-0 z-40 border-b border-transparent transition-colors duration-300 data-[scrolled]:border-border data-[scrolled]:bg-background/80 data-[scrolled]:backdrop-blur-md"
+>
+  <div class="mx-auto flex h-16 w-full max-w-7xl items-center justify-between gap-4 px-5 sm:px-6 lg:px-8">
+    <Logo class="min-w-0 shrink" compact />
+
+    <nav aria-label="Primary" class="hidden md:block">
+      <ul class="flex items-center gap-1">
+        {
+          primary.map((item) => (
+            <li>
+              <a
+                href={item.href}
+                aria-current={isActive(item.href) ? "page" : undefined}
+                class={cn(
+                  "relative rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                  isActive(item.href)
+                    ? "text-foreground"
+                    : "text-muted-foreground hover:text-foreground",
+                )}
+              >
+                {item.label}
+                {isActive(item.href) && (
+                  <span class="absolute inset-x-3 -bottom-px h-px bg-foreground" aria-hidden="true" />
+                )}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div class="flex items-center gap-1">
+      <ThemeToggle client:idle transition:persist />
+      <Button href={RESUME_PATH} variant="outline" size="sm" class="hidden md:inline-flex">
+        Résumé
+      </Button>
+      <MobileNav client:idle items={NAV} resumePath={RESUME_PATH} />
+    </div>
+  </div>
+</header>
+
+<script>
+  // Solidify the header once the page scrolls past the hero edge.
+  const header = document.getElementById("site-header");
+  const onScroll = () => {
+    if (!header) return;
+    if (window.scrollY > 8) header.setAttribute("data-scrolled", "");
+    else header.removeAttribute("data-scrolled");
+  };
+  onScroll();
+  window.addEventListener("scroll", onScroll, { passive: true });
+  document.addEventListener("astro:after-swap", onScroll);
+</script>

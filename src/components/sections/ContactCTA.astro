@@ -1,0 +1,36 @@
+---
+import { Icon } from "astro-icon/components";
+import Container from "@/components/ui/Container.astro";
+import Button from "@/components/ui/Button.astro";
+import { SITE } from "@/config/site";
+---
+
+<section class="py-16 sm:py-24">
+  <Container size="wide">
+    <div
+      class="relative overflow-hidden rounded-3xl border border-border bg-card px-6 py-14 text-center sm:px-12"
+      data-reveal
+    >
+      <div
+        class="pointer-events-none absolute -top-24 left-1/2 -z-10 h-72 w-72 -translate-x-1/2 rounded-full bg-brand/10 blur-3xl"
+      >
+      </div>
+      <h2 class="mx-auto max-w-2xl text-3xl font-semibold tracking-tight text-foreground text-balance sm:text-4xl">
+        Building something that needs to scale and stay correct?
+      </h2>
+      <p class="mx-auto mt-4 max-w-xl leading-relaxed text-muted-foreground">
+        I'm {SITE.availability.toLowerCase()}. If you're hiring for senior or staff engineering, I'd
+        love to talk.
+      </p>
+      <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
+        <Button href="/contact" variant="primary" size="lg">
+          <Icon name="lucide:mail" />
+          Get in touch
+        </Button>
+        <Button href={`mailto:${SITE.email}`} variant="outline" size="lg">
+          {SITE.email}
+        </Button>
+      </div>
+    </div>
+  </Container>
+</section>

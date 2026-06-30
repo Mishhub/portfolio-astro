@@ -1,0 +1,71 @@
+---
+import Container from "./Container.astro";
+import Eyebrow from "./Eyebrow.astro";
+import { cn } from "@/lib/utils";
+
+/**
+ * A vertically-rhythmic page section with an optional standard header
+ * (eyebrow + title + description). Use the `header` named slot for custom
+ * headers, or pass the props for the common case.
+ */
+interface Props {
+  id?: string;
+  eyebrow?: string;
+  title?: string;
+  description?: string;
+  /** Section vertical padding. */
+  spacing?: "default" | "compact" | "loose";
+  /** Container width. */
+  size?: "default" | "prose" | "wide";
+  /** Center the header block. */
+  align?: "left" | "center";
+  class?: string;
+  containerClass?: string;
+  headingLevel?: "h1" | "h2" | "h3";
+}
+
+const {
+  id,
+  eyebrow,
+  title,
+  description,
+  spacing = "default",
+  size = "default",
+  align = "left",
+  class: className,
+  containerClass,
+  headingLevel: Heading = "h2",
+} = Astro.props;
+
+const spacings = {
+  compact: "py-12 sm:py-16",
+  default: "py-16 sm:py-24",
+  loose: "py-20 sm:py-32",
+};
+
+const hasHeader = Boolean(eyebrow || title || description);
+---
+
+<section id={id} class={cn(spacings[spacing], className)}>
+  <Container size={size} class={containerClass}>
+    {
+      hasHeader && (
+        <header class={cn("mb-10 sm:mb-14 max-w-2xl", align === "center" && "mx-auto text-center")}>
+          {eyebrow && <Eyebrow class={cn(align === "center" && "justify-center")}>{eyebrow}</Eyebrow>}
+          {title && (
+            <Heading class="mt-4 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
+              {title}
+            </Heading>
+          )}
+          {description && (
+            <p class="mt-4 text-base leading-relaxed text-muted-foreground sm:text-lg">
+              {description}
+            </p>
+          )}
+          <slot name="header-extra" />
+        </header>
+      )
+    }
+    <slot />
+  </Container>
+</section>

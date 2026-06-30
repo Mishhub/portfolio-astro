@@ -1,0 +1,57 @@
+---
+title: "Spovio"
+summary: "A full HRMS with time-off, attendance, payroll and document storage — built on a React frontend and a Django backend, with Celery-driven time accrual."
+description: "Spovio — an HRMS built in React and Django, with role-based time-off and attendance accrual on Redis + Celery, monthly payroll exported to Excel/PDF, and secure file storage on AWS S3."
+year: "2020 — 2022"
+role: "Full Stack Developer"
+status: "live"
+featured: false
+order: 5
+domain: "SaaS · HR"
+problem: "HR teams run on manual, error-prone work — tracking leave balances, accruing time at different rates per role, reconciling attendance, generating payroll each month and chasing approvals over email. The hard part is doing all of that consistently: accrual has to keep ticking in the background, payroll has to be reproducible and exportable, and stakeholders have to be notified the moment something needs action."
+solution: "A SaaS HRMS with a React frontend over a Django backend, where the slow and time-driven work is pushed onto Redis + Celery. Time-off and attendance run on role-based accrual rates computed by scheduled background tasks; a salary and payroll module generates monthly runs and exports to Excel and PDF; email and SMS integrations drive HR alerts and approval flows; and organization and user files are stored securely on AWS S3."
+architecture: "Django + Django REST Framework serve a React SPA; PostgreSQL holds organization, payroll and attendance data; Redis backs the cache and the Celery broker; Celery workers and beat schedules accrue time and run background jobs; AWS S3 stores organization and user documents; email and SMS providers deliver HR alerts and approvals."
+contributions:
+  - "Designed and implemented the entire frontend in React and the backend in Django / Django REST Framework."
+  - "Built time-off and attendance modules with role-based accrual rates."
+  - "Used Redis and Celery to track time accrual and run background tasks on a schedule."
+  - "Designed a salary and payroll module with monthly generation and export to Excel and PDF."
+  - "Connected AWS S3 for secure storage of organization and user files."
+  - "Integrated email and SMS services for HR alerts and approval workflows."
+technologies:
+  - "React.js"
+  - "Redux"
+  - "Django"
+  - "Django REST Framework"
+  - "Celery"
+  - "Redis"
+  - "PostgreSQL"
+  - "AWS S3"
+challenges:
+  - "Computing accrual correctly when rates differ by role and time keeps advancing in the background."
+  - "Making monthly payroll runs reproducible and cleanly exportable to both Excel and PDF."
+  - "Keeping approval flows moving by notifying the right people over email and SMS at the right step."
+impact:
+  - "Automated roughly 80% of previously manual HR workflows."
+  - "Time-off and attendance accrue automatically via scheduled Celery jobs rather than manual tracking."
+  - "Payroll is generated monthly and exported to Excel and PDF for downstream use."
+metrics:
+  - { value: "~80%", label: "HR workflows automated" }
+  - { value: "Role-based", label: "Accrual rates" }
+  - { value: "Excel / PDF", label: "Payroll export" }
+lessons:
+  - "Time-driven domains like accrual belong on scheduled background jobs, not request handlers."
+  - "Celery beat plus a Redis broker is a dependable foundation for recurring, time-sensitive work."
+links:
+  caseStudy: "spovio"
+---
+
+Spovio is an HR management system covering the full employee lifecycle — time-off,
+attendance, payroll and document storage. The frontend is a React application; the
+backend is Django, with the time-sensitive work (accrual, scheduled jobs) handled
+by Celery workers over a Redis broker so the request path stays responsive.
+
+The linked case study goes deeper into the role-based accrual model, the monthly
+payroll generation and export pipeline, the AWS S3 storage design, and how email
+and SMS notifications drive the approval workflows that automated most of the
+manual HR process.

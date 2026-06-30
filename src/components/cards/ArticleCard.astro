@@ -1,0 +1,38 @@
+---
+import type { CollectionEntry } from "astro:content";
+import Card from "@/components/ui/Card.astro";
+import Badge from "@/components/ui/Badge.astro";
+import { formatDate } from "@/lib/utils";
+import { readingTimeOf } from "@/lib/content";
+import { cn } from "@/lib/utils";
+
+interface Props {
+  article: CollectionEntry<"articles">;
+  class?: string;
+}
+const { article, class: className } = Astro.props;
+const { data, id } = article;
+const reading = readingTimeOf(article);
+---
+
+<Card href={`/articles/${id}`} as="article" class={cn("flex h-full flex-col", className)}>
+  <div class="flex items-center gap-3 text-xs text-muted-foreground">
+    <Badge variant="brand" size="sm">{data.category}</Badge>
+    <time datetime={data.publishDate.toISOString()}>{formatDate(data.publishDate)}</time>
+    <span aria-hidden="true">·</span>
+    <span>{reading}</span>
+  </div>
+
+  <h3
+    class="mt-4 text-lg font-semibold leading-snug tracking-tight text-foreground transition-colors group-hover:text-brand"
+  >
+    {data.title}
+  </h3>
+  <p class="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground line-clamp-3">
+    {data.description}
+  </p>
+
+  <span class="mt-5 text-sm font-medium text-foreground/70 transition-colors group-hover:text-foreground">
+    Read article →
+  </span>
+</Card>

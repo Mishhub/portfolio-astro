@@ -1,0 +1,29 @@
+---
+import { Icon } from "astro-icon/components";
+import { cn } from "@/lib/utils";
+
+/** Inline note/tip/warning block for articles and case studies. */
+interface Props {
+  type?: "note" | "tip" | "warning" | "insight";
+  title?: string;
+  class?: string;
+}
+const { type = "note", title, class: className } = Astro.props;
+
+const config = {
+  note: { icon: "lucide:info", accent: "border-border bg-subtle", iconColor: "text-muted-foreground" },
+  tip: { icon: "lucide:lightbulb", accent: "border-success/25 bg-success/5", iconColor: "text-success" },
+  warning: { icon: "lucide:triangle-alert", accent: "border-warning/30 bg-warning/5", iconColor: "text-warning" },
+  insight: { icon: "lucide:sparkles", accent: "border-brand/25 bg-brand/5", iconColor: "text-brand" },
+} as const;
+
+const c = config[type];
+---
+
+<aside class={cn("my-6 flex gap-3 rounded-xl border p-4 text-sm", c.accent, className)}>
+  <Icon name={c.icon} class={cn("mt-0.5 size-5 shrink-0", c.iconColor)} aria-hidden="true" />
+  <div class="min-w-0 [&>p]:m-0 [&>p+p]:mt-2">
+    {title && <p class="font-semibold text-foreground">{title}</p>}
+    <div class="text-muted-foreground"><slot /></div>
+  </div>
+</aside>

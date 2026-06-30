@@ -1,0 +1,34 @@
+---
+import Section from "@/components/ui/Section.astro";
+import Button from "@/components/ui/Button.astro";
+import Reveal from "@/components/ui/Reveal.astro";
+import ArticleCard from "@/components/cards/ArticleCard.astro";
+import { getPublishedArticles } from "@/lib/content";
+
+const articles = (await getPublishedArticles()).slice(0, 3);
+---
+
+{
+  articles.length > 0 && (
+    <Section
+      eyebrow="Writing"
+      title="Recent technical articles"
+      description="Notes on system design, backend architecture and the AI engineering work I'm doing now."
+      size="wide"
+    >
+      <div slot="header-extra" class="mt-6">
+        <Button href="/articles" variant="outline" size="sm">
+          All articles
+        </Button>
+      </div>
+
+      <div class="grid gap-5 md:grid-cols-3">
+        {articles.map((article, i) => (
+          <Reveal delay={i * 80}>
+            <ArticleCard article={article} />
+          </Reveal>
+        ))}
+      </div>
+    </Section>
+  )
+}

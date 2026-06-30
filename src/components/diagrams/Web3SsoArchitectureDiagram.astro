@@ -1,0 +1,122 @@
+---
+/**
+ * Architecture diagram for the Web3 SSO & Wallet Platform case study.
+ *
+ * Diagrams live as standalone .astro components (not inline in MDX) so they can
+ * use scoped <style>, stay zero-JS, and adapt to light/dark via currentColor.
+ */
+---
+
+<svg
+  viewBox="0 0 840 420"
+  class="diagram mx-auto h-auto w-full max-w-3xl text-foreground"
+  role="img"
+  aria-label="Web3 SSO and wallet platform architecture: independent products authenticate through a centralized OAuth2/OIDC SSO service that issues JWTs and enforces RBAC, with SumSub KYC driving dynamic access levels. The SSO talks to a NestJS wallet gateway and a Merkle-tree reward module over gRPC. The wallet gateway reaches the chain through Viem and Account Abstraction (Biconomy and Alchemy). The reward module reads eligibility from the referral graph."
+>
+  <defs>
+    <marker id="w3-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0 0L10 5L0 10z" fill="currentColor" fill-opacity="0.5"></path>
+    </marker>
+  </defs>
+
+  <rect class="box" x="24" y="40" width="130" height="44" rx="9"></rect>
+  <text class="lbl" x="89" y="67" text-anchor="middle">Product A</text>
+
+  <rect class="box" x="24" y="100" width="130" height="44" rx="9"></rect>
+  <text class="lbl" x="89" y="127" text-anchor="middle">Product B</text>
+
+  <rect class="box" x="24" y="160" width="130" height="44" rx="9"></rect>
+  <text class="lbl" x="89" y="187" text-anchor="middle">Product C</text>
+
+  <text class="sub" x="89" y="222" text-anchor="middle">independent products</text>
+
+  <rect class="box accent" x="220" y="92" width="180" height="84" rx="10"></rect>
+  <text class="lbl" x="310" y="122" text-anchor="middle">SSO service</text>
+  <text class="sub" x="310" y="140" text-anchor="middle">OAuth2 / OIDC · JWT</text>
+  <text class="sub" x="310" y="156" text-anchor="middle">RBAC · sessions</text>
+
+  <rect class="box" x="220" y="260" width="180" height="50" rx="10"></rect>
+  <text class="lbl" x="240" y="284">SumSub</text>
+  <text class="sub" x="240" y="300">KYC · access levels</text>
+
+  <rect class="box accent" x="470" y="92" width="190" height="84" rx="10"></rect>
+  <text class="lbl" x="565" y="122" text-anchor="middle">Wallet gateway</text>
+  <text class="sub" x="565" y="140" text-anchor="middle">NestJS · Viem</text>
+  <text class="sub" x="565" y="156" text-anchor="middle">Account Abstraction</text>
+
+  <rect class="box" x="470" y="260" width="190" height="64" rx="10"></rect>
+  <text class="lbl" x="490" y="286">Reward module</text>
+  <text class="sub" x="490" y="303">Merkle proofs</text>
+  <text class="sub" x="490" y="318">eligibility claims</text>
+
+  <rect class="store" x="220" y="346" width="180" height="46" rx="9"></rect>
+  <text class="lbl" x="310" y="369" text-anchor="middle">Referral graph</text>
+  <text class="sub" x="310" y="384" text-anchor="middle">user-relationship tree</text>
+
+  <rect class="store" x="724" y="100" width="92" height="68" rx="9"></rect>
+  <text class="lbl" x="770" y="130" text-anchor="middle">Chain</text>
+  <text class="sub" x="770" y="148" text-anchor="middle">Biconomy</text>
+  <text class="sub" x="770" y="162" text-anchor="middle">Alchemy</text>
+
+  <path class="edge" d="M154 62 Q190 80 218 120" marker-end="url(#w3-arrow)"></path>
+  <path class="edge" d="M154 122H218" marker-end="url(#w3-arrow)"></path>
+  <path class="edge" d="M154 182 Q190 160 218 148" marker-end="url(#w3-arrow)"></path>
+
+  <path class="edge" d="M310 176V258" marker-end="url(#w3-arrow)"></path>
+
+  <text class="edgelbl" x="435" y="128" text-anchor="middle">gRPC</text>
+  <path class="edge" d="M400 134H468" marker-end="url(#w3-arrow)"></path>
+
+  <text class="edgelbl" x="435" y="246" text-anchor="middle">gRPC</text>
+  <path class="edge" d="M380 176 Q420 230 468 270" marker-end="url(#w3-arrow)"></path>
+
+  <path class="edge" d="M660 134H722" marker-end="url(#w3-arrow)"></path>
+
+  <path class="edge" d="M470 292 Q435 320 402 360" marker-end="url(#w3-arrow)"></path>
+</svg>
+
+<style>
+  .box {
+    fill: color-mix(in oklch, currentColor 6%, transparent);
+    stroke: currentColor;
+    stroke-opacity: 0.35;
+    stroke-width: 1.5;
+  }
+  .box.accent {
+    fill: color-mix(in oklch, var(--brand) 12%, transparent);
+    stroke: var(--brand);
+    stroke-opacity: 0.5;
+  }
+  .store {
+    fill: color-mix(in oklch, currentColor 10%, transparent);
+    stroke: currentColor;
+    stroke-opacity: 0.4;
+    stroke-width: 1.5;
+  }
+  .lbl {
+    fill: currentColor;
+    font:
+      600 13px ui-sans-serif,
+      system-ui;
+  }
+  .sub {
+    fill: currentColor;
+    fill-opacity: 0.6;
+    font:
+      11px ui-monospace,
+      monospace;
+  }
+  .edgelbl {
+    fill: currentColor;
+    fill-opacity: 0.55;
+    font:
+      10px ui-monospace,
+      monospace;
+  }
+  .edge {
+    stroke: currentColor;
+    stroke-opacity: 0.4;
+    stroke-width: 1.5;
+    fill: none;
+  }
+</style>

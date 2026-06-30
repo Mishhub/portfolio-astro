@@ -1,0 +1,57 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Container from "@/components/ui/Container.astro";
+import PageHeader from "@/components/layout/PageHeader.astro";
+import Breadcrumbs from "@/components/layout/Breadcrumbs.astro";
+import Reveal from "@/components/ui/Reveal.astro";
+import ContactCTA from "@/components/sections/ContactCTA.astro";
+import TimelineItem from "@/components/experience/TimelineItem.astro";
+import { EXPERIENCE } from "@/data/experience";
+import { breadcrumbSchema } from "@/lib/seo";
+
+const origin = Astro.site!.origin;
+
+const crumbs = [
+  { name: "Home", href: "/" },
+  { name: "Experience" },
+];
+
+const jsonLd = breadcrumbSchema([
+  { name: "Home", url: origin },
+  { name: "Experience", url: `${origin}/experience` },
+]);
+
+const title = "Experience — Senior Full Stack Engineer Timeline";
+const description =
+  "A timeline of roles building production-grade, event-driven backend systems — with responsibilities, impact and the stack behind each.";
+---
+
+<BaseLayout title={title} description={description} jsonLd={jsonLd}>
+  <PageHeader
+    eyebrow="Experience"
+    title="A timeline of building and shipping"
+    lead="Where I've worked, what I owned, and the outcomes that mattered. Expand any role for responsibilities, impact and the stack behind it."
+  >
+    <Breadcrumbs slot="breadcrumbs" items={crumbs} class="mb-2" />
+  </PageHeader>
+
+  <section class="py-16 sm:py-24">
+    <Container size="default">
+      <h2 class="sr-only">Roles</h2>
+      {/* The rail line is drawn on the <ol>; items place their own dots over it. */}
+      <ol
+        class="relative space-y-6 before:absolute before:bottom-2 before:left-0 before:top-2 before:w-px before:bg-border sm:space-y-8"
+      >
+        {
+          EXPERIENCE.map((entry, i) => (
+            <Reveal delay={i * 80} as="li">
+              <TimelineItem entry={entry} open={i === 0} />
+            </Reveal>
+          ))
+        }
+      </ol>
+    </Container>
+  </section>
+
+  <ContactCTA />
+</BaseLayout>

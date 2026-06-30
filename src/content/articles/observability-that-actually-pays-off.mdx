@@ -1,0 +1,127 @@
+---
+title: "Observability That Actually Pays Off"
+description: "Logs, metrics, and traces do different jobs. Correlation IDs tie them together, SLOs decide what matters, and you should alert on symptoms — not causes."
+publishDate: 2025-03-22
+category: "DevOps"
+tags: ["observability", "slo", "tracing", "monitoring", "alerting"]
+featured: false
+---
+
+import Callout from "@/components/ui/Callout.astro";
+
+Most "observability" spend is wasted. Teams ship a dashboard with forty panels
+nobody reads, fire alerts that everyone mutes, and still spend an hour guessing
+during an incident. The tooling isn't the problem — the model is. Observability
+pays off only when each signal does a job you understand, the signals connect to
+each other, and your alerts are tied to what users actually feel.
+
+## Three signals, three jobs
+
+Logs, metrics, and traces are not interchangeable. They answer different
+questions, and using one to do another's job is how monitoring bills explode
+while visibility stays poor.
+
+- **Metrics** answer *"is something wrong, and how much?"* They're cheap,
+  aggregatable numbers over time — request rate, error rate, p99 latency. You
+  alert on metrics because they're cheap to evaluate continuously.
+- **Logs** answer *"what exactly happened in this one case?"* They're the
+  detailed event record you read *after* a metric told you where to look. Log
+  with intent — structured, leveled, and sparing — not a `console.log` confetti
+  cannon.
+- **Traces** answer *"where did the time go across services?"* A trace stitches
+  one request's path through every hop, so a 2-second checkout becomes visibly
+  "1.8s of that was the inventory call."
+
+```ts
+// structured logs are queryable; string-concatenated ones are not
+logger.info({
+  event: "payment.captured",
+  orderId,
+  amountCents,
+  latencyMs,
+  correlationId,
+});
+```
+
+The discipline is to reach for the right one. You don't grep terabytes of logs to
+find out your error rate spiked — that's a metric. You don't emit a metric per
+user — that's a log line.
+
+## Correlation IDs are the glue
+
+Three signals are useless if you can't pivot between them. A single request that
+touches five services should carry one **correlation ID** (trace ID) end to end,
+stamped onto every log line and propagated on every outbound call. That ID is
+what turns "the error rate is up" into "show me the logs for the failing requests"
+into "here's the trace where the database call timed out" — in three clicks
+instead of three hours.
+
+```ts
+// propagate the id inward; generate one at the edge if absent
+const correlationId = req.headers["x-correlation-id"] ?? randomUUID();
+context.run({ correlationId }, () => handle(req));
+```
+
+<Callout type="tip" title="Generate at the edge, propagate everywhere">
+  Mint the correlation ID at your outermost entry point — the gateway or first
+  service — and pass it through every internal call and queue message. A
+  correlation ID that exists in only one service is just a log field; one that
+  spans the whole request is a debugger.
+</Callout>
+
+## SLOs decide what's worth caring about
+
+Without a definition of "good enough," every blip looks like a fire and you alert
+on all of them. A **Service Level Objective** is that definition: a target on a
+user-facing metric over a window — "99.9% of checkout requests succeed under
+500ms over 30 days."
+
+The SLO gives you an **error budget**: the 0.1% you're allowed to fail. That
+budget is the most useful number in the whole system. Burning it slowly is fine —
+that's what it's for. Burning it fast is the only thing worth waking someone for.
+And when the budget's healthy, you ship features instead of chasing a flaky panel
+that doesn't affect anyone.
+
+<Callout type="insight" title="The error budget is a decision tool, not a vanity metric">
+  When the budget is intact, ship faster. When it's burning, freeze risky changes
+  and stabilize. The SLO turns reliability from a vibe into a number both
+  engineers and product can act on.
+</Callout>
+
+## Alert on symptoms, not causes
+
+This is the single highest-leverage change most teams can make. Don't alert on
+"CPU is at 90%." High CPU might mean nothing — maybe you're efficiently busy.
+Alert on what the *user* experiences: the checkout success rate dropped, p99
+latency crossed the SLO threshold, the error budget is burning at 10x.
+
+Cause-based alerts have two failure modes, and you suffer both at once. They fire
+when nothing is actually wrong (a node is busy but users are fine), training
+everyone to ignore the pager. And they *miss* real problems your prebuilt
+causes didn't anticipate — the outage caused by something you never thought to
+threshold. Symptom-based alerts catch the user-facing problem regardless of cause,
+then your traces and logs tell you *why*.
+
+```yaml
+# alert on the symptom users feel...
+- alert: CheckoutErrorBudgetBurningFast
+  expr: checkout_error_ratio > (14 * 0.001)  # 14x burn vs the 0.1% budget
+  for: 5m
+# ...not on a cause that may or may not matter
+# (skip: node_cpu_seconds > 0.9)
+```
+
+## Putting it together
+
+Good observability is a small, coherent system, not a pile of tools. Metrics tell
+you *that* something's wrong and trip an alert when users are affected. The
+correlation ID jumps you from that alert to the exact failing requests. Traces
+show you *where* the latency or error lives, and logs tell you the *why* for that
+one request. SLOs decide what's worth an alert at all, and error budgets decide
+whether you're firefighting or shipping.
+
+Cut the forty-panel dashboard. Define one SLO for your most important user
+journey, alert on its error budget, make sure a correlation ID flows through every
+service, and confirm you can pivot from an alert to a trace to a log in under a
+minute. That's the version of observability that pays for itself the first time
+something breaks.

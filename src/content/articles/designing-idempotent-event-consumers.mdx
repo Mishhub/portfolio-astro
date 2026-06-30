@@ -1,0 +1,97 @@
+---
+title: "Designing Idempotent Event Consumers"
+description: "Exactly-once delivery is a myth. Here's how to make event consumers safe to retry — the dedupe store, the outbox, and where idempotency keys actually belong."
+publishDate: 2025-02-18
+category: "Backend"
+tags: ["event-driven", "idempotency", "redis", "nestjs"]
+featured: true
+---
+
+import Callout from "@/components/ui/Callout.astro";
+
+Every distributed system that processes events eventually re-delivers one. The
+broker crashes after handing you a message but before recording the ack; a
+consumer rebalances mid-batch; a retry fires because a downstream call timed out
+even though it actually succeeded. If your handler isn't safe to run twice, you
+don't have a reliability problem _yet_ — you have one scheduled.
+
+The usual reaction is to chase **exactly-once delivery**. Don't. What you can
+build, cheaply and durably, is **effectively-once processing**: at-least-once
+delivery plus an idempotent consumer.
+
+## The two failure modes
+
+It helps to separate the two things that "process this twice" can mean:
+
+- **Duplicate delivery** — the same logical message arrives more than once.
+- **Partial application** — a handler did half its work, crashed, and will be
+  retried from the top.
+
+A robust consumer has to survive both. Deduplication handles the first; making
+the handler's side effects atomic handles the second.
+
+## A dedupe store keyed on the event id
+
+Give every event a stable, producer-assigned id and record the ids you've fully
+processed. Before doing any work, check the store; after committing, record it —
+inside the **same transaction** as the business write.
+
+```ts
+async function handle(event: PaymentCaptured) {
+  await this.db.transaction(async (tx) => {
+    const seen = await tx.processedEvents.exists(event.id);
+    if (seen) return; // already applied — ack and move on
+
+    await tx.ledger.append(event.toLedgerEntry());
+    await tx.processedEvents.insert({ id: event.id, at: new Date() });
+  });
+}
+```
+
+The subtlety that trips people up: the dedupe insert and the business write must
+commit together. If they're in different transactions (or different stores), a
+crash between them puts you right back where you started.
+
+<Callout type="warning" title="Don't dedupe in Redis and write to Postgres">
+  A cache and a database can't share a transaction. If you record the event id
+  in Redis but the Postgres write rolls back, you'll silently drop the event on
+  retry. Keep the dedupe record in the same store as the effect it guards.
+</Callout>
+
+## The outbox pattern for what you emit
+
+Consuming idempotently is half the picture. When your handler also _produces_
+events, you need the publish to be atomic with the write that caused it — or
+you'll emit phantom events on rollback and lose real ones on crash.
+
+Write outgoing messages to an `outbox` table in the same transaction, then let a
+separate relay poll the table and publish. The relay is itself at-least-once, so
+downstream consumers must dedupe — which is fine, because you just built that.
+
+```ts
+await tx.outbox.insert({
+  id: ulid(),
+  topic: "settlement.requested",
+  payload: settlement,
+});
+```
+
+## Where idempotency keys belong
+
+For HTTP-triggered work (a client `POST /payments`), push the key to the edge:
+accept a client-supplied `Idempotency-Key`, persist the first response against
+it, and replay that stored response on repeat. The client gets a consistent
+answer no matter how many times its flaky network retried.
+
+<Callout type="insight" title="Idempotency is a product feature">
+  Treating retries as normal — not exceptional — is what lets you offer "safe to
+  retry" as a guarantee to the teams and clients that integrate with you.
+</Callout>
+
+## What this buys you
+
+Once consumers are idempotent and producers use an outbox, a whole category of
+operational anxiety disappears. You can redeploy mid-stream, replay a topic to
+backfill, and let the broker retry aggressively — none of it corrupts state. The
+system stops being fragile and starts being _boring_, which in production is the
+highest compliment there is.

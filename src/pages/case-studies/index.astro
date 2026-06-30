@@ -1,0 +1,57 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Container from "@/components/ui/Container.astro";
+import PageHeader from "@/components/layout/PageHeader.astro";
+import Breadcrumbs from "@/components/layout/Breadcrumbs.astro";
+import Reveal from "@/components/ui/Reveal.astro";
+import CaseStudyCard from "@/components/cards/CaseStudyCard.astro";
+import ContactCTA from "@/components/sections/ContactCTA.astro";
+import { getSortedCaseStudies } from "@/lib/content";
+import { breadcrumbSchema } from "@/lib/seo";
+
+const caseStudies = await getSortedCaseStudies();
+
+const origin = Astro.site!.origin;
+const jsonLd = [
+  breadcrumbSchema([
+    { name: "Home", url: `${origin}/` },
+    { name: "Case Studies", url: `${origin}/case-studies` },
+  ]),
+];
+
+const title = "Case Studies — Systems Design Deep Dives";
+const description =
+  "In-depth engineering case studies: the problem, the architecture, the trade-offs and the outcome behind production systems I've designed and shipped.";
+---
+
+<BaseLayout title={title} description={description} jsonLd={jsonLd}>
+  <PageHeader
+    eyebrow="Case studies"
+    title="Engineering decisions, in full"
+    lead="Long-form walkthroughs of real systems — the problem space, the architecture, the trade-offs I made under constraint, and what actually shipped."
+  >
+    <Breadcrumbs
+      slot="breadcrumbs"
+      items={[{ name: "Home", href: "/" }, { name: "Case Studies" }]}
+    />
+  </PageHeader>
+
+  <Container size="wide" as="section" class="py-16 sm:py-24">
+    <h2 class="sr-only">Case studies</h2>
+    {
+      caseStudies.length > 0 ? (
+        <ul class="grid gap-5 sm:grid-cols-2">
+          {caseStudies.map((caseStudy, i) => (
+            <Reveal as="li" delay={i * 80} class="h-full">
+              <CaseStudyCard caseStudy={caseStudy} />
+            </Reveal>
+          ))}
+        </ul>
+      ) : (
+        <p class="text-muted-foreground">No case studies published yet — check back soon.</p>
+      )
+    }
+  </Container>
+
+  <ContactCTA />
+</BaseLayout>

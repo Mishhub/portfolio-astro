@@ -1,0 +1,77 @@
+---
+/**
+ * Illustrative GitHub-style contribution heatmap.
+ *
+ * Pure CSS grid (7 rows x 26 weeks) of small rounded squares. Each cell's
+ * intensity is DETERMINISTIC — derived from its index with a fixed integer
+ * formula (no Math.random) so the pattern is identical on every build. This is
+ * a placeholder visual; wire it to the GitHub contributions API when available.
+ */
+import { cn } from "@/lib/utils";
+
+interface Props {
+  /** Number of week columns. */
+  weeks?: number;
+  class?: string;
+}
+
+const { weeks = 26, class: className } = Astro.props;
+
+const ROWS = 7;
+const cols = weeks;
+const total = ROWS * cols;
+
+/** Brand-tinted opacity per intensity bucket (level 0 reads as an empty day). */
+const levelOpacity = [0.06, 0.22, 0.42, 0.66, 0.92];
+
+/**
+ * Deterministic pseudo-noise from a cell index. A couple of mixed integer
+ * terms give an organic-looking spread across the five buckets without any
+ * randomness — same input always yields the same level.
+ */
+function levelFor(index: number): number {
+  const mixed = (index * 2654435761) ^ (index << 5) ^ (index >> 2);
+  return Math.abs(mixed) % levelOpacity.length;
+}
+
+const cells = Array.from({ length: total }, (_, i) => levelFor(i));
+---
+
+<figure class={cn("rounded-2xl border border-border bg-card p-6 sm:p-7", className)}>
+  <div class="overflow-x-auto">
+    <div
+      class="grid w-max grid-flow-col gap-1"
+      style={`grid-template-rows: repeat(${ROWS}, minmax(0, 1fr));`}
+      role="img"
+      aria-label="Illustrative contribution heatmap, one square per day across roughly six months."
+    >
+      {
+        cells.map((level) => (
+          <span
+            class="size-2.5 rounded-[3px] bg-brand sm:size-3"
+            style={`opacity: ${levelOpacity[level]};`}
+            aria-hidden="true"
+          />
+        ))
+      }
+    </div>
+  </div>
+
+  <div class="mt-5 flex items-center justify-end gap-2 text-xs text-muted-foreground">
+    <span>Less</span>
+    <div class="flex items-center gap-1" aria-hidden="true">
+      {
+        levelOpacity.map((opacity) => (
+          <span class="size-2.5 rounded-[3px] bg-brand sm:size-3" style={`opacity: ${opacity};`} />
+        ))
+      }
+    </div>
+    <span>More</span>
+  </div>
+
+  <figcaption class="mt-5 border-t border-border pt-4 text-sm leading-relaxed text-muted-foreground">
+    This heatmap is illustrative — a static placeholder, not live data. It's
+    built to be wired to the GitHub contributions API so the squares reflect
+    real daily activity.
+  </figcaption>
+</figure>

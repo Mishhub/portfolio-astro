@@ -1,0 +1,197 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { render } from "astro:content";
+import { Icon } from "astro-icon/components";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Container from "@/components/ui/Container.astro";
+import Section from "@/components/ui/Section.astro";
+import Prose from "@/components/ui/Prose.astro";
+import Badge from "@/components/ui/Badge.astro";
+import Tag from "@/components/ui/Tag.astro";
+import Reveal from "@/components/ui/Reveal.astro";
+import Breadcrumbs from "@/components/layout/Breadcrumbs.astro";
+import ArticleCard from "@/components/cards/ArticleCard.astro";
+import ContactCTA from "@/components/sections/ContactCTA.astro";
+import { readingTimeOf } from "@/lib/content";
+import { breadcrumbSchema, articleSchema } from "@/lib/seo";
+import { formatDate, absoluteUrl } from "@/lib/utils";
+
+/**
+ * Reading layout for a single article. Renders the header (breadcrumbs,
+ * category, title, meta, tags), the MDX body and a "Related articles" grid
+ * plus prev/next navigation. Owns all article-page SEO/JSON-LD.
+ */
+interface Props {
+  entry: CollectionEntry<"articles">;
+  /** Same-category siblings (excluding this one), newest first. */
+  related: CollectionEntry<"articles">[];
+  prev?: CollectionEntry<"articles">;
+  next?: CollectionEntry<"articles">;
+}
+
+const { entry, related, prev, next } = Astro.props;
+const { data } = entry;
+const { Content } = await render(entry);
+
+const reading = readingTimeOf(entry);
+const url = absoluteUrl(`/articles/${entry.id}`, Astro.site!.origin);
+
+const publishedTime = data.publishDate.toISOString();
+const modifiedTime = data.updatedDate?.toISOString();
+
+const jsonLd = [
+  breadcrumbSchema([
+    { name: "Home", url: Astro.site!.origin },
+    { name: "Articles", url: absoluteUrl("/articles", Astro.site!.origin) },
+    { name: data.title, url },
+  ]),
+  articleSchema(Astro.site!.origin, {
+    title: data.title,
+    description: data.description,
+    url,
+    datePublished: publishedTime,
+    dateModified: modifiedTime,
+    tags: data.tags,
+  }),
+];
+---
+
+<BaseLayout
+  title={data.title}
+  description={data.description}
+  type="article"
+  canonical={`/articles/${entry.id}`}
+  publishedTime={publishedTime}
+  modifiedTime={modifiedTime}
+  tags={data.tags}
+  jsonLd={jsonLd}
+>
+  <article>
+    <header class="relative overflow-hidden border-b border-border">
+      <div
+        class="pointer-events-none absolute inset-x-0 top-0 -z-10 h-64 bg-grid mask-radial-fade opacity-[0.4]"
+      >
+      </div>
+      <Container size="prose" class="py-14 sm:py-16">
+        <Breadcrumbs
+          items={[
+            { name: "Home", href: "/" },
+            { name: "Articles", href: "/articles" },
+            { name: data.category },
+          ]}
+        />
+
+        <div class="mt-6">
+          <Badge variant="brand" size="md">{data.category}</Badge>
+        </div>
+
+        <h1
+          class="mt-5 text-3xl font-semibold tracking-tight text-foreground text-balance sm:text-4xl"
+        >
+          {data.title}
+        </h1>
+
+        <p class="mt-5 text-lg leading-relaxed text-muted-foreground text-pretty">
+          {data.description}
+        </p>
+
+        <div
+          class="mt-6 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-sm text-muted-foreground"
+        >
+          <time datetime={publishedTime}>{formatDate(data.publishDate, { year: "numeric", month: "short", day: "numeric" })}</time>
+          {
+            data.updatedDate && (
+              <>
+                <span aria-hidden="true">·</span>
+                <span>Updated {formatDate(data.updatedDate, { year: "numeric", month: "short", day: "numeric" })}</span>
+              </>
+            )
+          }
+          <span aria-hidden="true">·</span>
+          <span>{reading}</span>
+        </div>
+
+        {
+          data.tags.length > 0 && (
+            <ul class="mt-6 flex flex-wrap gap-2">
+              {data.tags.map((tag) => (
+                <li>
+                  <Tag>{tag}</Tag>
+                </li>
+              ))}
+            </ul>
+          )
+        }
+      </Container>
+    </header>
+
+    <Container size="prose" class="py-12 sm:py-16">
+      <Prose>
+        <Content />
+      </Prose>
+    </Container>
+  </article>
+
+  {
+    related.length > 0 && (
+      <Section
+        eyebrow="Keep reading"
+        title="Related articles"
+        spacing="compact"
+        size="wide"
+      >
+        <div class="grid gap-5 md:grid-cols-3">
+          {related.map((article, i) => (
+            <Reveal delay={i * 80}>
+              <ArticleCard article={article} />
+            </Reveal>
+          ))}
+        </div>
+      </Section>
+    )
+  }
+
+  {
+    (prev || next) && (
+      <Container size="wide" class="pb-16 sm:pb-20">
+        <nav
+          aria-label="Article navigation"
+          class="grid gap-4 border-t border-border pt-8 sm:grid-cols-2"
+        >
+          {prev ? (
+            <a
+              href={`/articles/${prev.id}`}
+              class="group flex flex-col gap-1 rounded-xl border border-border bg-card p-5 transition-all duration-300 hover:border-foreground/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <span class="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+                <Icon name="lucide:arrow-left" class="size-3.5" aria-hidden="true" />
+                Previous
+              </span>
+              <span class="font-medium leading-snug text-foreground transition-colors group-hover:text-brand">
+                {prev.data.title}
+              </span>
+            </a>
+          ) : (
+            <span aria-hidden="true" class="hidden sm:block" />
+          )}
+          {next && (
+            <a
+              href={`/articles/${next.id}`}
+              class="group flex flex-col gap-1 rounded-xl border border-border bg-card p-5 text-right transition-all duration-300 hover:border-foreground/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:items-end"
+            >
+              <span class="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+                Next
+                <Icon name="lucide:arrow-right" class="size-3.5" aria-hidden="true" />
+              </span>
+              <span class="font-medium leading-snug text-foreground transition-colors group-hover:text-brand">
+                {next.data.title}
+              </span>
+            </a>
+          )}
+        </nav>
+      </Container>
+    )
+  }
+
+  <ContactCTA />
+</BaseLayout>

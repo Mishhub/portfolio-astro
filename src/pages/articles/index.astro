@@ -1,0 +1,187 @@
+---
+import { Icon } from "astro-icon/components";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Container from "@/components/ui/Container.astro";
+import PageHeader from "@/components/layout/PageHeader.astro";
+import Breadcrumbs from "@/components/layout/Breadcrumbs.astro";
+import Reveal from "@/components/ui/Reveal.astro";
+import ArticleCard from "@/components/cards/ArticleCard.astro";
+import ContactCTA from "@/components/sections/ContactCTA.astro";
+import { getPublishedArticles } from "@/lib/content";
+import { breadcrumbSchema } from "@/lib/seo";
+
+const articles = await getPublishedArticles();
+
+// Categories that actually appear, in their published-frequency-agnostic order
+// of first appearance — keeps the filter row honest to the content.
+const categories = [...new Set(articles.map((a) => a.data.category))];
+
+const jsonLd = [
+  breadcrumbSchema([
+    { name: "Home", url: Astro.site!.origin },
+    { name: "Articles", url: new URL("/articles", Astro.site!.origin).href },
+  ]),
+];
+---
+
+<BaseLayout
+  title="Articles on System Design & Backend Engineering"
+  description="Technical writing on system design, backend architecture, distributed systems and the AI engineering work I'm doing now."
+  jsonLd={jsonLd}
+>
+  <PageHeader
+    eyebrow="Writing"
+    title="Articles"
+    lead="Field notes on system design, backend architecture, distributed systems and AI engineering — written from the trenches of shipping production software."
+  >
+    <Breadcrumbs slot="breadcrumbs" items={[{ name: "Home", href: "/" }, { name: "Articles" }]} />
+  </PageHeader>
+
+  {
+    articles.length > 0 ? (
+      <Container size="wide" class="py-12 sm:py-16">
+        {/* Controls: search + category filter */}
+        <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div class="relative w-full lg:max-w-xs">
+            <label for="article-search" class="sr-only">
+              Search articles
+            </label>
+            <Icon
+              name="lucide:search"
+              class="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
+              aria-hidden="true"
+            />
+            <input
+              id="article-search"
+              type="search"
+              name="q"
+              placeholder="Search articles…"
+              autocomplete="off"
+              data-article-search
+              class="h-11 w-full rounded-lg border border-input bg-card pl-9 pr-3 text-sm text-foreground placeholder:text-muted-foreground focus-visible:border-foreground/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            />
+          </div>
+
+          <div
+            role="group"
+            aria-label="Filter articles by category"
+            class="-mx-1 flex flex-wrap items-center gap-2 overflow-x-auto px-1"
+            data-article-filters
+          >
+            <button
+              type="button"
+              data-category="all"
+              aria-pressed="true"
+              class="filter-btn inline-flex h-9 items-center rounded-full border border-border bg-card px-3.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground aria-pressed:border-foreground aria-pressed:bg-foreground aria-pressed:text-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              All
+            </button>
+            {categories.map((category) => (
+              <button
+                type="button"
+                data-category={category.toLowerCase()}
+                aria-pressed="false"
+                class="filter-btn inline-flex h-9 items-center rounded-full border border-border bg-card px-3.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground aria-pressed:border-foreground aria-pressed:bg-foreground aria-pressed:text-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                {category}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <h2 class="sr-only">All articles</h2>
+        {/* Card grid — all rendered server-side, filtered client-side */}
+        <ul
+          class="mt-10 grid list-none gap-5 sm:grid-cols-2 lg:grid-cols-3"
+          data-article-grid
+        >
+          {articles.map((article, i) => (
+            <li
+              data-article
+              data-title={article.data.title.toLowerCase()}
+              data-category={article.data.category.toLowerCase()}
+              data-tags={article.data.tags.join(" ").toLowerCase()}
+              class="flex"
+            >
+              <Reveal delay={i * 80} class="w-full">
+                <ArticleCard article={article} />
+              </Reveal>
+            </li>
+          ))}
+        </ul>
+
+        {/* Empty state — revealed by the filter script when nothing matches */}
+        <p
+          data-article-empty
+          hidden
+          class="mt-12 rounded-xl border border-dashed border-border bg-subtle py-12 text-center text-sm text-muted-foreground"
+        >
+          No articles match your search. Try a different keyword or category.
+        </p>
+      </Container>
+    ) : (
+      <Container size="wide" class="py-12 sm:py-16">
+        <p class="rounded-xl border border-dashed border-border bg-subtle py-12 text-center text-sm text-muted-foreground">
+          No articles published yet — check back soon.
+        </p>
+      </Container>
+    )
+  }
+
+  <ContactCTA />
+</BaseLayout>
+
+<script>
+  // Client-side filter for the articles index. Progressive enhancement: with JS
+  // off, every card stays visible. We only ever toggle a `hidden` attribute.
+  function setupArticleFilter() {
+    const grid = document.querySelector<HTMLElement>("[data-article-grid]");
+    if (!grid) return;
+
+    const search = document.querySelector<HTMLInputElement>("[data-article-search]");
+    const filterGroup = document.querySelector<HTMLElement>("[data-article-filters]");
+    const empty = document.querySelector<HTMLElement>("[data-article-empty]");
+    const cards = Array.from(grid.querySelectorAll<HTMLElement>("[data-article]"));
+    const buttons = Array.from(
+      (filterGroup?.querySelectorAll<HTMLButtonElement>(".filter-btn") ?? []),
+    );
+
+    let activeCategory = "all";
+
+    const apply = () => {
+      const query = (search?.value ?? "").trim().toLowerCase();
+      let visible = 0;
+
+      for (const card of cards) {
+        const title = card.dataset.title ?? "";
+        const category = card.dataset.category ?? "";
+        const tags = card.dataset.tags ?? "";
+
+        const matchesCategory = activeCategory === "all" || category === activeCategory;
+        const matchesQuery =
+          query === "" || title.includes(query) || tags.includes(query) || category.includes(query);
+
+        const show = matchesCategory && matchesQuery;
+        card.hidden = !show;
+        if (show) visible++;
+      }
+
+      if (empty) empty.hidden = visible !== 0;
+    };
+
+    search?.addEventListener("input", apply);
+
+    for (const button of buttons) {
+      button.addEventListener("click", () => {
+        activeCategory = button.dataset.category ?? "all";
+        for (const b of buttons) b.setAttribute("aria-pressed", String(b === button));
+        apply();
+      });
+    }
+
+    apply();
+  }
+
+  setupArticleFilter();
+  document.addEventListener("astro:after-swap", setupArticleFilter);
+</script>

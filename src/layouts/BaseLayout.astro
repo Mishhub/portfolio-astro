@@ -1,0 +1,89 @@
+---
+import "@fontsource-variable/inter";
+import "@fontsource-variable/jetbrains-mono";
+import "@/styles/global.css";
+
+import { ClientRouter } from "astro:transitions";
+import BaseHead from "@/components/seo/BaseHead.astro";
+import Header from "@/components/layout/Header.astro";
+import Footer from "@/components/layout/Footer.astro";
+import SkipLink from "@/components/layout/SkipLink.astro";
+import { SITE } from "@/config/site";
+import { cn } from "@/lib/utils";
+
+/** Root layout: head/SEO, chrome (header + footer) and the page slot. */
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  imageAlt?: string;
+  type?: "website" | "article" | "profile";
+  canonical?: string;
+  noindex?: boolean;
+  publishedTime?: string;
+  modifiedTime?: string;
+  tags?: string[];
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+  /** Extra classes on <main>. */
+  mainClass?: string;
+}
+
+const { mainClass, ...head } = Astro.props;
+---
+
+<!doctype html>
+<html lang={SITE.lang}>
+  <head>
+    <!-- Set the theme before paint to avoid any flash of the wrong palette. -->
+    <script is:inline>
+      (function () {
+        const root = document.documentElement;
+        root.classList.add("js");
+        try {
+          const stored = localStorage.getItem("theme");
+          // Dark mode first: default to dark unless the visitor chose light.
+          root.classList.toggle("dark", stored !== "light");
+        } catch (e) {
+          root.classList.add("dark");
+        }
+      })();
+    </script>
+
+    <BaseHead {...head} />
+    <ClientRouter />
+  </head>
+
+  <body>
+    <SkipLink />
+    <Header />
+    <main id="main" class={cn("min-h-[60vh]", mainClass)}>
+      <slot />
+    </main>
+    <Footer />
+
+    <script>
+      // Shared scroll-reveal observer. Re-armed after each view transition.
+      const setup = () => {
+        const els = document.querySelectorAll<HTMLElement>("[data-reveal]:not(.is-visible)");
+        if (!("IntersectionObserver" in window) || !els.length) {
+          els.forEach((el) => el.classList.add("is-visible"));
+          return;
+        }
+        const io = new IntersectionObserver(
+          (entries, obs) => {
+            for (const entry of entries) {
+              if (entry.isIntersecting) {
+                entry.target.classList.add("is-visible");
+                obs.unobserve(entry.target);
+              }
+            }
+          },
+          { rootMargin: "0px 0px -8% 0px", threshold: 0.12 },
+        );
+        els.forEach((el) => io.observe(el));
+      };
+      setup();
+      document.addEventListener("astro:after-swap", setup);
+    </script>
+  </body>
+</html>

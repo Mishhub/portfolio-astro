@@ -1,0 +1,25 @@
+---
+import { Icon } from "astro-icon/components";
+import Section from "@/components/ui/Section.astro";
+import Reveal from "@/components/ui/Reveal.astro";
+import { HIGHLIGHTS } from "@/data/home";
+---
+
+<Section eyebrow="Why hire me" title="Selected highlights" size="wide" spacing="compact">
+  <dl class="grid gap-x-8 gap-y-px overflow-hidden rounded-2xl border border-border sm:grid-cols-2">
+    {
+      HIGHLIGHTS.map((h, i) => (
+        <Reveal
+          delay={i * 70}
+          class="flex gap-4 border-b border-border bg-card p-6 last:border-b-0 sm:[&:nth-last-child(2)]:border-b-0"
+        >
+          <Icon name="lucide:check" class="mt-1 size-5 shrink-0 text-brand" aria-hidden="true" />
+          <div>
+            <dt class="font-semibold tracking-tight text-foreground">{h.title}</dt>
+            <dd class="mt-1.5 text-sm leading-relaxed text-muted-foreground">{h.description}</dd>
+          </div>
+        </Reveal>
+      ))
+    }
+  </dl>
+</Section>

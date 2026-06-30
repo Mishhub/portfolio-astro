@@ -1,0 +1,37 @@
+---
+import Container from "@/components/ui/Container.astro";
+import Eyebrow from "@/components/ui/Eyebrow.astro";
+import { cn } from "@/lib/utils";
+
+/** Standard hero block for inner pages: eyebrow + H1 + lead paragraph. */
+interface Props {
+  eyebrow?: string;
+  title: string;
+  lead?: string;
+  align?: "left" | "center";
+  size?: "default" | "wide";
+  class?: string;
+}
+
+const { eyebrow, title, lead, align = "left", size = "default", class: className } = Astro.props;
+---
+
+<section class={cn("relative overflow-hidden border-b border-border", className)}>
+  <div class="pointer-events-none absolute inset-0 -z-10 bg-grid mask-radial-fade opacity-[0.4]"></div>
+  <Container size={size} class="py-16 sm:py-20">
+    <div class={cn("max-w-3xl", align === "center" && "mx-auto text-center")}>
+      <slot name="breadcrumbs" />
+      {eyebrow && <Eyebrow class={cn("mt-1", align === "center" && "justify-center")}>{eyebrow}</Eyebrow>}
+      <h1 class="mt-4 text-4xl font-semibold tracking-tight text-foreground text-balance sm:text-5xl">
+        {title}
+      </h1>
+      {
+        lead && (
+          <p class="mt-5 text-lg leading-relaxed text-muted-foreground text-pretty">{lead}</p>
+        )
+      }
+      <slot name="actions" />
+    </div>
+    <slot />
+  </Container>
+</section>

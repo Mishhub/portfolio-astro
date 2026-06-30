@@ -1,0 +1,44 @@
+---
+import type { SkillLevel } from "@/data/skills";
+import { cn } from "@/lib/utils";
+
+/**
+ * A small, accessible four-step meter for a skill's self-assessed level.
+ * Each level maps to a number of filled bars (expert = 4 … learning = 1).
+ * The meter itself is decorative (the bars are aria-hidden); the wrapping
+ * element carries an aria-label like "advanced — 3 of 4" so assistive tech
+ * announces the level without relying on colour. Zero client JS.
+ */
+interface Props {
+  level: SkillLevel;
+  class?: string;
+}
+
+const { level, class: className } = Astro.props;
+
+const STEPS: Record<SkillLevel, number> = {
+  expert: 4,
+  advanced: 3,
+  proficient: 2,
+  learning: 1,
+};
+
+const TOTAL = 4;
+const filled = STEPS[level];
+const bars = Array.from({ length: TOTAL }, (_, i) => i < filled);
+---
+
+<span
+  class={cn("inline-flex items-center gap-1", className)}
+  role="img"
+  aria-label={`${level} — ${filled} of ${TOTAL}`}
+>
+  {
+    bars.map((on) => (
+      <span
+        aria-hidden="true"
+        class={cn("h-1.5 w-3.5 rounded-full", on ? "bg-brand" : "bg-muted")}
+      />
+    ))
+  }
+</span>

@@ -1,0 +1,70 @@
+---
+title: "Zenit World"
+summary: "A copy-trading platform with digital-asset custody, real-time KYC/AML and a custom token — built on a modular Django backend."
+description: "Zenit World — a Django 4.1 copy-trading platform with Fireblocks custody, SumSub KYC/AML, a custom ZENIT token, staking and yield farming, serving 3M+ users."
+year: "2023 — 2024"
+role: "Senior Full Stack Developer"
+status: "live"
+featured: true
+order: 2
+domain: "FinTech · Web3"
+problem: "A copy-trading platform serving millions of users has to do three hard things at once: custody digital assets safely, onboard every user through real KYC/AML before they can trade, and mirror lead traders' strategies onto follower wallets reliably. Doing that inside one backend — without a custody breach, a compliance gap, or copy-trades that drift from their source — is the engineering problem."
+solution: "A modular Django 4.1 + PostgreSQL backend that delegates custody and transaction orchestration to the Fireblocks SDK, runs real-time KYC/AML through SumSub, and exposes a custom ZENIT token with both fiat and crypto wallet support. Staking, yield farming and automated copy-trading run through smart-contract integrations, while Redis + Celery handle audit logging, event tracking and the asynchronous work the request path can't block on."
+architecture: "Django 4.1 + Django REST Framework over PostgreSQL, split into modules so each domain (custody, KYC, wallets, copy-trading) scales independently; Fireblocks handles digital-asset custody and transaction orchestration; SumSub runs real-time KYC/AML; MinIO provides S3-compatible storage for user documents; Redis + Celery drive audit logging, event tracking and background jobs; smart-contract integrations back staking, yield farming and copy-trading."
+contributions:
+  - "Built the backend on Django 4.1 + PostgreSQL with a modular architecture so each domain scales independently."
+  - "Integrated the Fireblocks SDK for digital-asset custody and transaction orchestration."
+  - "Integrated the SumSub SDK for real-time KYC/AML during onboarding."
+  - "Used MinIO (S3-compatible) for object storage of user documents and assets."
+  - "Developed and managed a custom token (ZENIT) with both fiat and crypto wallet support."
+  - "Implemented staking, yield farming and automated copy-trading algorithms via smart-contract integrations."
+  - "Designed modular, scalable RESTful APIs with Django REST Framework."
+  - "Implemented audit logging and event tracking with Redis + Celery."
+technologies:
+  - "Django"
+  - "Django REST Framework"
+  - "Python"
+  - "PostgreSQL"
+  - "Redis"
+  - "Celery"
+  - "Fireblocks"
+  - "SumSub"
+  - "MinIO"
+  - "Solidity"
+challenges:
+  - "Keeping custody and transaction orchestration safe at the platform's scale by delegating signing and key management to Fireblocks rather than handling keys in-app."
+  - "Mirroring lead-trader strategies onto follower wallets accurately through smart-contract integrations without drift between source and copy."
+  - "Gating every user behind real-time KYC/AML before trading, and keeping that verification state consistent across asynchronous SumSub callbacks."
+  - "Maintaining a complete, queryable audit trail of financial events without blocking the request path."
+impact:
+  - "Served 3M+ users on a single modular Django backend."
+  - "Digital-asset custody and transaction orchestration handled through Fireblocks rather than self-managed keys."
+  - "Compliant onboarding via real-time SumSub KYC/AML before any trading activity."
+  - "A custom ZENIT token with fiat and crypto wallets, plus staking, yield farming and automated copy-trading."
+metrics:
+  - { value: "3M+", label: "Users" }
+  - { value: "Fireblocks", label: "Digital-asset custody" }
+  - { value: "KYC / AML", label: "Real-time onboarding" }
+  - { value: "ZENIT", label: "Custom token" }
+lessons:
+  - "At scale, custody is a problem to delegate, not to build — Fireblocks owns key management and signing so the application never touches private keys."
+  - "Real-time compliance and financial audit logging both depend on durable, asynchronous processing; Redis + Celery keep them off the request path."
+  - "A modular Django architecture lets distinct domains — custody, KYC, wallets, copy-trading — evolve and scale without entangling each other."
+links:
+  caseStudy: "zenit-world"
+---
+
+Zenit World is a copy-trading platform serving 3M+ users, where followers mirror
+lead traders' strategies onto their own wallets. The backend is a modular Django
+4.1 + PostgreSQL service: custody and transaction orchestration are delegated to
+**Fireblocks**, onboarding runs through **SumSub** KYC/AML in real time, and a
+custom **ZENIT** token is exposed with both fiat and crypto wallet support.
+
+Staking, yield farming and the automated copy-trading algorithms are driven by
+smart-contract integrations, while **Redis + Celery** handle audit logging,
+event tracking and the background work the request path can't block on. User
+documents and assets live in **MinIO** behind S3-compatible storage.
+
+The linked case study walks through the custody model, the real-time KYC/AML
+flow, the copy-trading and token design, and how audit logging and event
+tracking stay durable without slowing the request path.

@@ -1,0 +1,34 @@
+---
+import { cn } from "@/lib/utils";
+
+/**
+ * Surface card. `interactive` adds hover affordances; `href` turns the whole
+ * card into a link (rendered as an <a>). Otherwise the element tag is `as`.
+ */
+interface Props {
+  as?: string;
+  interactive?: boolean;
+  href?: string;
+  class?: string;
+  [key: string]: unknown;
+}
+
+const { as = "div", interactive = false, href, class: className, ...rest }: Props = Astro.props;
+
+const Tag: any = href ? "a" : as;
+const isLink = Boolean(href);
+---
+
+<Tag
+  href={href}
+  class={cn(
+    "group relative rounded-2xl border border-border bg-card p-6 text-card-foreground",
+    (interactive || isLink) &&
+      "transition-all duration-300 hover:border-foreground/15 hover:shadow-[0_1px_0_0_var(--color-border),0_18px_40px_-24px_rgba(0,0,0,0.45)]",
+    isLink && "block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+    className,
+  )}
+  {...rest}
+>
+  <slot />
+</Tag>

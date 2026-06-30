@@ -1,0 +1,101 @@
+---
+/**
+ * Architecture diagram for the Zenit World case study.
+ *
+ * Diagrams live as standalone .astro components (not inline in MDX) so they can
+ * use scoped <style>, stay zero-JS, and adapt to light/dark via currentColor.
+ */
+---
+
+<svg
+  viewBox="0 0 820 360"
+  class="diagram mx-auto h-auto w-full max-w-3xl text-foreground"
+  role="img"
+  aria-label="Zenit World architecture: a client calls a modular Django REST API backed by PostgreSQL. The API delegates digital-asset custody and transaction orchestration to Fireblocks, runs real-time KYC/AML through SumSub, stores user documents in MinIO, and offloads audit logging, event tracking and copy-trading jobs to Celery workers over Redis."
+>
+  <defs>
+    <marker id="zw-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0 0L10 5L0 10z" fill="currentColor" fill-opacity="0.5"></path>
+    </marker>
+  </defs>
+
+  <rect class="box" x="24" y="150" width="116" height="58" rx="10"></rect>
+  <text class="lbl" x="82" y="176" text-anchor="middle">Client</text>
+  <text class="sub" x="82" y="193" text-anchor="middle">web · mobile</text>
+
+  <rect class="box accent" x="190" y="142" width="170" height="74" rx="10"></rect>
+  <text class="lbl" x="275" y="170" text-anchor="middle">Django REST API</text>
+  <text class="sub" x="275" y="188" text-anchor="middle">modular · 3M+ users</text>
+  <text class="sub" x="275" y="204" text-anchor="middle">custody · KYC · wallets</text>
+
+  <rect class="store" x="120" y="270" width="130" height="46" rx="9"></rect>
+  <text class="lbl" x="185" y="293" text-anchor="middle">PostgreSQL</text>
+  <text class="sub" x="185" y="308" text-anchor="middle">core data</text>
+
+  <rect class="store" x="290" y="270" width="130" height="46" rx="9"></rect>
+  <text class="lbl" x="355" y="293" text-anchor="middle">Redis · Celery</text>
+  <text class="sub" x="355" y="308" text-anchor="middle">audit · jobs</text>
+
+  <rect class="box" x="560" y="62" width="220" height="50" rx="10"></rect>
+  <text class="lbl" x="578" y="86">Fireblocks</text>
+  <text class="sub" x="578" y="102">custody · orchestration</text>
+
+  <rect class="box" x="560" y="138" width="220" height="50" rx="10"></rect>
+  <text class="lbl" x="578" y="162">SumSub</text>
+  <text class="sub" x="578" y="178">KYC / AML · webhooks</text>
+
+  <rect class="box" x="560" y="214" width="220" height="50" rx="10"></rect>
+  <text class="lbl" x="578" y="238">MinIO</text>
+  <text class="sub" x="578" y="254">documents · signed URLs</text>
+
+  <rect class="box" x="560" y="290" width="220" height="50" rx="10"></rect>
+  <text class="lbl" x="578" y="314">Smart contracts</text>
+  <text class="sub" x="578" y="330">staking · copy-trading</text>
+
+  <path class="edge" d="M140 179H188" marker-end="url(#zw-arrow)"></path>
+  <path class="edge" d="M255 216V250 H185 V268" marker-end="url(#zw-arrow)"></path>
+  <path class="edge" d="M295 216 Q330 240 355 268" marker-end="url(#zw-arrow)"></path>
+  <path class="edge" d="M360 162 Q460 110 558 87" marker-end="url(#zw-arrow)"></path>
+  <path class="edge" d="M360 172 Q450 160 558 163" marker-end="url(#zw-arrow)"></path>
+  <path class="edge" d="M360 190 Q450 215 558 239" marker-end="url(#zw-arrow)"></path>
+  <path class="edge" d="M420 293 Q500 300 558 313" marker-end="url(#zw-arrow)"></path>
+</svg>
+
+<style>
+  .box {
+    fill: color-mix(in oklch, currentColor 6%, transparent);
+    stroke: currentColor;
+    stroke-opacity: 0.35;
+    stroke-width: 1.5;
+  }
+  .box.accent {
+    fill: color-mix(in oklch, var(--brand) 12%, transparent);
+    stroke: var(--brand);
+    stroke-opacity: 0.5;
+  }
+  .store {
+    fill: color-mix(in oklch, currentColor 10%, transparent);
+    stroke: currentColor;
+    stroke-opacity: 0.4;
+    stroke-width: 1.5;
+  }
+  .lbl {
+    fill: currentColor;
+    font:
+      600 13px ui-sans-serif,
+      system-ui;
+  }
+  .sub {
+    fill: currentColor;
+    fill-opacity: 0.6;
+    font:
+      11px ui-monospace,
+      monospace;
+  }
+  .edge {
+    stroke: currentColor;
+    stroke-opacity: 0.4;
+    stroke-width: 1.5;
+    fill: none;
+  }
+</style>

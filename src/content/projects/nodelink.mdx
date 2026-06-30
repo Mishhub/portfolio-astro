@@ -1,0 +1,53 @@
+---
+title: "NodeLink"
+summary: "An infrastructure-based reward ecosystem (DePIN-style) with compliant onboarding, e-signatures and real-time reward tracking."
+description: "NodeLink — a NestJS reward ecosystem for decentralized physical infrastructure networks, with KYC/AML, e-signatures, OAuth2/OIDC identity and real-time updates."
+year: "2025 — Present"
+role: "Senior Full Stack Developer"
+status: "wip"
+featured: true
+order: 1
+domain: "FinTech · Web3 (DePIN)"
+problem: "Decentralized physical-infrastructure (DePIN) reward ecosystems need fully compliant onboarding — KYC/AML and legally-binding e-signatures — alongside secure identity and real-time reward tracking. Stitching those third-party compliance flows into one reliable, auditable, horizontally-scalable backend is the hard part."
+solution: "A NestJS 11 backend that composes KYC (SumSub), e-signatures (BoldSign), S3-compatible storage (MinIO), a centralized OAuth2/OIDC identity layer, durable background jobs (BullMQ) and real-time updates (Socket.IO) into a compliant reward platform — instrumented end to end for observability and audit."
+architecture: "NestJS 11 + PostgreSQL at the core; Redis backs caching, BullMQ queues and the Socket.IO adapter for horizontal scaling; MinIO provides object storage with signed URLs; OAuth2/OIDC issues JWT access/refresh/ID tokens; Sentry and OpenObserve provide observability and auditability."
+contributions:
+  - "Built the NestJS 11 + TypeScript + PostgreSQL backend for a DePIN-style reward ecosystem."
+  - "Integrated SumSub for KYC/AML — applicant status, access tokens, webhook callbacks, and scheduled document-expiry re-checks via BullMQ."
+  - "Integrated BoldSign for e-signatures — template-based documents, embedded signing links (Redis-cached), webhook handling and document status sync for compliance and pool requirements."
+  - "Implemented OAuth2 / OpenID Connect (authorization code + PKCE, scopes) issuing JWT access, refresh and ID tokens."
+  - "Used MinIO (S3-compatible) for file storage with configurable buckets and signed URLs."
+  - "Built background processing on Redis + BullMQ, with Bull Board for queue monitoring."
+  - "Enabled real-time updates with Socket.IO and a Redis-backed adapter for horizontal scaling."
+  - "Added observability and auditability with Sentry and OpenObserve."
+technologies:
+  - "NestJS"
+  - "TypeScript"
+  - "PostgreSQL"
+  - "Redis"
+  - "BullMQ"
+  - "Socket.IO"
+  - "OAuth2 / OIDC"
+  - "MinIO"
+  - "SumSub"
+  - "BoldSign"
+  - "Sentry"
+  - "OpenObserve"
+challenges:
+  - "Keeping KYC and e-signature state consistent across asynchronous third-party webhooks (SumSub, BoldSign)."
+  - "Scaling real-time delivery horizontally without dropping socket sessions."
+  - "Reliably scheduling document-expiry re-checks so compliance never silently lapses."
+impact:
+  - "Compliant onboarding — KYC/AML plus legally-binding e-signatures — handled end to end inside one backend."
+  - "Real-time reward updates scale horizontally through a Redis-backed Socket.IO adapter."
+  - "Queues, webhooks and errors are observable and auditable via Bull Board, Sentry and OpenObserve."
+lessons:
+  - "Third-party compliance integrations live or die on robust, idempotent webhook handling."
+  - "A Redis-backed Socket.IO adapter is the simplest path to horizontally-scalable real-time."
+links:
+  caseStudy: "nodelink"
+---
+
+NodeLink is covered in depth in the linked case study, which walks through the
+compliance data flow (KYC and e-signatures), the OAuth2/OIDC identity layer, the
+BullMQ background-job design and how the system stays observable in production.

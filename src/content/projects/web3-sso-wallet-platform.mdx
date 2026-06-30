@@ -1,0 +1,73 @@
+---
+title: "Web3 SSO & Wallet Platform"
+summary: "A centralized SSO identity layer, KYC-gated access tiers and a NestJS wallet gateway with Account Abstraction for a confidential Web3 ecosystem."
+description: "Web3 SSO & Wallet Platform — centralized OAuth2/OIDC single sign-on, SumSub KYC-gated access levels, a NestJS + Viem wallet gateway with Biconomy/Alchemy Account Abstraction, Merkle-tree reward eligibility and a gRPC-synced referral graph."
+year: "2023 — 2024"
+role: "Senior Full Stack Developer"
+status: "internal"
+featured: true
+order: 3
+domain: "Web3 · Identity"
+problem: "A confidential Web3 ecosystem of several independent products needed one identity. Each product was reinventing login, wallet handling and access control, while regulatory exposure demanded KYC-gated access tiers. On top of that, on-chain interactions had to be approachable for non-crypto-native users, reward eligibility had to be verifiable without leaking the full recipient set, and referral relationships had to stay consistent across every product in real time."
+solution: "A centralized OAuth2/OpenID Connect single sign-on app issuing JWT sessions with role-based access control, fronted by SumSub KYC that drives dynamic per-user access levels. A NestJS wallet gateway microservice uses Viem for blockchain interactions and Biconomy + Alchemy for Account Abstraction, so users transact through smart accounts with gasless/sponsored flows. A decentralized reward-management module proves eligibility with Merkle trees, a user-relationship tree models the referral program, and gRPC keeps the products synchronized in real time."
+architecture: "A centralized OAuth2/OIDC SSO service issues JWT access/refresh/ID tokens and enforces RBAC; SumSub KYC results map to dynamic access tiers. A NestJS wallet gateway abstracts chain interactions via Viem and exposes Account Abstraction (Biconomy + Alchemy) smart accounts. A Merkle-tree reward module gates claims on-chain, a graph-structured referral tree tracks user relationships, and gRPC connects the services for cross-platform communication and real-time sync."
+contributions:
+  - "Developed a centralized Single Sign-On authentication app using OAuth2 and OpenID Connect, so every product in the ecosystem shares one identity."
+  - "Implemented JWT-based session management (access, refresh and ID tokens) and role-based access control across services."
+  - "Integrated KYC via SumSub and mapped verification results to dynamic per-user access levels that gate product features."
+  - "Built a wallet gateway microservice in NestJS using Viem for typed, reliable blockchain interactions."
+  - "Implemented Account Abstraction with Biconomy and Alchemy so users transact through smart accounts with sponsored/gasless flows."
+  - "Created a decentralized reward-management module that uses Merkle trees to prove reward eligibility without publishing the full recipient set."
+  - "Developed and maintained a user-relationship tree (graph structure) to power the referral program."
+  - "Used gRPC for cross-platform communication and real-time sync between the SSO, wallet and reward services."
+technologies:
+  - "NestJS"
+  - "TypeScript"
+  - "OAuth2 / OIDC"
+  - "SumSub"
+  - "Viem"
+  - "Biconomy"
+  - "Alchemy"
+  - "Ethereum"
+  - "Solidity"
+  - "Merkle Trees"
+  - "gRPC"
+  - "PostgreSQL"
+  - "Redis"
+challenges:
+  - "Mapping asynchronous SumSub KYC outcomes to dynamic access levels without leaving products in an inconsistent or over-privileged state."
+  - "Making Account Abstraction (Biconomy + Alchemy) smart accounts feel seamless for non-crypto-native users while keeping signing secure."
+  - "Proving reward eligibility on-chain with Merkle trees while keeping the full recipient list private and claims cheap to verify."
+  - "Keeping the referral relationship graph and session state consistent across independent products over gRPC in real time."
+impact:
+  - "One centralized SSO identity replaced per-product login, with KYC-gated access tiers enforced consistently."
+  - "Account Abstraction let users transact through smart accounts without managing gas, lowering the barrier for non-crypto-native users."
+  - "Merkle-tree eligibility made reward claims verifiable on-chain without exposing the full recipient set."
+  - "gRPC kept the SSO, wallet and reward services synchronized in real time across the ecosystem."
+metrics:
+  - { value: "OAuth2 / OIDC", label: "Centralized SSO" }
+  - { value: "Account Abstraction", label: "Biconomy · Alchemy" }
+  - { value: "Merkle Trees", label: "Reward eligibility" }
+lessons:
+  - "Centralizing identity once, behind OAuth2/OIDC with RBAC, removes a whole class of drift between products."
+  - "Account Abstraction is the difference between a wallet a crypto user tolerates and one a mainstream user can actually use."
+  - "Merkle proofs are the right primitive when eligibility must be on-chain-verifiable but the recipient set must stay private."
+links:
+  caseStudy: "web3-sso-wallet-platform"
+---
+
+This was the shared identity and wallet backbone for a confidential Web3
+ecosystem — several independent products that needed to behave like one system.
+Rather than each product owning its own login, wallet logic and access rules,
+the platform centralizes identity behind **OAuth2 / OpenID Connect**, gates
+access on **SumSub** KYC tiers, and exposes a single **NestJS** wallet gateway
+that hides chain complexity behind **Viem** and **Account Abstraction**
+(Biconomy + Alchemy).
+
+The interesting engineering lives at the seams: keeping KYC-driven access
+levels, the Merkle-tree reward module and the graph-structured referral tree
+consistent across products that talk to each other over **gRPC** in real time.
+
+The linked case study walks through the SSO and RBAC design, the
+Account-Abstraction wallet flow, the Merkle-tree eligibility scheme and how the
+services stay synchronized.

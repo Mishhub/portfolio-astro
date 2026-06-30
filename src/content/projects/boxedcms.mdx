@@ -1,0 +1,63 @@
+---
+title: "BoxedCMS"
+summary: "A plug-and-play content management system with hot-swappable themes, social/2FA auth, multilingual content and built-in AdSense monetization."
+description: "BoxedCMS — an Angular 11 + Node.js plug-and-play CMS with a pluggable module architecture, CKEditor content templating, Passport.js auth (local, social, 2FA), AdSense monetization, dynamic translation and on-the-fly theme re-rendering."
+year: "2020 — 2021"
+role: "Full Stack Developer"
+status: "live"
+featured: false
+order: 7
+domain: "CMS · Publishing"
+problem: "Most publishers need the same building blocks — auth, theming, editorial tooling, localization and ad monetization — but rebuild them per project, and every customization means forking core code. The hard part is shipping a CMS that lets teams add capabilities and swap themes without touching or redeploying the engine."
+solution: "A plug-and-play CMS built on Angular 11 and Node.js where features ship as self-contained plugins and themes load dynamically. CKEditor handles rich-text editing and reusable content templates, Passport.js covers local, social and 2FA authentication, Google AdSense APIs drive monetization, dynamic translation services localize content, and uploaded themes re-render on the fly without a rebuild."
+architecture: "An Angular 11 single-page admin talking to a Node.js API. A plugin layer registers features through a common contract so capabilities compose without forking core; themes are uploaded as packages and resolved at request time for on-the-fly re-rendering. Passport.js strategies handle local, social and 2FA login; CKEditor powers content templating; AdSense and translation services integrate as plugins."
+contributions:
+  - "Designed and built BoxedCMS end to end on Angular 11 (admin SPA) and Node.js (API) with a plug-and-play architecture so features ship as plugins without forking core."
+  - "Integrated CKEditor for rich-text editing and reusable content templating across content types."
+  - "Implemented authentication with Passport.js — local credentials, social login and 2FA — behind a shared strategy layer."
+  - "Built dynamic monetization by integrating the Google AdSense APIs so publishers could place and manage ad units from the CMS."
+  - "Added multilingual content via dynamic translation services so a single source of content could be served per locale."
+  - "Built dynamic theme uploading with on-the-fly re-rendering, letting teams swap themes without a redeploy."
+technologies:
+  - "Angular"
+  - "Node.js"
+  - "Express"
+  - "JavaScript"
+  - "TypeScript"
+  - "MongoDB"
+  - "Passport.js"
+  - "CKEditor"
+challenges:
+  - "Designing a plugin contract general enough to compose arbitrary features yet strict enough to keep core untouched."
+  - "Re-rendering uploaded themes on the fly without restarting or redeploying the server."
+  - "Unifying local, social and 2FA flows behind one Passport.js strategy layer with consistent session handling."
+  - "Keeping a single content source consistent across locales as translation services resolved dynamically."
+impact:
+  - "Publishers extend the platform through plugins and swap themes live, with no fork of or redeploy of the core engine."
+  - "Authentication spans local, social and 2FA from a single integration point."
+  - "Built-in AdSense monetization and dynamic multilingual content ship out of the box rather than as bespoke work."
+metrics:
+  - value: "Plug-and-play"
+    label: "Architecture"
+  - value: "Local · Social · 2FA"
+    label: "Auth (Passport.js)"
+  - value: "Hot-swap"
+    label: "Theme re-rendering"
+lessons:
+  - "A clear plugin contract is what lets a CMS grow without the core becoming a fork magnet."
+  - "Resolving themes at request time, rather than at build time, is what makes live theme swaps possible."
+links: {}
+---
+
+BoxedCMS started from a simple observation: publishing teams kept rebuilding the
+same foundation — auth, theming, an editor, localization, ad monetization — and
+every customization risked forking the core. The plug-and-play architecture
+inverts that. Features register as plugins against a common contract, and themes
+are uploaded as packages that the server resolves and re-renders on the fly, so
+extending or restyling a site never means editing or redeploying the engine.
+
+On top of that base, CKEditor provides rich-text editing and reusable content
+templates, Passport.js unifies local, social and 2FA login behind one strategy
+layer, dynamic translation services serve a single content source per locale,
+and the Google AdSense APIs make monetization a first-class, configurable part
+of the CMS rather than a bolt-on.

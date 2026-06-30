@@ -1,0 +1,56 @@
+---
+title: "Bex Educations"
+summary: "An EdTech content platform with a public blog frontend and an admin CMS — modular Node.js REST API with role-based access, Vimeo adaptive-bitrate video, and a persistent light/dark theming engine."
+description: "Bex Educations — a React + Redux blog frontend and admin CMS over a modular Node.js REST API, with role-based content management, Vimeo adaptive-bitrate video, a persistent theming engine, and social sharing, tagging and content analytics."
+year: "2020 — 2021"
+role: "Full Stack Developer"
+status: "live"
+featured: false
+order: 8
+domain: "EdTech · Content"
+problem: "An educational content platform has two very different audiences sharing one content model: readers who need fast, well-tagged, shareable articles and smooth video playback across devices and connections, and editors who need a safe place to author, schedule and manage that content. The hard part is serving both from a single, modular API — keeping reader-facing surfaces light while giving editors role-scoped control, and making video work over varied bandwidth without a heavy in-house streaming stack."
+solution: "A React and Redux client-facing blog frontend paired with an admin CMS, both backed by a modular Node.js REST API. Content management runs behind role-based access so editorial actions stay scoped to authorized users; the Vimeo API handles video upload and adaptive-bitrate streaming so playback adapts to the viewer's connection; a theming engine offers light/dark switching with the preference persisted per user; and social sharing, tagging and analytics make content discoverable and measurable."
+architecture: "A React + Redux SPA for the public blog and a separate admin CMS surface, both consuming a modular Node.js REST API split by content domain. Role-based access gates editorial endpoints; video upload and playback are delegated to the Vimeo API for adaptive-bitrate streaming; a theming layer toggles light/dark and persists the choice client-side; tagging and analytics hooks track content engagement and feed social-sharing flows."
+contributions:
+  - "Built the client-facing blog frontend and the admin CMS in React.js and Redux, sharing one content model across reader and editor surfaces."
+  - "Designed a modular Node.js REST API split by content domain, with role-based access controlling who can author and manage content."
+  - "Integrated the Vimeo API for video upload and adaptive-bitrate streaming so playback adapts to the viewer's connection without an in-house streaming stack."
+  - "Built a theming engine for light/dark switching with the user's preference persisted across sessions."
+  - "Enabled social sharing, tagging and analytics to make content discoverable, organized and measurable."
+technologies:
+  - "React.js"
+  - "Redux"
+  - "Node.js"
+  - "Express"
+  - "JavaScript"
+  - "MongoDB"
+  - "Vimeo API"
+challenges:
+  - "Keeping the reader-facing blog light while the admin CMS exposed full role-scoped content management from the same API."
+  - "Delegating video upload and adaptive-bitrate playback to the Vimeo API while keeping content state in sync with the platform."
+  - "Persisting per-user theme preference so light/dark survived reloads and sessions without a flash of the wrong theme."
+  - "Making tagging and analytics consistent enough to drive both discovery and content-performance tracking."
+impact:
+  - "Readers and editors are served from one modular API, with editorial actions scoped by role-based access."
+  - "Video upload and adaptive-bitrate streaming run through Vimeo, so playback adapts to bandwidth without a custom streaming pipeline."
+  - "Tagging, social sharing and analytics make content discoverable and its engagement measurable out of the box."
+metrics:
+  - { value: "Role-based", label: "Content access" }
+  - { value: "Adaptive bitrate", label: "Vimeo streaming" }
+  - { value: "Persistent", label: "Light/dark theming" }
+lessons:
+  - "Delegating video to a specialized API like Vimeo buys adaptive-bitrate streaming for free, instead of maintaining transcoding and delivery in-house."
+  - "Persisting UI preferences like theme client-side, and applying them before first paint, is what avoids the flash of the wrong theme."
+links: {}
+---
+
+Bex Educations is an EdTech content platform built around two surfaces that share
+a single content model: a public blog for readers and an admin CMS for editors.
+Both are React and Redux applications talking to a modular Node.js REST API, split
+by content domain, with role-based access gating who can author and manage content.
+
+Rather than building an in-house streaming stack, video upload and playback are
+delegated to the Vimeo API, which handles adaptive-bitrate streaming so playback
+adapts to the viewer's connection. On the reader side, a theming engine toggles
+light and dark with the preference persisted per user, and tagging, social sharing
+and analytics make content discoverable and its engagement measurable.

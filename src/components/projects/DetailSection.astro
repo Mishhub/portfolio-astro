@@ -1,0 +1,29 @@
+---
+import { Icon } from "astro-icon/components";
+import { cn } from "@/lib/utils";
+
+/**
+ * A titled content block on the project detail page. Renders an <h2> with an
+ * optional lucide icon, then its slotted body. Used for Problem, Solution,
+ * Architecture, Contributions, Challenges, Impact, Lessons and Notes so every
+ * section keeps the same rhythm and heading order.
+ */
+interface Props {
+  id: string;
+  title: string;
+  /** lucide icon name (kebab-case), without the "lucide:" prefix. */
+  icon?: string;
+  class?: string;
+}
+const { id, title, icon, class: className } = Astro.props;
+---
+
+<section id={id} class={cn("scroll-mt-28", className)}>
+  <h2 class="flex items-center gap-2.5 text-xl font-semibold tracking-tight text-foreground">
+    {icon && <Icon name={`lucide:${icon}`} class="size-5 text-brand" aria-hidden="true" />}
+    {title}
+  </h2>
+  <div class="mt-4">
+    <slot />
+  </div>
+</section>

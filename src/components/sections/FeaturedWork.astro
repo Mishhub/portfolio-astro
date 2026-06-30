@@ -1,0 +1,30 @@
+---
+import Section from "@/components/ui/Section.astro";
+import Button from "@/components/ui/Button.astro";
+import Reveal from "@/components/ui/Reveal.astro";
+import ProjectCard from "@/components/cards/ProjectCard.astro";
+import CaseStudyCard from "@/components/cards/CaseStudyCard.astro";
+import { getSortedProjects, getSortedCaseStudies, pickFeatured } from "@/lib/content";
+
+const projects = await getSortedProjects();
+const caseStudies = await getSortedCaseStudies();
+const project = pickFeatured(projects);
+const caseStudy = pickFeatured(caseStudies);
+---
+
+<Section
+  eyebrow="Selected work"
+  title="Systems I've designed and shipped"
+  description="A featured project and a deep-dive case study. The full set lives on their respective pages."
+  size="wide"
+>
+  <div slot="header-extra" class="mt-6 flex flex-wrap gap-3">
+    <Button href="/projects" variant="outline" size="sm">All projects</Button>
+    <Button href="/case-studies" variant="ghost" size="sm">All case studies</Button>
+  </div>
+
+  <div class="grid gap-5 lg:grid-cols-2">
+    {project && <Reveal><ProjectCard project={project} /></Reveal>}
+    {caseStudy && <Reveal delay={90}><CaseStudyCard caseStudy={caseStudy} /></Reveal>}
+  </div>
+</Section>

@@ -1,0 +1,21 @@
+---
+import type { HTMLTag, Polymorphic } from "astro/types";
+
+/**
+ * Subtle fade-up on scroll. Pure CSS + a shared IntersectionObserver (see
+ * BaseLayout) — no client framework, and a no-op when JS is off or the user
+ * prefers reduced motion.
+ */
+type Props<Tag extends HTMLTag = "div"> = Polymorphic<{ as: Tag }> & {
+  /** Stagger in milliseconds. */
+  delay?: number;
+  class?: string;
+};
+
+const { as: Tag = "div", delay = 0, class: className, ...rest } = Astro.props;
+const style = delay ? `--reveal-delay:${delay}ms` : undefined;
+---
+
+<Tag data-reveal class={className} style={style} {...rest}>
+  <slot />
+</Tag>

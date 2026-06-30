@@ -1,0 +1,289 @@
+---
+import { getCollection, render, type CollectionEntry } from "astro:content";
+import { Icon } from "astro-icon/components";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Breadcrumbs from "@/components/layout/Breadcrumbs.astro";
+import Container from "@/components/ui/Container.astro";
+import Eyebrow from "@/components/ui/Eyebrow.astro";
+import Button from "@/components/ui/Button.astro";
+import Badge from "@/components/ui/Badge.astro";
+import Tag from "@/components/ui/Tag.astro";
+import Stat from "@/components/ui/Stat.astro";
+import Prose from "@/components/ui/Prose.astro";
+import DetailSection from "@/components/projects/DetailSection.astro";
+import DetailList from "@/components/projects/DetailList.astro";
+import ContactCTA from "@/components/sections/ContactCTA.astro";
+import { personSchema, breadcrumbSchema } from "@/lib/seo";
+
+export const getStaticPaths = (async () => {
+  const items = await getCollection("projects");
+  return items.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}) satisfies import("astro").GetStaticPaths;
+
+interface Props {
+  entry: CollectionEntry<"projects">;
+}
+const { entry } = Astro.props;
+const { data } = entry;
+const { Content } = await render(entry);
+
+const origin = Astro.site!.origin;
+
+const crumbs = [
+  { name: "Home", href: "/" },
+  { name: "Projects", href: "/projects" },
+  { name: data.title, href: `/projects/${entry.id}` },
+];
+const jsonLd = [
+  breadcrumbSchema(crumbs.map((c) => ({ name: c.name, url: new URL(c.href, origin).href }))),
+  personSchema(origin),
+];
+
+const statusLabel: Record<string, string> = {
+  live: "Live",
+  wip: "In progress",
+  archived: "Archived",
+  internal: "Internal",
+};
+
+// Build the link set, rendering only links that exist.
+const links: { href: string; label: string; icon: string; external: boolean }[] = [];
+if (data.links.github) {
+  links.push({ href: data.links.github, label: "Source", icon: "lucide:github", external: true });
+}
+if (data.links.demo) {
+  links.push({
+    href: data.links.demo,
+    label: "Live demo",
+    icon: "lucide:external-link",
+    external: true,
+  });
+}
+if (data.links.caseStudy) {
+  links.push({
+    href: `/case-studies/${data.links.caseStudy}`,
+    label: "Read case study",
+    icon: "lucide:layers",
+    external: false,
+  });
+}
+
+const hasArchitecture = Boolean(data.architecture);
+const hasContributions = data.contributions.length > 0;
+const hasChallenges = data.challenges.length > 0;
+const hasImpact = data.impact.length > 0 || data.metrics.length > 0;
+const hasLessons = data.lessons.length > 0;
+const hasTech = data.technologies.length > 0;
+const hasNotes = entry.body !== undefined && entry.body.trim().length > 0;
+---
+
+<BaseLayout
+  type="website"
+  title={data.title}
+  description={data.description ?? data.summary}
+  image={data.cover?.src}
+  imageAlt={data.coverAlt}
+  tags={data.technologies}
+  jsonLd={jsonLd}
+>
+  <Container size="wide" class="py-12 sm:py-16">
+    <Breadcrumbs items={crumbs} class="mb-8" />
+
+    <div class="grid grid-cols-1 gap-12 lg:grid-cols-[minmax(0,1fr)_18rem] lg:gap-16">
+      <!-- Main column -->
+      <div class="min-w-0">
+        <header>
+          <div class="flex flex-wrap items-center gap-2.5 text-xs text-muted-foreground">
+            {data.domain && <Eyebrow>{data.domain}</Eyebrow>}
+            <Badge variant={data.status === "live" ? "success" : "default"} size="sm">
+              {statusLabel[data.status]}
+            </Badge>
+          </div>
+
+          <h1
+            class="mt-5 text-4xl font-semibold tracking-tight text-foreground text-balance sm:text-5xl"
+          >
+            {data.title}
+          </h1>
+          <p class="mt-5 max-w-2xl text-lg leading-relaxed text-muted-foreground text-pretty">
+            {data.summary}
+          </p>
+
+          {
+            links.length > 0 && (
+              <div class="mt-7 flex flex-wrap gap-3">
+                {links.map((link, i) => (
+                  <Button
+                    href={link.href}
+                    external={link.external}
+                    variant={i === 0 ? "primary" : "outline"}
+                    size="sm"
+                  >
+                    <Icon name={link.icon} aria-hidden="true" />
+                    {link.label}
+                  </Button>
+                ))}
+              </div>
+            )
+          }
+        </header>
+
+        <div class="mt-12 space-y-12">
+          <DetailSection id="problem" title="The problem" icon="circle-help">
+            <p class="text-sm leading-relaxed text-muted-foreground sm:text-base">{data.problem}</p>
+          </DetailSection>
+
+          <DetailSection id="solution" title="The solution" icon="lightbulb">
+            <p class="text-sm leading-relaxed text-muted-foreground sm:text-base">
+              {data.solution}
+            </p>
+          </DetailSection>
+
+          {
+            hasArchitecture && (
+              <DetailSection id="architecture" title="Architecture" icon="network">
+                <p class="text-sm leading-relaxed text-muted-foreground sm:text-base">
+                  {data.architecture}
+                </p>
+              </DetailSection>
+            )
+          }
+
+          {
+            hasContributions && (
+              <DetailSection id="contributions" title="My contributions" icon="hammer">
+                <DetailList items={data.contributions} marker="check" />
+              </DetailSection>
+            )
+          }
+
+          {
+            hasChallenges && (
+              <DetailSection id="challenges" title="Challenges" icon="mountain">
+                <DetailList items={data.challenges} marker="dot" />
+              </DetailSection>
+            )
+          }
+
+          {
+            hasImpact && (
+              <DetailSection id="impact" title="Impact" icon="trending-up">
+                {data.metrics.length > 0 && (
+                  <dl class="grid grid-cols-2 gap-6 rounded-2xl border border-border bg-subtle p-6 sm:grid-cols-3">
+                    {data.metrics.map((m) => (
+                      <Stat value={m.value} label={m.label} />
+                    ))}
+                  </dl>
+                )}
+                {data.impact.length > 0 && (
+                  <DetailList
+                    items={data.impact}
+                    marker="check"
+                    class={data.metrics.length > 0 ? "mt-6" : ""}
+                  />
+                )}
+              </DetailSection>
+            )
+          }
+
+          {
+            hasLessons && (
+              <DetailSection id="lessons" title="Lessons learned" icon="graduation-cap">
+                <DetailList items={data.lessons} marker="sparkles" />
+              </DetailSection>
+            )
+          }
+
+          {
+            hasTech && (
+              <DetailSection id="technologies" title="Technologies" icon="layers">
+                <ul class="flex flex-wrap gap-1.5">
+                  {data.technologies.map((t) => (
+                    <li>
+                      <Tag>{t}</Tag>
+                    </li>
+                  ))}
+                </ul>
+              </DetailSection>
+            )
+          }
+
+          {
+            hasNotes && (
+              <DetailSection id="notes" title="Notes">
+                <Prose>
+                  <Content />
+                </Prose>
+              </DetailSection>
+            )
+          }
+        </div>
+      </div>
+
+      <!-- Sticky meta sidebar -->
+      <aside class="lg:sticky lg:top-28 lg:self-start">
+        <div class="rounded-2xl border border-border bg-card p-6">
+          <h2 class="text-xs font-medium uppercase tracking-[0.16em] text-muted-foreground">
+            Project details
+          </h2>
+          <dl class="mt-4 space-y-4 text-sm">
+            <div>
+              <dt class="text-muted-foreground">Role</dt>
+              <dd class="mt-0.5 font-medium text-foreground">{data.role}</dd>
+            </div>
+            <div>
+              <dt class="text-muted-foreground">Year</dt>
+              <dd class="mt-0.5 font-medium text-foreground">{data.year}</dd>
+            </div>
+            {
+              data.domain && (
+                <div>
+                  <dt class="text-muted-foreground">Domain</dt>
+                  <dd class="mt-0.5 font-medium text-foreground">{data.domain}</dd>
+                </div>
+              )
+            }
+            <div>
+              <dt class="text-muted-foreground">Status</dt>
+              <dd class="mt-1">
+                <Badge variant={data.status === "live" ? "success" : "default"} size="sm">
+                  {statusLabel[data.status]}
+                </Badge>
+              </dd>
+            </div>
+          </dl>
+
+          {
+            links.length > 0 && (
+              <div class="mt-6 flex flex-col gap-2 border-t border-border pt-6">
+                {links.map((link) => (
+                  <a
+                    href={link.href}
+                    target={link.external ? "_blank" : undefined}
+                    rel={link.external ? "noopener noreferrer" : undefined}
+                    class="inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+                  >
+                    <Icon name={link.icon} class="size-4 shrink-0" aria-hidden="true" />
+                    {link.label}
+                  </a>
+                ))}
+              </div>
+            )
+          }
+
+          <div class="mt-6 border-t border-border pt-6">
+            <a
+              href="/projects"
+              class="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
+            >
+              <Icon name="lucide:arrow-left" class="size-4" aria-hidden="true" />
+              All projects
+            </a>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </Container>
+
+  <ContactCTA />
+</BaseLayout>

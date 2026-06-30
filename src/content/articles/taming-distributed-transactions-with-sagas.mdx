@@ -1,0 +1,122 @@
+---
+title: "Taming Distributed Transactions with Sagas"
+description: "Two-phase commit doesn't survive contact with microservices. Here's the saga pattern — orchestration vs choreography, compensations, and when to walk away."
+publishDate: 2024-09-12
+category: "Architecture"
+tags: ["distributed-systems", "sagas", "microservices", "transactions"]
+featured: true
+---
+
+import Callout from "@/components/ui/Callout.astro";
+
+The moment you split a monolith, you lose the one thing that made it pleasant to
+reason about: the database transaction. Inside a single process, `BEGIN ... COMMIT`
+gave you atomicity for free. Spread that same business operation across an orders
+service, a payments service, and an inventory service, and there is no shared
+transaction to roll back. A crash halfway through leaves you with money taken and
+no order created — or an order created and nothing shipped.
+
+The textbook answer is **two-phase commit**. Don't reach for it. 2PC needs a
+coordinator holding locks across every participant until everyone votes, and a
+single slow service stalls the whole operation. It trades availability for a
+consistency guarantee you rarely actually need. The pattern that scales is the
+**saga**.
+
+## A saga is a sequence with an undo button
+
+A saga models a distributed operation as a series of local transactions, each in
+its own service, each committing independently. If step three fails, you don't
+roll back — you run **compensating actions** that semantically undo steps two and
+one. The system reaches a consistent state not by holding locks, but by always
+driving forward to either completion or a clean reversal.
+
+The mental shift that matters: there is no rollback, only compensation. You can't
+un-charge a card with a `ROLLBACK`; you issue a refund. Compensations are
+first-class business operations, and you design them deliberately.
+
+```ts
+const placeOrder: SagaStep[] = [
+  { action: reserveInventory, compensation: releaseInventory },
+  { action: capturePayment, compensation: refundPayment },
+  { action: createShipment, compensation: cancelShipment },
+];
+```
+
+## Orchestration vs choreography
+
+There are two ways to wire the steps together, and the choice shapes everything.
+
+**Choreography** is event-driven and decentralized. Each service listens for an
+event, does its work, and emits the next event. No central brain. It's elegant
+for two or three steps and couples services only through the event contract.
+
+```ts
+// payments service reacts to an event and emits the next one
+on("InventoryReserved", async (e) => {
+  const result = await capturePayment(e.orderId);
+  emit(result.ok ? "PaymentCaptured" : "PaymentFailed", e.orderId);
+});
+```
+
+The problem is that the flow exists nowhere. To understand "what happens when an
+order is placed," you trace events across five codebases and pray nobody added a
+listener you missed. Past three or four steps, choreography becomes a distributed
+`goto`.
+
+**Orchestration** puts the workflow in one place — an explicit orchestrator that
+calls each service and decides what to do next. The logic lives in a single,
+readable, testable module. You pay for it with one more component to run, but the
+flow is visible and the compensation logic is centralized.
+
+<Callout type="insight" title="Default to orchestration">
+  Choreography looks cleaner in the demo and turns into a debugging nightmare in
+  production. For anything beyond a trivial two-step flow, an explicit
+  orchestrator — backed by a durable execution engine if you can afford one — is
+  the choice you won't regret at 3 a.m.
+</Callout>
+
+## Designing compensations that actually work
+
+Compensations have a property that surprises people: they must be **idempotent
+and commutative-ish**. The orchestrator can crash after a service performed its
+action but before recording success, so on recovery it may run a compensation for
+work it isn't sure completed. `refundPayment` has to be safe whether or not a
+charge ever landed.
+
+Two more hard truths:
+
+- **Some actions can't be compensated.** Once you've sent the confirmation email
+  or handed cash to an ATM, there is no undo. Order your saga so irreversible
+  steps come last, after everything that might fail.
+- **Compensations can fail too.** A refund call can time out. You need retries
+  with backoff and, eventually, a human escalation path. Sagas don't eliminate
+  failure handling — they make it explicit instead of hoping a `ROLLBACK` covers it.
+
+## State must be durable
+
+A saga is a long-running state machine, and that state has to survive process
+restarts. Persist the saga's position after every step. If you're hand-rolling
+this, that means a `saga_state` row updated transactionally with each local step.
+
+This is exactly the niche that engines like Temporal exist to fill: they persist
+execution state for you, replay it deterministically after a crash, and let you
+write the orchestrator as ordinary sequential code. If your sagas are core to the
+business, adopting one is usually cheaper than maintaining a bespoke state
+machine.
+
+## When NOT to use a saga
+
+Sagas are not free, and reaching for one reflexively is its own mistake.
+
+- **If the data lives in one database, use a transaction.** Don't manufacture a
+  distributed problem by splitting services that share a consistency boundary.
+- **If you can tolerate eventual consistency with a simple retry**, a single
+  reliable async job may be all you need — no compensations required.
+- **If the operation is read-mostly or genuinely independent steps**, there's no
+  invariant spanning services, so there's nothing to coordinate.
+
+The saga is the right tool when a business operation must span service boundaries
+*and* you need a defined, recoverable end state across all of them. That's a
+narrower set of cases than the microservices hype suggests. Use it where you need
+it, reach for a plain transaction everywhere else, and your future on-call self
+will thank you.

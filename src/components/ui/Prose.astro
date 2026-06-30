@@ -1,0 +1,21 @@
+---
+import { cn } from "@/lib/utils";
+
+/** Wraps long-form MDX/markdown bodies in themed typography styles. */
+interface Props {
+  class?: string;
+}
+const { class: className } = Astro.props;
+---
+
+<div
+  class={cn(
+    "prose prose-portfolio max-w-none",
+    "prose-headings:scroll-mt-28 prose-headings:font-semibold prose-headings:tracking-tight",
+    "prose-h2:text-2xl prose-h2:mt-14 prose-h3:text-xl",
+    "prose-pre:shadow-sm prose-img:rounded-xl prose-img:border prose-img:border-border",
+    className,
+  )}
+>
+  <slot />
+</div>

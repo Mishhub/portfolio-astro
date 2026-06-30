@@ -1,0 +1,73 @@
+---
+import { Icon } from "astro-icon/components";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Container from "@/components/ui/Container.astro";
+import Button from "@/components/ui/Button.astro";
+import Eyebrow from "@/components/ui/Eyebrow.astro";
+import { NAV } from "@/config/site";
+
+/** Helpful destinations shown beneath the primary actions. */
+const helpfulLinks = NAV.filter((item) =>
+  ["/about", "/experience", "/case-studies", "/articles", "/contact"].includes(item.href),
+);
+---
+
+<BaseLayout
+  title="Page not found (404)"
+  description="The page you were looking for doesn't exist or has moved."
+  noindex
+>
+  <section class="relative overflow-hidden">
+    <div
+      class="pointer-events-none absolute inset-0 -z-10 bg-grid mask-radial-fade opacity-[0.4]"
+    >
+    </div>
+    <Container class="flex min-h-[70vh] flex-col items-center justify-center py-20 text-center">
+      <Eyebrow>Error 404</Eyebrow>
+
+      <p
+        class="mt-6 font-mono text-7xl font-semibold tracking-tighter text-foreground sm:text-8xl"
+      >
+        404
+      </p>
+
+      <h1 class="mt-6 text-3xl font-semibold tracking-tight text-foreground text-balance sm:text-4xl">
+        This page wandered off
+      </h1>
+      <p class="mt-4 max-w-md text-base leading-relaxed text-muted-foreground text-pretty">
+        The page you're looking for doesn't exist, was moved, or never did. Let's get you back to
+        something useful.
+      </p>
+
+      <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
+        <Button href="/" variant="primary" size="lg">
+          <Icon name="lucide:home" aria-hidden="true" />
+          Back home
+        </Button>
+        <Button href="/projects" variant="outline" size="lg">
+          View projects
+          <Icon name="lucide:arrow-right" aria-hidden="true" />
+        </Button>
+      </div>
+
+      <nav aria-label="Helpful links" class="mt-12">
+        <ul
+          class="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-muted-foreground"
+        >
+          {
+            helpfulLinks.map((item) => (
+              <li>
+                <a
+                  href={item.href}
+                  class="underline-offset-4 transition-colors hover:text-foreground hover:underline"
+                >
+                  {item.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+    </Container>
+  </section>
+</BaseLayout>

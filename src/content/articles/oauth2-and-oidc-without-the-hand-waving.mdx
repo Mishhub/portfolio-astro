@@ -1,0 +1,125 @@
+---
+title: "OAuth2 and OIDC Without the Hand-Waving"
+description: "Authorization code with PKCE, the three tokens that actually matter, what OIDC adds on top, and the implementation mistakes that quietly become CVEs."
+publishDate: 2024-11-05
+category: "Backend"
+tags: ["oauth2", "oidc", "security", "authentication", "pkce"]
+featured: false
+---
+
+import Callout from "@/components/ui/Callout.astro";
+
+Almost everyone integrating OAuth2 copies a flow diagram, gets the happy path
+working, and ships. The flow then sits in production as a security-critical
+component that nobody fully understands. The specs are dense, the terminology is
+overloaded, and half the tutorials online teach a grant type you shouldn't be
+using anymore. Let's strip it down to what a backend engineer actually needs to
+hold in their head.
+
+First, the one distinction that everything hangs on: **OAuth2 is authorization;
+OIDC is authentication.** OAuth2 answers "is this app allowed to call the API on
+the user's behalf." It says nothing about *who* the user is. Treating an OAuth2
+access token as proof of identity is the original sin of this whole space, and we
+will come back to it.
+
+## The only grant you should be using: authorization code with PKCE
+
+Forget the implicit flow — it leaked tokens in URLs and is deprecated. Forget the
+password grant — it hands your credentials to the app you're trying to protect
+them from. For browser apps, mobile apps, and SPAs alike, the answer is the
+**authorization code flow with PKCE**.
+
+PKCE (Proof Key for Code Exchange) closes a real hole: the authorization code is
+delivered through the browser redirect, where it can be intercepted. PKCE binds
+that code to a secret only the legitimate client holds.
+
+```ts
+// 1. client generates a random verifier and its SHA-256 hash (the challenge)
+const verifier = base64url(randomBytes(32));
+const challenge = base64url(sha256(verifier));
+
+// 2. send the challenge on the authorize request
+//    GET /authorize?response_type=code&code_challenge=...&code_challenge_method=S256
+
+// 3. redeem the code, proving you hold the original verifier
+const tokens = await fetch("/token", {
+  method: "POST",
+  body: new URLSearchParams({
+    grant_type: "authorization_code",
+    code,
+    code_verifier: verifier,
+  }),
+});
+```
+
+An attacker who steals the code from the redirect can't redeem it — they never
+saw the verifier. PKCE is no longer "for public clients only"; the current
+guidance is to use it everywhere.
+
+## Three tokens, three jobs
+
+The token endpoint can hand you up to three things, and conflating them is where
+bugs and breaches live.
+
+- **Access token** — a bearer credential for calling APIs. Short-lived (minutes).
+  Treat it as opaque unless the resource server explicitly defines its format.
+  It is *not* about the user; it's about what the client may do.
+- **Refresh token** — long-lived, used only against the token endpoint to mint
+  fresh access tokens without re-prompting the user. High value; guard it like a
+  password.
+- **ID token** — a signed JWT, defined by OIDC, that *describes the user*. This
+  is your proof of authentication.
+
+<Callout type="warning" title="Never authenticate with an access token">
+  An access token tells you a client is authorized — not who the user is and not
+  that they're present. Using it as a login proof is how apps end up accepting
+  tokens minted for a different audience. For identity, use the ID token and
+  verify it.
+</Callout>
+
+## What OIDC actually adds
+
+OpenID Connect is a thin, standardized identity layer on top of OAuth2. It
+doesn't replace anything; it adds:
+
+- The **ID token** — a JWT with standard claims (`sub`, `iss`, `aud`, `iat`,
+  `exp`) so identity is portable across providers.
+- A **userinfo endpoint** for fetching profile claims.
+- **Discovery** — a well-known metadata document so your client can configure
+  itself from the issuer URL instead of hardcoded endpoints.
+
+If you need to know who logged in — and for login, you always do — you want OIDC,
+not bare OAuth2.
+
+## The mistakes that become CVEs
+
+Most OAuth/OIDC breaches aren't exotic. They're the same handful of skipped
+validations:
+
+- **Not validating the ID token signature, `iss`, and `aud`.** A JWT you don't
+  verify is just an attacker-controlled JSON blob. Check the signature against
+  the provider's JWKS, confirm the issuer, and confirm the audience is *you*.
+- **Skipping the `state` parameter.** `state` is your CSRF defense on the
+  redirect. Generate it per request, store it, and reject any callback whose
+  `state` doesn't match.
+- **Not pinning the `nonce`.** Send a `nonce` on the authorize request and verify
+  it comes back in the ID token — this defends against token replay.
+- **Long-lived access tokens.** If your access token lives for a day, a leak
+  lives for a day. Keep them short and lean on refresh tokens.
+- **Storing tokens in `localStorage`.** Any XSS on the page can read it. Prefer
+  httpOnly cookies, or keep a backend-for-frontend that holds tokens server-side.
+
+```ts
+// the validation you must not skip
+const claims = await verifyJwt(idToken, jwks);
+assert(claims.iss === expectedIssuer);
+assert(claims.aud === clientId);
+assert(claims.nonce === storedNonce);
+assert(claims.exp * 1000 > Date.now());
+```
+
+None of this is clever. It's just the part the happy-path tutorial left out — and
+it's the entire reason the protocol is safe. Get the authorization code + PKCE
+flow right, keep the three tokens in their lanes, and validate every claim before
+you trust it. Do that and OAuth2/OIDC stops being a black box you're afraid to
+touch.

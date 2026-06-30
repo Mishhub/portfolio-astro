@@ -1,0 +1,47 @@
+---
+import { Icon } from "astro-icon/components";
+import Section from "@/components/ui/Section.astro";
+import Button from "@/components/ui/Button.astro";
+import Tag from "@/components/ui/Tag.astro";
+import { AI_COURSE, AI_TOPICS } from "@/data/ai-journey";
+
+const topics = AI_TOPICS.slice(0, 10);
+---
+
+<Section size="wide" spacing="compact">
+  <div
+    class="relative overflow-hidden rounded-3xl border border-border bg-card p-8 sm:p-12"
+    data-reveal
+  >
+    <div class="pointer-events-none absolute inset-0 -z-10 bg-grid opacity-[0.25]"></div>
+    <div class="grid gap-8 lg:grid-cols-[1.3fr_1fr] lg:items-center">
+      <div>
+        <span
+          class="inline-flex items-center gap-2 text-xs font-medium uppercase tracking-[0.16em] text-brand"
+        >
+          <Icon name="lucide:sparkles" class="size-4" aria-hidden="true" />
+          Currently learning
+        </span>
+        <h2 class="mt-4 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
+          Transitioning into production AI engineering
+        </h2>
+        <p class="mt-4 max-w-xl leading-relaxed text-muted-foreground">
+          I'm working through <span class="text-foreground">{AI_COURSE.title}</span> by {
+            AI_COURSE.instructor
+          } alongside my own experiments — building real LLM applications with the same engineering
+          rigour I bring to backend systems.
+        </p>
+        <div class="mt-7">
+          <Button href="/ai-engineering" variant="brand" size="md">
+            Follow the journey
+            <Icon name="lucide:arrow-right" />
+          </Button>
+        </div>
+      </div>
+
+      <ul class="flex flex-wrap gap-2 lg:justify-end">
+        {topics.map((t) => <li><Tag>{t.name}</Tag></li>)}
+      </ul>
+    </div>
+  </div>
+</Section>

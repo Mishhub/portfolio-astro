@@ -1,0 +1,161 @@
+---
+import { Icon } from "astro-icon/components";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import PageHeader from "@/components/layout/PageHeader.astro";
+import Breadcrumbs from "@/components/layout/Breadcrumbs.astro";
+import Section from "@/components/ui/Section.astro";
+import Container from "@/components/ui/Container.astro";
+import Card from "@/components/ui/Card.astro";
+import Badge from "@/components/ui/Badge.astro";
+import Button from "@/components/ui/Button.astro";
+import Reveal from "@/components/ui/Reveal.astro";
+import RoadmapTimeline from "@/components/ai/RoadmapTimeline.astro";
+import TopicGroup from "@/components/ai/TopicGroup.astro";
+import { breadcrumbSchema } from "@/lib/seo";
+import { AI_COURSE, AI_TOPICS, AI_ROADMAP, AI_OUTPUTS } from "@/data/ai-journey";
+import type { Topic } from "@/data/ai-journey";
+
+const origin = Astro.site!.origin;
+
+const crumbs = [
+  { name: "Home", href: "/" },
+  { name: "AI Journey" },
+];
+
+const jsonLd = breadcrumbSchema([
+  { name: "Home", url: origin },
+  { name: "AI Journey", url: `${origin}/ai-engineering` },
+]);
+
+/** Topics grouped by stage, in learning-arc order. */
+const stages: { key: Topic["stage"]; label: string }[] = [
+  { key: "foundations", label: "Foundations" },
+  { key: "core", label: "Core" },
+  { key: "agents", label: "Agents" },
+  { key: "applied", label: "Applied" },
+];
+
+const topicsByStage = stages
+  .map((s) => ({ ...s, topics: AI_TOPICS.filter((t) => t.stage === s.key) }))
+  .filter((s) => s.topics.length > 0);
+---
+
+<BaseLayout
+  title="AI Engineering Journey"
+  description="An honest, living log of my transition into production AI engineering — what I'm studying, a phased roadmap, and the projects and write-ups it will produce."
+  jsonLd={jsonLd}
+>
+  <PageHeader
+    eyebrow="AI Engineering"
+    title="AI Engineering Journey"
+    lead="A living log of my move into production AI engineering. This documents what I'm actively studying, the roadmap I'm following, and the hands-on work it produces — bringing the same rigour I apply to backend systems."
+  >
+    <Breadcrumbs slot="breadcrumbs" items={crumbs} class="mb-4" />
+  </PageHeader>
+
+  {/* (a) Currently studying */}
+  <Section eyebrow="Currently studying" title="The course I'm working through" size="wide" spacing="compact">
+    <Reveal>
+      <Card class="p-7 sm:p-8">
+        <div class="flex flex-wrap items-start justify-between gap-4">
+          <div class="flex items-center gap-3">
+            <span
+              class="flex size-10 shrink-0 items-center justify-center rounded-xl border border-border bg-subtle text-brand"
+              aria-hidden="true"
+            >
+              <Icon name="lucide:graduation-cap" class="size-5" />
+            </span>
+            <div>
+              <h3 class="text-lg font-semibold tracking-tight text-foreground">{AI_COURSE.title}</h3>
+              <p class="mt-0.5 text-sm text-muted-foreground">{AI_COURSE.instructor}</p>
+            </div>
+          </div>
+          <Badge variant="brand" size="md">
+            <span class="size-1.5 rounded-full bg-brand" aria-hidden="true"></span>
+            {AI_COURSE.status}
+          </Badge>
+        </div>
+        <p class="mt-5 max-w-2xl leading-relaxed text-muted-foreground">{AI_COURSE.blurb}</p>
+      </Card>
+    </Reveal>
+  </Section>
+
+  {/* (b) What I am learning */}
+  <Section
+    eyebrow="Curriculum"
+    title="What I am learning"
+    description="The topics I'm working through, grouped by where they sit in the learning arc — from fundamentals to production-grade agents."
+    size="wide"
+    spacing="compact"
+  >
+    <div class="grid gap-5 sm:grid-cols-2">
+      {
+        topicsByStage.map((s, i) => (
+          <Reveal delay={i * 80}>
+            <TopicGroup label={s.label} topics={s.topics} />
+          </Reveal>
+        ))
+      }
+    </div>
+  </Section>
+
+  {/* (c) Roadmap */}
+  <Section
+    eyebrow="Roadmap"
+    title="The path to production"
+    description="A phased plan, not a checklist of claims. Each phase builds on the last toward shipping a real AI system."
+    size="wide"
+    spacing="compact"
+  >
+    <Container size="prose" class="px-0">
+      <RoadmapTimeline milestones={AI_ROADMAP} />
+    </Container>
+  </Section>
+
+  {/* (d) What this will produce */}
+  <Section
+    eyebrow="Outputs"
+    title="What this will produce"
+    description="Learning is the input. These are the artefacts it's meant to create — and they'll grow over time."
+    size="wide"
+    spacing="compact"
+  >
+    <ul class="grid gap-px overflow-hidden rounded-2xl border border-border sm:grid-cols-3">
+      {
+        AI_OUTPUTS.map((output, i) => (
+          <Reveal as="li" delay={i * 80} class="flex gap-3 bg-card p-6">
+            <Icon name="lucide:arrow-up-right" class="mt-0.5 size-5 shrink-0 text-brand" aria-hidden="true" />
+            <span class="text-sm leading-relaxed text-foreground">{output}</span>
+          </Reveal>
+        ))
+      }
+    </ul>
+  </Section>
+
+  {/* (e) Honest framing + CTAs */}
+  <Section size="wide" spacing="compact">
+    <Reveal>
+      <div class="rounded-3xl border border-border bg-card p-8 sm:p-12">
+        <h2 class="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
+          An honest work in progress
+        </h2>
+        <p class="mt-4 max-w-2xl leading-relaxed text-muted-foreground">
+          This page documents an active transition into production AI engineering — not claimed
+          mastery. It's deliberately a living artefact: as I work through the roadmap, it will keep
+          growing with hands-on projects, experiments, technical write-ups and open-source
+          contributions. The goal is to learn in public and let the work speak for itself.
+        </p>
+        <div class="mt-8 flex flex-wrap items-center gap-3">
+          <Button href="/articles" variant="brand" size="md">
+            <Icon name="lucide:pen-line" />
+            Read the write-ups
+          </Button>
+          <Button href="/open-source" variant="outline" size="md">
+            <Icon name="lucide:github" />
+            Browse open-source
+          </Button>
+        </div>
+      </div>
+    </Reveal>
+  </Section>
+</BaseLayout>

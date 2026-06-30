@@ -1,0 +1,32 @@
+---
+import { Icon } from "astro-icon/components";
+import Section from "@/components/ui/Section.astro";
+import Card from "@/components/ui/Card.astro";
+import Reveal from "@/components/ui/Reveal.astro";
+import { VALUE_PROPS } from "@/data/home";
+---
+
+<Section
+  id="what-i-bring"
+  eyebrow="What I bring"
+  title="Engineering that holds up in production"
+  description="The same three things show up in every system I've owned: it scales, it's secure, and it ships."
+  spacing="default"
+  size="wide"
+>
+  <div class="grid gap-5 md:grid-cols-3">
+    {
+      VALUE_PROPS.map((prop, i) => (
+        <Reveal delay={i * 90}>
+          <Card class="h-full">
+            <div class="flex size-11 items-center justify-center rounded-xl border border-border bg-subtle text-brand">
+              <Icon name={`lucide:${prop.icon}`} class="size-5" aria-hidden="true" />
+            </div>
+            <h3 class="mt-5 text-lg font-semibold tracking-tight text-foreground">{prop.title}</h3>
+            <p class="mt-2 text-sm leading-relaxed text-muted-foreground">{prop.description}</p>
+          </Card>
+        </Reveal>
+      ))
+    }
+  </div>
+</Section>

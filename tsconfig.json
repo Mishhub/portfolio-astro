@@ -1,0 +1,20 @@
+{
+  "extends": "astro/tsconfigs/strictest",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    },
+    "jsx": "react-jsx",
+    "jsxImportSource": "react",
+    "verbatimModuleSyntax": true,
+    "allowJs": true,
+    "skipLibCheck": true,
+    // Keep every strict check from `strictest` EXCEPT exactOptionalPropertyTypes,
+    // which conflicts with passing `T | undefined` into optional component props
+    // across a content-driven site (no runtime safety lost — `strict` stays on).
+    "exactOptionalPropertyTypes": false
+  },
+  "include": [".astro/types.d.ts", "**/*.ts", "**/*.tsx", "**/*.astro", "**/*.mjs"],
+  "exclude": ["dist", "node_modules", ".astro"]
+}

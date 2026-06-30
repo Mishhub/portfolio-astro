@@ -1,0 +1,43 @@
+---
+import type { MarkdownHeading } from "astro";
+import { cn } from "@/lib/utils";
+
+/**
+ * Sticky "on this page" table of contents for case-study detail pages. Built
+ * entirely from the headings `render()` returns — anchor links to the
+ * auto-generated heading ids, zero client JS. Hidden below `lg`.
+ */
+interface Props {
+  headings: MarkdownHeading[];
+  class?: string;
+}
+const { headings, class: className } = Astro.props;
+
+// Only h2/h3 make for a useful, uncluttered outline.
+const items = headings.filter((h) => h.depth === 2 || h.depth === 3);
+---
+
+{
+  items.length > 0 && (
+    <nav aria-label="On this page" class={cn("text-sm", className)}>
+      <p class="mb-3 text-xs font-medium uppercase tracking-[0.16em] text-muted-foreground">
+        On this page
+      </p>
+      <ul class="space-y-2.5 border-l border-border">
+        {items.map((h) => (
+          <li>
+            <a
+              href={`#${h.slug}`}
+              class={cn(
+                "-ml-px block border-l border-transparent py-0.5 leading-snug text-muted-foreground transition-colors hover:border-foreground/30 hover:text-foreground",
+                h.depth === 2 ? "pl-4" : "pl-8 text-[0.8125rem]",
+              )}
+            >
+              {h.text}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  )
+}

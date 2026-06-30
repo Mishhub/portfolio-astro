@@ -1,0 +1,293 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+/* Class-based dark mode: `.dark` on <html> toggles the dark palette. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+  Design tokens.
+  Dark mode is the default surface; light mode is a first-class override.
+  Colours are authored in OKLCH for perceptually even steps and predictable
+  contrast. Semantic names only — no raw colours leak into components.
+*/
+:root {
+  --background: oklch(0.985 0.001 286);
+  --foreground: oklch(0.21 0.006 286);
+
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.21 0.006 286);
+
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.21 0.006 286);
+
+  --muted: oklch(0.968 0.002 286);
+  --muted-foreground: oklch(0.482 0.01 286);
+
+  --subtle: oklch(0.974 0.002 286);
+
+  --brand: oklch(0.52 0.168 256);
+  --brand-foreground: oklch(0.99 0 0);
+
+  --border: oklch(0.21 0.01 286 / 10%);
+  --input: oklch(0.21 0.01 286 / 14%);
+  --ring: oklch(0.52 0.168 256 / 55%);
+
+  --success: oklch(0.6 0.13 155);
+  --warning: oklch(0.72 0.15 75);
+
+  --radius: 0.75rem;
+}
+
+.dark {
+  --background: oklch(0.155 0.004 286);
+  --foreground: oklch(0.965 0.003 286);
+
+  --card: oklch(0.185 0.004 286);
+  --card-foreground: oklch(0.965 0.003 286);
+
+  --popover: oklch(0.185 0.004 286);
+  --popover-foreground: oklch(0.965 0.003 286);
+
+  --muted: oklch(0.235 0.005 286);
+  --muted-foreground: oklch(0.685 0.013 286);
+
+  --subtle: oklch(0.205 0.004 286);
+
+  --brand: oklch(0.7 0.142 252);
+  --brand-foreground: oklch(0.16 0.004 286);
+
+  --border: oklch(1 0 0 / 9%);
+  --input: oklch(1 0 0 / 12%);
+  --ring: oklch(0.7 0.142 252 / 60%);
+
+  --success: oklch(0.72 0.15 158);
+  --warning: oklch(0.78 0.15 80);
+}
+
+/* Map tokens onto Tailwind's theme so `bg-background`, `text-muted-foreground`,
+   `border-border`, `font-mono`, etc. resolve from the variables above. */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-subtle: var(--subtle);
+  --color-brand: var(--brand);
+  --color-brand-foreground: var(--brand-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: "JetBrains Mono Variable", ui-monospace, "SF Mono", Menlo,
+    Consolas, "Liberation Mono", monospace;
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+
+  --text-balance: balance;
+
+  /* Reading-width container used across content sections. */
+  --container-prose: 44rem;
+}
+
+@layer base {
+  *,
+  ::before,
+  ::after {
+    border-color: var(--color-border);
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+    color-scheme: light;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  html.dark {
+    color-scheme: dark;
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    font-feature-settings: "cv11", "ss01";
+    font-variation-settings: normal;
+    min-height: 100dvh;
+    /* Safety net: never allow page-level horizontal scroll. `clip` (unlike
+       `hidden`) keeps position: sticky working for the header and TOC. */
+    overflow-x: clip;
+  }
+
+  /* Anchor offset so heading links don't hide under the sticky header. */
+  :target {
+    scroll-margin-top: 6rem;
+  }
+
+  ::selection {
+    background-color: color-mix(in oklch, var(--brand) 28%, transparent);
+    color: var(--foreground);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  /* Quiet, narrow scrollbars that match the surface. */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-border) transparent;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    text-wrap: balance;
+    letter-spacing: -0.02em;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+}
+
+@layer components {
+  /* Faint top-to-bottom hairline grid used as a structural backdrop. */
+  .bg-grid {
+    background-image:
+      linear-gradient(to right, var(--color-border) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--color-border) 1px, transparent 1px);
+    background-size: 56px 56px;
+  }
+
+  /* Radial fade mask for decorative layers. */
+  .mask-radial-fade {
+    mask-image: radial-gradient(ellipse at center, black 30%, transparent 72%);
+  }
+
+  /* Scroll-reveal. Only active when JS is present so no-JS users see content. */
+  html.js [data-reveal] {
+    opacity: 0;
+    transform: translateY(14px);
+    transition:
+      opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+  html.js [data-reveal].is-visible {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/*
+  Long-form article / case-study typography. Maps the Tailwind Typography
+  plugin onto our semantic tokens so it adapts to light/dark for free.
+  Deliberately UNLAYERED: the typography plugin defines `.prose` variables in a
+  cascade layer, and unlayered rules beat any layered rule regardless of
+  specificity — so these overrides reliably win.
+*/
+.prose.prose-portfolio {
+  --tw-prose-body: color-mix(in oklch, var(--foreground) 88%, transparent);
+  --tw-prose-headings: var(--foreground);
+  --tw-prose-lead: var(--muted-foreground);
+  --tw-prose-links: var(--brand);
+  --tw-prose-bold: var(--foreground);
+  --tw-prose-counters: var(--muted-foreground);
+  --tw-prose-bullets: color-mix(in oklch, var(--foreground) 32%, transparent);
+  --tw-prose-hr: var(--border);
+  --tw-prose-quotes: var(--foreground);
+  --tw-prose-quote-borders: var(--brand);
+  --tw-prose-captions: var(--muted-foreground);
+  --tw-prose-code: var(--foreground);
+  --tw-prose-pre-code: var(--foreground);
+  --tw-prose-pre-bg: var(--subtle);
+  --tw-prose-th-borders: var(--border);
+  --tw-prose-td-borders: var(--border);
+}
+.prose.prose-portfolio :where(code):not(:where(pre code, .heading-anchor *))::before,
+.prose.prose-portfolio :where(code):not(:where(pre code, .heading-anchor *))::after {
+  content: none;
+}
+.prose.prose-portfolio :where(code):not(:where(pre code)) {
+  border-radius: 0.375rem;
+  border: 1px solid var(--border);
+  background: var(--subtle);
+  padding: 0.15rem 0.4rem;
+  font-weight: 500;
+  font-size: 0.85em;
+}
+.prose.prose-portfolio :where(pre) {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+.prose.prose-portfolio :where(a) {
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+}
+
+/* Respect users who ask for less motion: disable transitions/animations. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Shiki dual-theme: the light theme renders inline; swap to the dark palette
+   when `.dark` is active. Astro emits both as CSS custom properties. */
+html.dark .astro-code,
+html.dark .astro-code span {
+  color: var(--shiki-dark) !important;
+  background-color: var(--shiki-dark-bg) !important;
+  font-style: var(--shiki-dark-font-style) !important;
+  font-weight: var(--shiki-dark-font-weight) !important;
+  text-decoration: var(--shiki-dark-text-decoration) !important;
+}
+
+/* Heading anchors injected by rehype-autolink-headings. */
+.heading-anchor {
+  margin-left: 0.4ch;
+  opacity: 0;
+  color: var(--muted-foreground);
+  text-decoration: none;
+  transition: opacity 0.15s ease;
+}
+.heading-anchor::after {
+  content: "#";
+}
+:is(h1, h2, h3, h4, h5, h6):hover .heading-anchor,
+.heading-anchor:focus-visible {
+  opacity: 1;
+}
+
+/* View Transitions: gentle cross-fade instead of the default slide. */
+@view-transition {
+  navigation: auto;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.18s;
+}

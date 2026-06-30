@@ -1,0 +1,69 @@
+---
+import { cva, type VariantProps } from "class-variance-authority";
+import { cn } from "@/lib/utils";
+
+/**
+ * Button / link in one component. Renders an <a> when `href` is set, otherwise
+ * a <button>. Variants follow the shadcn naming convention.
+ */
+const button = cva(
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-50 [&>svg]:size-4 [&>svg]:shrink-0",
+  {
+    variants: {
+      variant: {
+        primary:
+          "bg-foreground text-background hover:bg-foreground/90 active:scale-[0.985] shadow-sm",
+        brand: "bg-brand text-brand-foreground hover:bg-brand/90 active:scale-[0.985] shadow-sm",
+        outline:
+          "border border-border bg-transparent text-foreground hover:bg-muted hover:border-foreground/20",
+        ghost: "bg-transparent text-muted-foreground hover:bg-muted hover:text-foreground",
+        link: "text-foreground underline-offset-4 hover:underline px-0",
+      },
+      size: {
+        sm: "h-9 px-3.5 text-sm",
+        md: "h-11 px-5 text-sm",
+        lg: "h-12 px-6 text-[0.95rem]",
+        icon: "size-10",
+      },
+    },
+    defaultVariants: { variant: "primary", size: "md" },
+  },
+);
+
+type Props = VariantProps<typeof button> & {
+  href?: string;
+  type?: "button" | "submit" | "reset";
+  class?: string;
+  disabled?: boolean;
+  /** For external links — adds target + rel. */
+  external?: boolean;
+  "aria-label"?: string;
+  [key: string]: unknown;
+};
+
+const {
+  variant,
+  size,
+  href,
+  type = "button",
+  class: className,
+  external,
+  disabled,
+  ...rest
+} = Astro.props;
+
+const classes = cn(button({ variant, size }), className);
+const externalAttrs = external ? { target: "_blank", rel: "noopener noreferrer" } : {};
+---
+
+{
+  href ? (
+    <a href={href} class={classes} {...externalAttrs} {...rest}>
+      <slot />
+    </a>
+  ) : (
+    <button type={type} class={classes} disabled={disabled} {...rest}>
+      <slot />
+    </button>
+  )
+}

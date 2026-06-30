@@ -1,0 +1,58 @@
+---
+title: "PureTax"
+summary: "A multi-tenant tax and accounting reporting backend that syncs QuickBooks Online data and generates monthly financial reports as PDF, XLSX and CSV with visual charts."
+description: "PureTax — a multi-tenant Django/DRF reporting backend with QuickBooks Online sync, Celery-driven monthly report generation, and exports to PDF, XLSX and CSV."
+year: "2021 — 2022"
+role: "Full Stack Developer"
+status: "live"
+featured: false
+order: 6
+domain: "FinTech · Accounting"
+problem: "Accounting firms manage many client books at once, each needing financial reports pulled from QuickBooks Online and delivered on a monthly cadence. Doing that by hand is slow and error-prone, and a shared backend has to keep every client's data strictly isolated while still running heavy, scheduled report generation reliably."
+solution: "A Django + Django REST Framework backend with multi-tenant data isolation that syncs financial data from QuickBooks Online automatically, then uses Redis and Celery to run report generation and monthly reporting in the background — producing PDF, XLSX and CSV outputs with visual charts."
+architecture: "Django + DRF at the core with multi-tenant scoping per accounting client; QuickBooks Online APIs feed automated financial syncs; Redis backs Celery, which runs report generation and scheduled monthly reporting off the request path; rendered reports are exported to PDF, XLSX and CSV with embedded charts."
+contributions:
+  - "Developed the complete backend with Django and Django REST Framework, including multi-tenant support so each accounting client's data stays isolated."
+  - "Integrated the QuickBooks Online APIs to automatically sync financial reports and source data."
+  - "Built background job handling and monthly reporting on Redis + Celery, keeping heavy report generation off the request path."
+  - "Implemented report generation in PDF, XLSX and CSV formats, including visual charts."
+  - "Operated the system at a steady cadence of 600+ reports generated monthly."
+technologies:
+  - "Python"
+  - "Django"
+  - "Django REST Framework"
+  - "Celery"
+  - "Redis"
+  - "PostgreSQL"
+  - "QuickBooks API"
+challenges:
+  - "Enforcing strict tenant isolation across every query so one accounting client could never see another's financial data."
+  - "Keeping QuickBooks Online syncs reliable against API rate limits, token refresh and partial failures."
+  - "Running monthly report generation as durable background work that retries cleanly instead of blocking requests."
+impact:
+  - "Automated QuickBooks Online syncing removed manual data pulls from the monthly reporting workflow."
+  - "Multi-tenant isolation let many accounting clients share one backend without data leakage."
+  - "Reports are delivered in PDF, XLSX and CSV with visual charts to suit different downstream uses."
+metrics:
+  - { value: "600+", label: "Reports / month" }
+  - { value: "Multi-tenant", label: "Client isolation" }
+  - { value: "PDF · XLSX · CSV", label: "Export formats" }
+lessons:
+  - "Multi-tenancy is a query-layer discipline — isolation has to be enforced everywhere, not bolted on at the edges."
+  - "Pushing report generation onto Celery is what keeps a scheduled, bursty workload from degrading the API."
+links:
+  caseStudy: "puretax"
+---
+
+PureTax is a tax and accounting reporting backend built for firms that manage many
+clients' books at once. The backend, built on Django and DRF, scopes every client's
+data into its own tenant, pulls financial information from **QuickBooks Online** on
+an automated schedule, and turns it into monthly reports.
+
+The heavy lifting — syncing and report generation — runs on **Redis + Celery** so it
+stays off the request path and can be scheduled for the monthly cadence. Each report
+can be rendered as **PDF, XLSX or CSV** with visual charts, and the system runs at a
+steady volume of **600+ reports per month**.
+
+The linked case study goes deeper into the multi-tenant data model, the QuickBooks
+Online sync design, and how Celery drives reliable monthly report generation.

@@ -1,0 +1,26 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Hero from "@/components/sections/Hero.astro";
+import TrustedTech from "@/components/sections/TrustedTech.astro";
+import ValueProps from "@/components/sections/ValueProps.astro";
+import FeaturedWork from "@/components/sections/FeaturedWork.astro";
+import Highlights from "@/components/sections/Highlights.astro";
+import CurrentLearning from "@/components/sections/CurrentLearning.astro";
+import LatestArticles from "@/components/sections/LatestArticles.astro";
+import ContactCTA from "@/components/sections/ContactCTA.astro";
+import { personSchema, websiteSchema, profilePageSchema } from "@/lib/seo";
+
+const origin = Astro.site!.origin;
+const jsonLd = [personSchema(origin), websiteSchema(origin), profilePageSchema(origin)];
+---
+
+<BaseLayout type="profile" jsonLd={jsonLd}>
+  <Hero />
+  <TrustedTech />
+  <ValueProps />
+  <FeaturedWork />
+  <Highlights />
+  <CurrentLearning />
+  <LatestArticles />
+  <ContactCTA />
+</BaseLayout>

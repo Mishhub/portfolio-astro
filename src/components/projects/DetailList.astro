@@ -1,0 +1,28 @@
+---
+import { Icon } from "astro-icon/components";
+import { cn } from "@/lib/utils";
+
+/** Bulleted list with a brand check marker — for contributions, impact, etc. */
+interface Props {
+  items: string[];
+  /** lucide icon (kebab-case) used as the bullet marker. */
+  marker?: string;
+  class?: string;
+}
+const { items, marker = "check", class: className } = Astro.props;
+---
+
+<ul class={cn("space-y-3", className)}>
+  {
+    items.map((item) => (
+      <li class="flex gap-3 text-sm leading-relaxed text-muted-foreground">
+        <Icon
+          name={`lucide:${marker}`}
+          class="mt-0.5 size-4 shrink-0 text-brand"
+          aria-hidden="true"
+        />
+        <span class="min-w-0">{item}</span>
+      </li>
+    ))
+  }
+</ul>

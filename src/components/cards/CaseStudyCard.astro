@@ -1,0 +1,58 @@
+---
+import { Icon } from "astro-icon/components";
+import type { CollectionEntry } from "astro:content";
+import Card from "@/components/ui/Card.astro";
+import Tag from "@/components/ui/Tag.astro";
+import { cn } from "@/lib/utils";
+
+interface Props {
+  caseStudy: CollectionEntry<"caseStudies">;
+  class?: string;
+}
+const { caseStudy, class: className } = Astro.props;
+const { data, id } = caseStudy;
+---
+
+<Card href={`/case-studies/${id}`} as="article" class={cn("flex h-full flex-col", className)}>
+  <div class="flex items-center gap-2 text-xs text-muted-foreground">
+    <Icon name="lucide:layers" class="size-3.5 text-brand" aria-hidden="true" />
+    <span>{data.problemSpace}</span>
+    <span aria-hidden="true">·</span>
+    <span>{data.year}</span>
+  </div>
+
+  <h3
+    class="mt-4 text-xl font-semibold tracking-tight text-foreground transition-colors group-hover:text-brand"
+  >
+    {data.title}
+  </h3>
+  <p class="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">{data.summary}</p>
+
+  {
+    data.metrics.length > 0 && (
+      <dl class="mt-5 flex flex-wrap gap-x-8 gap-y-3 border-t border-border pt-5">
+        {data.metrics.slice(0, 3).map((m) => (
+          <div>
+            <dt class="text-xs text-muted-foreground">{m.label}</dt>
+            <dd class="font-mono text-base font-semibold text-foreground">{m.value}</dd>
+          </div>
+        ))}
+      </dl>
+    )
+  }
+
+  <ul class="mt-5 flex flex-wrap gap-1.5">
+    {data.stack.slice(0, 5).map((t) => <li><Tag>{t}</Tag></li>)}
+  </ul>
+
+  <div
+    class="mt-5 inline-flex items-center gap-1.5 text-sm font-medium text-foreground/70 transition-colors group-hover:text-foreground"
+  >
+    Read case study
+    <Icon
+      name="lucide:arrow-right"
+      class="size-4 transition-transform group-hover:translate-x-0.5"
+      aria-hidden="true"
+    />
+  </div>
+</Card>

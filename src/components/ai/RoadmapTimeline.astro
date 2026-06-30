@@ -1,0 +1,92 @@
+---
+import { Icon } from "astro-icon/components";
+import Reveal from "@/components/ui/Reveal.astro";
+import Badge from "@/components/ui/Badge.astro";
+import { cn } from "@/lib/utils";
+import type { Milestone } from "@/data/ai-journey";
+
+/**
+ * Vertical roadmap timeline for the AI Engineering page. Each milestone is
+ * styled by status: done (muted + check), active (brand-highlighted) and
+ * planned (muted with a dashed marker). Pure CSS + Reveal stagger, zero JS.
+ */
+interface Props {
+  milestones: Milestone[];
+  class?: string;
+}
+
+const { milestones, class: className } = Astro.props;
+
+const statusLabel: Record<Milestone["status"], string> = {
+  done: "Completed",
+  active: "In progress",
+  planned: "Planned",
+};
+
+const statusBadge: Record<Milestone["status"], "success" | "brand" | "default"> = {
+  done: "success",
+  active: "brand",
+  planned: "default",
+};
+
+const statusIcon: Record<Milestone["status"], string> = {
+  done: "lucide:check",
+  active: "lucide:loader",
+  planned: "lucide:circle-dashed",
+};
+---
+
+<ol class={cn("relative", className)}>
+  {
+    milestones.map((m, i) => (
+      <Reveal as="li" delay={i * 90} class="relative flex gap-5 pb-10 last:pb-0">
+        {/* Connector line — drawn between markers, hidden after the last item. */}
+        {i < milestones.length - 1 && (
+          <span
+            class={cn(
+              "absolute left-[15px] top-9 -bottom-1 w-px",
+              m.status === "planned"
+                ? "border-l border-dashed border-border"
+                : "bg-border",
+            )}
+            aria-hidden="true"
+          />
+        )}
+
+        {/* Status marker. */}
+        <span
+          class={cn(
+            "relative z-10 mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full border",
+            m.status === "active" && "border-brand/40 bg-brand/10 text-brand",
+            m.status === "done" && "border-success/30 bg-success/10 text-success",
+            m.status === "planned" && "border-dashed border-border bg-card text-muted-foreground",
+          )}
+          aria-hidden="true"
+        >
+          <Icon name={statusIcon[m.status]} class="size-4" aria-hidden="true" />
+        </span>
+
+        <div
+          class={cn(
+            "min-w-0 flex-1 rounded-2xl border p-5 sm:p-6",
+            m.status === "active"
+              ? "border-brand/30 bg-brand/[0.04]"
+              : "border-border bg-card",
+            m.status === "planned" && "border-dashed",
+          )}
+        >
+          <div class="flex flex-wrap items-center gap-x-3 gap-y-2">
+            <span class="font-mono text-xs uppercase tracking-wide text-muted-foreground">
+              {m.period}
+            </span>
+            <Badge variant={statusBadge[m.status]} size="sm">
+              {statusLabel[m.status]}
+            </Badge>
+          </div>
+          <h3 class="mt-2 text-lg font-semibold tracking-tight text-foreground">{m.title}</h3>
+          <p class="mt-1.5 text-sm leading-relaxed text-muted-foreground">{m.description}</p>
+        </div>
+      </Reveal>
+    ))
+  }
+</ol>

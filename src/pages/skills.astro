@@ -1,0 +1,112 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Container from "@/components/ui/Container.astro";
+import PageHeader from "@/components/layout/PageHeader.astro";
+import Breadcrumbs from "@/components/layout/Breadcrumbs.astro";
+import Section from "@/components/ui/Section.astro";
+import Card from "@/components/ui/Card.astro";
+import Badge from "@/components/ui/Badge.astro";
+import Reveal from "@/components/ui/Reveal.astro";
+import ContactCTA from "@/components/sections/ContactCTA.astro";
+import SkillMeter from "@/components/skills/SkillMeter.astro";
+import { SKILL_GROUPS, DOMAINS, type SkillLevel } from "@/data/skills";
+import { breadcrumbSchema } from "@/lib/seo";
+
+const origin = Astro.site!.origin;
+
+const jsonLd = breadcrumbSchema([
+  { name: "Home", url: `${origin}/` },
+  { name: "Skills", url: `${origin}/skills` },
+]);
+
+const title = "Skills — Backend, Architecture & Cloud Stack";
+const description =
+  "A grouped skill matrix across backend, architecture, databases, cloud, DevOps and AI engineering, each rated on a four-level scale.";
+
+/** The legend explaining the four meter levels, ordered high to low. */
+const LEGEND: { level: SkillLevel; label: string; hint: string }[] = [
+  { level: "expert", label: "Expert", hint: "Deep, daily, design-level command" },
+  { level: "advanced", label: "Advanced", hint: "Production-grade, owned end to end" },
+  { level: "proficient", label: "Proficient", hint: "Comfortable and shipping with it" },
+  { level: "learning", label: "Learning", hint: "Actively building depth" },
+];
+---
+
+<BaseLayout title={title} description={description} jsonLd={jsonLd}>
+  <PageHeader
+    eyebrow="Skills"
+    title="The stack I build with"
+    lead="A grouped, honest skill matrix — rated on a four-level scale rather than a vanity percentage. Strongest in backend, architecture and the systems that move money and trust."
+  >
+    <Breadcrumbs slot="breadcrumbs" items={[{ name: "Home", href: "/" }, { name: "Skills" }]} />
+  </PageHeader>
+
+  <Section size="wide" spacing="default">
+    {/* Domains — context tags for where these skills have shipped. */}
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6">
+      <span class="text-xs font-medium uppercase tracking-[0.16em] text-muted-foreground">
+        Shipped into
+      </span>
+      <ul class="flex flex-wrap gap-2">
+        {
+          DOMAINS.map((domain) => (
+            <li>
+              <Badge variant="brand">{domain}</Badge>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    {/* Legend — what the four meter steps mean. */}
+    <div class="mt-10 rounded-2xl border border-border bg-card p-5 sm:p-6">
+      <h2 class="text-sm font-semibold tracking-tight text-foreground">How to read the meters</h2>
+      <dl class="mt-4 grid gap-x-6 gap-y-4 sm:grid-cols-2 lg:grid-cols-4">
+        {
+          LEGEND.map((item) => (
+            <div class="flex items-start gap-3">
+              <SkillMeter level={item.level} class="mt-1 shrink-0" />
+              <div>
+                <dt class="text-sm font-medium text-foreground">{item.label}</dt>
+                <dd class="mt-0.5 text-xs leading-relaxed text-muted-foreground">{item.hint}</dd>
+              </div>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+  </Section>
+
+  <section class="pb-16 sm:pb-24">
+    <Container size="wide">
+      <div class="grid gap-5 lg:grid-cols-2">
+        {
+          SKILL_GROUPS.map((group, i) => (
+            <Reveal delay={i * 80}>
+              <Card class="h-full">
+                <h2 class="text-lg font-semibold tracking-tight text-foreground">{group.title}</h2>
+                <p class="mt-2 text-sm leading-relaxed text-muted-foreground">{group.blurb}</p>
+
+                <ul class="mt-6 space-y-px overflow-hidden rounded-xl border border-border">
+                  {group.skills.map((skill) => (
+                    <li class="flex items-center justify-between gap-4 border-b border-border bg-subtle/40 px-4 py-3 last:border-b-0">
+                      <div class="min-w-0">
+                        <span class="text-sm font-medium text-foreground">{skill.name}</span>
+                        {skill.note && (
+                          <span class="ml-2 text-xs text-muted-foreground">{skill.note}</span>
+                        )}
+                      </div>
+                      <SkillMeter level={skill.level} class="shrink-0" />
+                    </li>
+                  ))}
+                </ul>
+              </Card>
+            </Reveal>
+          ))
+        }
+      </div>
+    </Container>
+  </section>
+
+  <ContactCTA />
+</BaseLayout>

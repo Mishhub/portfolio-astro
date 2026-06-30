@@ -1,0 +1,41 @@
+---
+import { SITE } from "@/config/site";
+import { cn } from "@/lib/utils";
+
+/**
+ * Monogram + wordmark linking home. `markOnly` drops the text entirely;
+ * `compact` keeps the monogram alone on small screens (used in the header to
+ * avoid crowding the nav controls).
+ */
+interface Props {
+  markOnly?: boolean;
+  compact?: boolean;
+  class?: string;
+}
+const { markOnly = false, compact = false, class: className } = Astro.props;
+---
+
+<a
+  href="/"
+  class={cn(
+    "group inline-flex items-center gap-2.5 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+    className,
+  )}
+  aria-label={`${SITE.name} — home`}
+>
+  <span
+    class="grid size-9 place-items-center rounded-lg border border-border bg-card font-mono text-sm font-semibold tracking-tight text-foreground transition-colors group-hover:border-foreground/25"
+  >
+    {SITE.initials}
+  </span>
+  {
+    !markOnly && (
+      <span class={cn("min-w-0 flex-col leading-none", compact ? "hidden sm:flex" : "flex")}>
+        <span class="truncate text-sm font-semibold tracking-tight text-foreground">
+          {SITE.name}
+        </span>
+        <span class="truncate text-[0.7rem] text-muted-foreground">{SITE.role}</span>
+      </span>
+    )
+  }
+</a>
