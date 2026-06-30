@@ -2,7 +2,7 @@
 
 The site implements all of this in code (`src/components/seo/BaseHead.astro`, `src/lib/seo.ts`).
 This file documents the per-page metadata and the structured data, and is a handy copy/paste
-reference. Replace `https://mishhub.dev` with the real production origin (`SITE.url`).
+reference. Replace `https://mishhub.com` with the real production origin (`SITE.url`).
 
 ## Meta titles & descriptions
 
@@ -35,9 +35,9 @@ AI Engineer · LLM Engineering · RAG · MCP · Vector Database.
 {
   "@context": "https://schema.org",
   "@type": "Person",
-  "@id": "https://mishhub.dev/#person",
+  "@id": "https://mishhub.com/#person",
   "name": "Mohammed Mishhub",
-  "url": "https://mishhub.dev",
+  "url": "https://mishhub.com",
   "jobTitle": "Senior Full Stack Software Engineer",
   "email": "mailto:mishhub@gmail.com",
   "address": { "@type": "PostalAddress", "addressLocality": "Dubai", "addressCountry": "AE" },
@@ -56,10 +56,10 @@ AI Engineer · LLM Engineering · RAG · MCP · Vector Database.
 {
   "@context": "https://schema.org",
   "@type": "WebSite",
-  "@id": "https://mishhub.dev/#website",
-  "url": "https://mishhub.dev",
+  "@id": "https://mishhub.com/#website",
+  "url": "https://mishhub.com",
   "name": "Mohammed Mishhub — Senior Full Stack Software Engineer",
-  "publisher": { "@id": "https://mishhub.dev/#person" },
+  "publisher": { "@id": "https://mishhub.com/#person" },
   "inLanguage": "en"
 }
 ```
@@ -70,10 +70,10 @@ AI Engineer · LLM Engineering · RAG · MCP · Vector Database.
 {
   "@context": "https://schema.org",
   "@type": "Blog",
-  "@id": "https://mishhub.dev/articles/#blog",
-  "url": "https://mishhub.dev/articles",
+  "@id": "https://mishhub.com/articles/#blog",
+  "url": "https://mishhub.com/articles",
   "name": "Mohammed Mishhub — Articles",
-  "author": { "@id": "https://mishhub.dev/#person" }
+  "author": { "@id": "https://mishhub.com/#person" }
 }
 ```
 
@@ -86,7 +86,7 @@ og:type        = website (profile on home, article on articles)
 og:site_name   = Mohammed Mishhub
 og:title       = <page title>
 og:description = <page description>
-og:image       = https://mishhub.dev/og/default.png   (1200x630)
+og:image       = https://mishhub.com/og/default.png   (1200x630)
 og:locale      = en_US
 twitter:card   = summary_large_image
 ```
@@ -94,7 +94,7 @@ twitter:card   = summary_large_image
 ## Canonical URLs
 
 Every page sets `<link rel="canonical">` to its absolute URL. Suggested canonical examples:
-`https://mishhub.dev/`, `/about`, `/experience`, `/projects`, `/projects/nodelink`,
+`https://mishhub.com/`, `/about`, `/experience`, `/projects`, `/projects/nodelink`,
 `/case-studies/nodelink`, `/articles`, `/articles/<slug>`, `/ai-engineering`, `/skills`,
 `/open-source`, `/certifications`, `/resume`, `/contact`.
 

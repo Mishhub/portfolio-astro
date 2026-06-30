@@ -22,7 +22,7 @@ export interface SocialLink {
 
 export const SITE = {
   /** Canonical production origin — no trailing slash. Used for SEO + sitemap. */
-  url: "https://mishhub.dev",
+  url: "https://mishhub.com",
 
   /** Display name. */
   name: "Mohammed Mishhub",
