@@ -5,7 +5,7 @@
  */
 
 export const AI_COURSE = {
-  title: "LLM Engineering — Master AI & Large Language Models",
+  title: "AI Engineer Core Track: LLM Engineering, RAG, QLoRA, Agents",
   instructor: "Ed Donner",
   status: "In progress",
   blurb:

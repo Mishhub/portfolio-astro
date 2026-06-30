@@ -11,7 +11,7 @@ import Button from "@/components/ui/Button.astro";
 import Stat from "@/components/ui/Stat.astro";
 import Reveal from "@/components/ui/Reveal.astro";
 import ContactCTA from "@/components/sections/ContactCTA.astro";
-import ContributionGraph from "@/components/open-source/ContributionGraph.astro";
+// import ContributionGraph from "@/components/open-source/ContributionGraph.astro";
 import { breadcrumbSchema } from "@/lib/seo";
 import { PINNED_REPOS, CONTRIBUTION_SUMMARY, GITHUB_PROFILE } from "@/data/open-source";
 
@@ -140,7 +140,7 @@ const description =
   </Section>
 
   {/* (c) Contribution graph placeholder */}
-  <Section
+  <!-- <Section
     eyebrow="Activity"
     title="Contribution graph"
     description="A GitHub-style heatmap of recent activity. The pattern below is a static placeholder; it's designed to be driven by real contribution data."
@@ -156,7 +156,7 @@ const description =
         See it live on GitHub
       </Button>
     </div>
-  </Section>
+  </Section> -->
 
   <ContactCTA />
 </BaseLayout>

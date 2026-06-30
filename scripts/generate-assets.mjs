@@ -2,12 +2,14 @@
  * Generates raster brand assets from SVG sources using sharp:
  *   - apple-touch-icon.png (180), icon-192.png, icon-512.png  (from favicon.svg)
  *   - og/default.png (1200x630 social card)
+ *   - src/assets/portrait.png (placeholder ONLY if you haven't added a real photo)
  *
  * Run with: node scripts/generate-assets.mjs
- * Re-runnable and deterministic.
+ * Re-runnable and deterministic. Never overwrites an existing portrait.
  */
 import sharp from "sharp";
-import { readFile, mkdir, writeFile } from "node:fs/promises";
+import { readFile, mkdir } from "node:fs/promises";
+import { existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
 
@@ -82,6 +84,46 @@ async function makeOg() {
   console.log("✓ og/default.png (1200x630)");
 }
 
+function portraitSvg() {
+  return `<svg width="880" height="1100" viewBox="0 0 880 1100" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="pg" cx="0.5" cy="0.34" r="0.85">
+      <stop offset="0" stop-color="#3b5bdb" stop-opacity="0.18"/>
+      <stop offset="0.7" stop-color="#3b5bdb" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="pgrid" width="44" height="44" patternUnits="userSpaceOnUse">
+      <path d="M44 0H0V44" fill="none" stroke="#ffffff" stroke-opacity="0.05" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="880" height="1100" fill="#101013"/>
+  <rect width="880" height="1100" fill="url(#pgrid)"/>
+  <rect width="880" height="1100" fill="url(#pg)"/>
+  <g transform="translate(440,460)">
+    <rect x="-72" y="-72" width="144" height="144" rx="30" fill="#0b0b0d" stroke="#5c7cfa" stroke-opacity="0.6" stroke-width="2"/>
+    <text x="0" y="2" dominant-baseline="central" text-anchor="middle"
+      font-family="Helvetica, Arial, sans-serif" font-size="58" font-weight="700" letter-spacing="-2" fill="#fafafa">MM</text>
+  </g>
+  <text x="440" y="630" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="24" font-weight="600" fill="#a1a1aa">Add your photo</text>
+  <text x="440" y="664" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="16" fill="#71717a">replace src/assets/portrait.png</text>
+</svg>`;
+}
+
+async function makePortrait() {
+  const dir = resolve(root, "src/assets");
+  const out = resolve(dir, "portrait.png");
+  await mkdir(dir, { recursive: true });
+  if (existsSync(out)) {
+    console.log("• src/assets/portrait.png already exists — leaving your photo untouched");
+    return;
+  }
+  await sharp(Buffer.from(portraitSvg()), { density: 144 })
+    .resize(880, 1100)
+    .png()
+    .toFile(out);
+  console.log("✓ src/assets/portrait.png (placeholder — replace with your headshot)");
+}
+
 await makeIcons();
 await makeOg();
+await makePortrait();
 console.log("Done.");

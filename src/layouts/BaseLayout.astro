@@ -37,15 +37,21 @@ const { mainClass, ...head } = Astro.props;
     <!-- Set the theme before paint to avoid any flash of the wrong palette. -->
     <script is:inline>
       (function () {
-        const root = document.documentElement;
-        root.classList.add("js");
-        try {
-          const stored = localStorage.getItem("theme");
-          // Dark mode first: default to dark unless the visitor chose light.
-          root.classList.toggle("dark", stored !== "light");
-        } catch (e) {
-          root.classList.add("dark");
+        function applyTheme() {
+          const root = document.documentElement;
+          root.classList.add("js");
+          try {
+            const stored = localStorage.getItem("theme");
+            // Dark mode first: default to dark unless the visitor chose light.
+            root.classList.toggle("dark", stored !== "light");
+          } catch (e) {
+            root.classList.add("dark");
+          }
         }
+        applyTheme();
+        // View Transitions swap in a fresh <html> whose classes don't include
+        // `.dark`/`.js`; re-apply after each navigation so the theme persists.
+        document.addEventListener("astro:after-swap", applyTheme);
       })();
     </script>
 

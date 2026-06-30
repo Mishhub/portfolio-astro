@@ -1,0 +1,87 @@
+---
+title: "Zenit World — Scaling a Copy-Trading Platform to 3M+ Users"
+description: "Scaling a modular Django copy-trading platform to 3M+ users with Fireblocks custody, real-time KYC/AML, a custom token and Celery-driven audit logging."
+summary: "Scaling a modular Django platform to 3M+ users with secure digital-asset custody, real-time KYC/AML and automated copy-trading."
+year: "2023 — 2024"
+role: "Senior Full Stack Developer"
+problemSpace: "FinTech · Web3"
+tags: ["Django", "Digital-Asset Custody", "KYC/AML", "Copy Trading"]
+stack: ["Django", "PostgreSQL", "Fireblocks", "SumSub", "MinIO", "Redis", "Celery"]
+metrics:
+  - { value: "3M+", label: "Users" }
+  - { value: "Fireblocks", label: "Asset custody" }
+  - { value: "Real-time", label: "KYC / AML" }
+relatedProject: "zenit-world"
+featured: true
+order: 2
+---
+
+import Figure from "@/components/ui/Figure.astro";
+import Callout from "@/components/ui/Callout.astro";
+import ZenitWorldArchitectureDiagram from "@/components/diagrams/ZenitWorldArchitectureDiagram.astro";
+
+## Context
+
+Zenit World is a copy-trading platform that grew to **3M+ users**. A platform that
+moves money and custodies digital assets at that scale has three non-negotiables:
+funds must be held and moved safely, every user must clear **KYC/AML**, and every
+financially-meaningful action must be **auditable**. The job was to deliver all of
+that on a backend that stays modular enough to keep evolving.
+
+## Architecture
+
+The system is a modular **Django 4.1 + PostgreSQL** backend. Rather than owning
+custody logic directly, it delegates asset handling to **Fireblocks** and identity
+to **SumSub**, keeping the highest-risk concerns behind hardened providers. Slow or
+audit-heavy work is pushed onto **Celery** workers over **Redis**.
+
+<Figure diagram caption="A modular Django core delegates custody to Fireblocks and KYC to SumSub, with Celery handling audit and copy-trading work.">
+  <ZenitWorldArchitectureDiagram />
+</Figure>
+
+Keeping the Django codebase **modular** — clear app boundaries rather than one
+tangled monolith — is what let the platform keep shipping features as it scaled.
+
+## Digital-asset custody
+
+Custody and transaction orchestration run through the **Fireblocks SDK**. That puts
+key management and transfer policy behind a dedicated custody layer instead of
+home-grown wallet code — the right call when real assets are involved.
+
+## Onboarding & compliance
+
+Every user is verified through the **SumSub SDK** for real-time KYC/AML. Verification
+state gates what a user can do, and uploaded documents are stored in **MinIO** with
+S3-compatible buckets.
+
+## The ZENIT token & wallets
+
+The platform runs a custom **ZENIT** token with support for both **fiat and crypto
+wallets**, plus staking, yield farming and **automated copy-trading** that mirrors
+strategies through smart-contract integrations.
+
+<Callout type="insight" title="Push the risky and the slow off the request path">
+  Custody goes to Fireblocks; KYC goes to SumSub; audit logging and copy-trading
+  execution go to Celery. The synchronous API stays small and predictable, which is
+  exactly what you want when the user count has seven digits.
+</Callout>
+
+## Scaling
+
+The modular Django monolith scales horizontally behind PostgreSQL, with **Redis +
+Celery** absorbing spikes in background work (copy-trade execution, report and audit
+jobs). Modularity matters as much as raw throughput here: clean app boundaries kept
+the codebase shippable as the user base grew to millions.
+
+## Audit & observability
+
+Financial platforms have to be able to answer "what happened, and when." Robust
+**audit logging and event tracking** are implemented with **Redis and Celery**, so
+every meaningful action leaves a durable, queryable trail.
+
+## Outcome
+
+Zenit World scaled to 3M+ users by keeping its riskiest responsibilities — custody
+and identity — behind specialized providers, its codebase modular, and its
+audit trail durable. The synchronous path stayed lean while Celery carried the
+heavy, asynchronous work.

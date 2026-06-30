@@ -1,0 +1,80 @@
+---
+title: "A Web3 SSO & Wallet Platform"
+description: "A centralized OAuth2/OIDC single sign-on, KYC-gated access tiers, and a NestJS wallet gateway with Account Abstraction and Merkle-tree reward eligibility."
+summary: "Centralized identity, a NestJS wallet gateway with Account Abstraction, and Merkle-tree reward eligibility for a confidential Web3 ecosystem."
+year: "2023 — 2024"
+role: "Senior Full Stack Developer"
+problemSpace: "Web3 · Identity"
+tags: ["OAuth2 / OIDC", "Account Abstraction", "Merkle Trees", "gRPC"]
+stack: ["NestJS", "OAuth2 / OIDC", "Viem", "Biconomy", "Alchemy", "gRPC", "JWT"]
+metrics:
+  - { value: "OAuth2 / OIDC", label: "Centralized SSO" }
+  - { value: "ERC-4337", label: "Account Abstraction" }
+  - { value: "Merkle", label: "Reward eligibility" }
+relatedProject: "web3-sso-wallet-platform"
+featured: true
+order: 3
+---
+
+import Figure from "@/components/ui/Figure.astro";
+import Callout from "@/components/ui/Callout.astro";
+import Web3SsoArchitectureDiagram from "@/components/diagrams/Web3SsoArchitectureDiagram.astro";
+
+## Context
+
+A confidential Web3 ecosystem spanned several products that each needed the same
+things: one identity a user signs in with everywhere, KYC-gated access, a wallet
+that's pleasant to use on-chain, and a referral/reward program that pays out
+fairly. The work was to build that shared backbone — identity, wallets and rewards —
+as services the products could all build on.
+
+## Architecture
+
+A centralized **OAuth2 / OpenID Connect** service is the identity backbone; a
+**NestJS** wallet gateway abstracts chain interactions; and services talk to each
+other over **gRPC** for real-time sync. JWTs and role-based access control carry a
+scoped identity across every product.
+
+<Figure diagram caption="A central OIDC identity layer and a NestJS wallet gateway, linked to products over gRPC, with a Merkle-tree reward module.">
+  <Web3SsoArchitectureDiagram />
+</Figure>
+
+## Centralized identity
+
+Single sign-on is built on **OAuth2 + OpenID Connect**, so a user authenticates once
+and every product trusts the same identity. **KYC (via SumSub)** feeds **dynamic
+access levels** — what a verified user can do differs from an unverified one — and
+**JWT** sessions plus **RBAC** enforce that consistently across services.
+
+## The wallet gateway
+
+A dedicated **NestJS + Viem** microservice fronts all blockchain interactions, so
+products never touch RPC details directly. **Account Abstraction** via **Biconomy**
+and **Alchemy** makes the wallet experience smoother — smart-account flows instead of
+raw externally-owned-account friction.
+
+<Callout type="insight" title="A wallet gateway is an anti-corruption layer">
+  Putting every chain interaction behind one NestJS service means RPC providers,
+  gas strategy and account-abstraction details can change without rippling through
+  the products that depend on it.
+</Callout>
+
+## Rewards & referrals
+
+Reward eligibility uses **Merkle trees**: eligibility is proven against a published
+root rather than stored and checked row by row, which keeps verification cheap and
+tamper-evident. A **user-relationship tree** (a graph structure) models the referral
+program, so multi-level referral relationships are first-class data.
+
+## Communication & security
+
+Services synchronize over **gRPC** for fast, typed, real-time cross-platform
+communication. Access is gated by scoped **JWTs** and **role-based access control**,
+and identity is centralized rather than re-implemented per product — fewer places
+for auth to drift or break.
+
+## Outcome
+
+The ecosystem got a single identity, a clean wallet abstraction with
+account-abstraction UX, and a tamper-evident reward system — delivered as shared
+services that every product builds on through one OIDC layer and a gRPC backbone.

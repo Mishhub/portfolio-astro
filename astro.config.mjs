@@ -1,5 +1,6 @@
 // @ts-check
 import { defineConfig } from "astro/config";
+import cloudflare from "@astrojs/cloudflare";
 import react from "@astrojs/react";
 import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
@@ -14,6 +15,14 @@ import { SITE } from "./src/config/site";
 export default defineConfig({
   site: SITE.url,
   trailingSlash: "never",
+  // Static by default — every page is prerendered to the CDN. Only routes that
+  // opt out with `export const prerender = false` (e.g. src/pages/api/contact.ts)
+  // run on-demand as Cloudflare Pages Functions.
+  adapter: cloudflare({
+    // Exposes Cloudflare bindings/secrets via `locals.runtime.env` during
+    // `astro dev` (reads .dev.vars), matching production behaviour.
+    platformProxy: { enabled: true },
+  }),
   prefetch: {
     prefetchAll: true,
     defaultStrategy: "viewport",

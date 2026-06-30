@@ -1,8 +1,8 @@
 /**
  * Pinned repositories + contribution summary for the Open Source page.
- * Taken from the resume: a published NestJS/MinIO package and an open-source
- * calendar project with 100+ weekly npm downloads. No repos or stats are
- * invented; wire the exact URLs to live repositories as needed.
+ * Real published npm packages: nestjs-minio-backend, scheduler-calendar
+ * (100+ weekly downloads) and nestjs-dynamic-filter. No repos or stats are
+ * invented; URLs point at the live npm packages.
  */
 
 export interface Repo {
@@ -28,13 +28,22 @@ export const PINNED_REPOS: Repo[] = [
     topics: ["nestjs", "minio", "s3", "storage"],
   },
   {
-    name: "Open-source calendar",
+    name: "scheduler-calendar",
     description:
       "A reusable calendar library published to npm during my time at Stead Technologies, with 100+ weekly downloads.",
     language: "JavaScript",
     languageColor: "#f1e05a",
-    url: "https://github.com/mishhub",
+    url: "https://www.npmjs.com/package/scheduler-calendar",
     topics: ["calendar", "npm", "open-source"],
+  },
+  {
+    name: "nestjs-dynamic-filter",
+    description:
+      "A flexible, database-agnostic filtering system for NestJS — decorator-driven filterable fields, rich operators (exact, contains, gte/lte, in), built-in pagination and auto Swagger docs, with MongoDB/Mongoose and PostgreSQL/TypeORM support. Published to npm.",
+    language: "TypeScript",
+    languageColor: "#3178c6",
+    url: "https://www.npmjs.com/package/nestjs-dynamic-filter",
+    topics: ["nestjs", "filter", "mongodb", "postgres", "typeorm"],
   },
 ];
 
@@ -45,7 +54,7 @@ export interface ContributionSummary {
 
 /** Headline contribution stats — taken from the resume, no invented numbers. */
 export const CONTRIBUTION_SUMMARY: ContributionSummary[] = [
-  { value: "2+", label: "Open-source packages" },
+  { value: "3+", label: "Open-source packages" },
   { value: "100+", label: "Weekly npm downloads" },
   { value: "TS · Py · Sol", label: "Primary languages" },
   { value: "Yes", label: "Open to PRs" },

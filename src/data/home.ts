@@ -51,6 +51,12 @@ export const TRUSTED_TECH: string[] = [
   "GCP",
   "Solidity",
   "GraphQL",
+  "Generative AI",
+  "LLMs",
+  "Prompt Engineering",
+  "RAG",
+  "OpenAI",
+  "Claude",
 ];
 
 export interface Highlight {
@@ -61,7 +67,7 @@ export interface Highlight {
 /** Selected highlights — recruiter-legible, drawn from real resume facts. */
 export const HIGHLIGHTS: Highlight[] = [
   {
-    title: "6+ years across web & Web3",
+    title: "7+ years across web & Web3",
     description:
       "From e-commerce and real-time platforms to FinTech systems serving millions — Dubai and India.",
   },

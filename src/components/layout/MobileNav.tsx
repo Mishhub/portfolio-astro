@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { Menu, X } from "lucide-react";
 import type { NavItem } from "@/config/site";
 
@@ -14,7 +15,14 @@ interface Props {
  */
 export default function MobileNav({ items, resumePath }: Props) {
   const [open, setOpen] = useState(false);
+  // Portal the overlay to <body> only after mount. This keeps the dialog out of
+  // the <header>'s stacking/`backdrop-filter` context — otherwise the scrolled
+  // header's blur becomes the fixed overlay's containing block and page content
+  // bleeds through the drawer. Gating on `mounted` also avoids any SSR mismatch.
+  const [mounted, setMounted] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => setMounted(true), []);
 
   useEffect(() => {
     if (!open) return;
@@ -53,13 +61,15 @@ export default function MobileNav({ items, resumePath }: Props) {
         <Menu className="size-5" />
       </button>
 
-      <div
-        className={`fixed inset-0 z-50 md:hidden ${open ? "" : "pointer-events-none"}`}
-        role="dialog"
-        aria-modal="true"
-        aria-label="Site navigation"
-        aria-hidden={!open}
-      >
+      {mounted &&
+        createPortal(
+          <div
+            className={`fixed inset-0 z-50 md:hidden ${open ? "" : "pointer-events-none"}`}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Site navigation"
+            aria-hidden={!open}
+          >
         {/* Scrim */}
         <button
           type="button"
@@ -113,7 +123,9 @@ export default function MobileNav({ items, resumePath }: Props) {
             Download Résumé
           </a>
         </div>
-      </div>
+          </div>,
+          document.body,
+        )}
     </>
   );
 }

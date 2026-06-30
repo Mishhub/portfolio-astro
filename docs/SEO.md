@@ -8,9 +8,9 @@ reference. Replace `https://mishhub.dev` with the real production origin (`SITE.
 
 | Page | Title (`<title>` appends "· Mohammed Mishhub") | Meta description |
 | --- | --- | --- |
-| Home | Mohammed Mishhub — Senior Full Stack Software Engineer | Senior Full Stack Engineer with 6+ years building and scaling web & Web3 platforms — NestJS, Node.js, React, Django, PostgreSQL, Redis and distributed systems. |
-| About | About | Senior full-stack engineer (6+ yrs) across FinTech and Web3 — backend architecture, distributed systems, authentication and identity, from India to Dubai. |
-| Experience | Experience | 6+ years across LMNTO, Coolshop, Connectopia, Stead and AgileCrew — event-driven microservices, auth/identity, Web3 and real-time systems. |
+| Home | Mohammed Mishhub — Senior Full Stack Software Engineer | Senior Full Stack Engineer with 7+ years building and scaling web & Web3 platforms — NestJS, Node.js, React, Django, PostgreSQL, Redis and distributed systems. |
+| About | About | Senior full-stack engineer (7+ yrs) across FinTech and Web3 — backend architecture, distributed systems, authentication and identity, from India to Dubai. |
+| Experience | Experience | 7+ years across LMNTO, Coolshop, Connectopia, Stead and AgileCrew — event-driven microservices, auth/identity, Web3 and real-time systems. |
 | Projects | Projects | Selected engineering work — NodeLink, Zenit World, a Web3 SSO & wallet platform, Spovio, Puretax and more. NestJS, Django, React, Solidity. |
 | Case Studies | Case Studies | In-depth engineering case studies on compliance, identity, copy-trading, multi-tenant reporting and real-time systems. |
 | Articles | Articles | Notes on authentication, NestJS, event-driven systems, Redis/BullMQ, Web3 and AI engineering. |

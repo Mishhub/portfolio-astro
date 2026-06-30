@@ -33,15 +33,15 @@ export const SITE = {
   role: "Senior Full Stack Software Engineer",
   /** One-line value proposition (used in <title> templates + OG). */
   tagline:
-    "I design, build and scale full-stack web and Web3 platforms — distributed backend services, authentication systems and the interfaces on top of them.",
+    "I design and scale full-stack web & Web3 platforms — distributed backends and the interfaces on top — now moving into agentic AI development.",
 
   /** Default meta description (overridable per page). Kept under 160 chars. */
   description:
-    "Senior Full Stack Engineer with 6+ years building and scaling web & Web3 platforms — NestJS, Node.js, React, Django, PostgreSQL, Redis and distributed systems.",
+    "Senior Full Stack Engineer, 7+ yrs — NestJS, Node.js, React, Django, distributed systems & Web3, now building agentic AI: LLMs, RAG and AI agents.",
 
   email: "mishhub@gmail.com",
   location: "Dubai, UAE",
-  availability: "Open to senior & staff roles",
+  availability: "Keen to build interesting projects together",
 
   locale: "en_US",
   lang: "en",

@@ -1,0 +1,69 @@
+---
+title: "Puretax — Multi-Tenant Financial Reporting at Volume"
+description: "A multi-tenant Django/DRF backend that syncs QuickBooks Online data and generates 600+ monthly financial reports as PDF, XLSX and CSV with charts."
+summary: "A multi-tenant Django/DRF backend syncing QuickBooks data and generating 600+ monthly reports in PDF, XLSX and CSV."
+year: "2021 — 2022"
+role: "Full Stack Developer"
+problemSpace: "FinTech · Accounting"
+tags: ["Django", "Multi-Tenant", "QuickBooks", "Reporting"]
+stack: ["Django", "Django REST Framework", "PostgreSQL", "Redis", "Celery"]
+metrics:
+  - { value: "600+", label: "Reports / month" }
+  - { value: "Multi-tenant", label: "Isolation" }
+  - { value: "PDF · XLSX · CSV", label: "Export formats" }
+relatedProject: "puretax"
+featured: false
+order: 5
+---
+
+import Figure from "@/components/ui/Figure.astro";
+import Callout from "@/components/ui/Callout.astro";
+import PuretaxArchitectureDiagram from "@/components/diagrams/PuretaxArchitectureDiagram.astro";
+
+## Context
+
+Puretax is an accounting reporting backend that generates **600+ financial reports a
+month** for many client organizations. Two problems dominate that brief: keeping each
+tenant's financial data strictly isolated, and reliably pulling from a third party
+(**QuickBooks Online**) whose data you don't control — then turning all of it into
+reports finance teams can actually use.
+
+## Architecture
+
+A **Django + Django REST Framework** backend with **multi-tenant** support over
+**PostgreSQL**, plus **Redis + Celery** for the background sync and report
+generation that shouldn't ever block a request.
+
+<Figure diagram caption="A multi-tenant Django/DRF API with QuickBooks sync and a Celery-driven report-generation pipeline.">
+  <PuretaxArchitectureDiagram />
+</Figure>
+
+## Multi-tenant isolation
+
+The backend is **multi-tenant** from the ground up, so each client's financial data
+stays isolated — the foundational guarantee for anything handling money for multiple
+organizations.
+
+## Syncing QuickBooks
+
+Financial data is synced automatically from the **QuickBooks Online APIs**. Because a
+third-party API is involved, the sync runs as **background jobs** (Celery) rather
+than inline — so a slow or rate-limited QuickBooks call never stalls the app.
+
+<Callout type="insight" title="Third-party sync belongs in the background">
+  QuickBooks is external and can be slow or throttled. Running the sync on Celery
+  keeps the request path responsive and makes the integration retryable instead of
+  fragile.
+</Callout>
+
+## Reporting at volume
+
+The reporting pipeline generates **600+ reports monthly** in **PDF, XLSX and CSV**,
+complete with visual charts. **Redis + Celery** handle the scheduled monthly runs so
+generation scales with workers rather than blocking users.
+
+## Outcome
+
+Puretax delivers isolated multi-tenant financial data, a resilient QuickBooks sync,
+and a reporting pipeline that produces 600+ formatted reports a month — all built so
+the heavy, third-party-dependent work runs in the background.

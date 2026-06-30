@@ -1,0 +1,70 @@
+---
+title: "Spovio — Automating an HR Platform End to End"
+description: "Building a full HRMS — time-off, attendance, payroll and document storage — on React and Django, with Celery-driven accrual that automated 80% of HR workflows."
+summary: "A full HRMS with time-off, attendance and payroll, built on React + Django with Celery-driven accrual — automating 80% of HR workflows."
+year: "2020 — 2022"
+role: "Full Stack Developer"
+problemSpace: "SaaS · HR"
+tags: ["Django", "React", "Celery", "Payroll"]
+stack: ["React", "Django", "PostgreSQL", "Redis", "Celery", "AWS S3"]
+metrics:
+  - { value: "80%", label: "HR workflows automated" }
+  - { value: "1,200+", label: "Employees managed" }
+  - { value: "Excel / PDF", label: "Payroll exports" }
+relatedProject: "spovio"
+featured: false
+order: 4
+---
+
+import Figure from "@/components/ui/Figure.astro";
+import Callout from "@/components/ui/Callout.astro";
+import SpovioArchitectureDiagram from "@/components/diagrams/SpovioArchitectureDiagram.astro";
+
+## Context
+
+Spovio is a complete HR platform that ended up managing **1,200+ employees** across
+10+ businesses. HR software lives or dies on getting the unglamorous rules right —
+leave accrual, attendance, payroll — and on automating the manual back-and-forth
+that drains an HR team. The goal was to model those rules correctly and **automate
+80% of the workflow** around them.
+
+## Architecture
+
+A **React** frontend over a **Django** backend, with **PostgreSQL** for the system
+of record. **Redis + Celery** drive time accrual and the scheduled/background work,
+and **AWS S3** holds organization and employee documents securely.
+
+<Figure diagram caption="A React client over a Django API, with Celery workers driving accrual and payroll, and S3 for document storage.">
+  <SpovioArchitectureDiagram />
+</Figure>
+
+## Modeling accrual & attendance
+
+Time-off and attendance are built around **role-based accrual rates** — different
+roles accrue leave on different rules. Getting this model right is what makes the
+rest of the system trustworthy; accrual is computed and tracked through **Celery**
+so balances stay correct over time without manual intervention.
+
+## Payroll
+
+The payroll module generates salaries **monthly** and exports to **Excel and PDF**,
+turning what's usually a manual spreadsheet ritual into a repeatable, scheduled job.
+
+<Callout type="tip" title="Background work is where HR automation lives">
+  Accrual, monthly payroll runs and notifications are all scheduled, long-running
+  tasks. Pushing them to Celery is what turns an HR tool from a data-entry form into
+  something that actually runs the process for you.
+</Callout>
+
+## Notifications & automation
+
+Email and SMS integrations drive HR alerts and approvals, closing the loop on
+requests without someone chasing them. Together with scheduled accrual and payroll,
+this is how the platform **automated roughly 80% of the HR workflow**.
+
+## Outcome
+
+Spovio turned manual HR processes into an automated system: correct role-based
+accrual, scheduled monthly payroll with clean exports, secure document storage, and
+alerting that moves approvals along — used across 10+ businesses managing 1,200+
+employees.

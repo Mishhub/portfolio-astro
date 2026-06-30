@@ -45,19 +45,28 @@ const fieldClass =
           </p>
 
           {/*
-            ⚠️ PLACEHOLDER ACTION — replace the form `action` below with your own
-            backend endpoint before going live. Two common options:
-              • Formspree:  action="https://formspree.io/f/your-form-id"
-              • Resend:     point `action` at your own /api route that calls Resend.
-            As shipped, this form has NO backend and will not deliver messages.
+            Submits via fetch() to our own /api/contact endpoint (a Cloudflare
+            Pages Function), which sends the mail through Resend using a secret
+            held server-side. No keys are exposed to the browser.
           */}
           <form
-            action="https://formspree.io/f/your-form-id"
+            action="/api/contact"
             method="POST"
             novalidate
             class="mt-8 space-y-5"
             data-contact-form
           >
+            {/* Honeypot: hidden from people, irresistible to bots. Submissions
+                with this filled are silently dropped server-side. */}
+            <input
+              type="text"
+              name="botcheck"
+              tabindex="-1"
+              autocomplete="off"
+              aria-hidden="true"
+              class="hidden"
+            />
+
             <div>
               <label for="name" class="block text-sm font-medium text-foreground">
                 Name <span class="text-brand" aria-hidden="true">*</span>
@@ -150,10 +159,10 @@ const fieldClass =
                 aria-hidden="true"
               />
               <span>
-                This form needs a backend to deliver mail. Until one is connected, please reach me
-                directly by <a
+                Your message is sent straight to my inbox — I usually reply within a day or two.
+                Prefer email? Reach me directly at <a
                   href={`mailto:${SITE.email}`}
-                  class="font-medium text-foreground underline-offset-4 hover:underline">email</a
+                  class="font-medium text-foreground underline-offset-4 hover:underline">{SITE.email}</a
                 >.
               </span>
             </p>
@@ -228,12 +237,22 @@ const fieldClass =
 </BaseLayout>
 
 <script>
-  // Lightweight client-side validation. The form still requires a real backend
-  // (Formspree / Resend) to actually deliver mail — see the action placeholder.
+  // Client-side validation + fetch submission to our own /api/contact endpoint,
+  // which delivers the mail via Resend (secret held server-side on Cloudflare).
   const form = document.querySelector<HTMLFormElement>("[data-contact-form]");
   if (form) {
     const status = form.querySelector<HTMLElement>("[data-form-status]");
+    const submitBtn = form.querySelector<HTMLButtonElement>('button[type="submit"]');
     const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    const setStatus = (text: string, tone: "muted" | "success" | "warning") => {
+      if (!status) return;
+      status.textContent = text;
+      status.classList.remove("hidden", "text-muted-foreground", "text-success", "text-warning");
+      status.classList.add(
+        tone === "success" ? "text-success" : tone === "warning" ? "text-warning" : "text-muted-foreground",
+      );
+    };
 
     const fieldById = (id: string) => form.querySelector<HTMLInputElement | HTMLTextAreaElement>(`#${id}`);
     const errorFor = (id: string) => form.querySelector<HTMLElement>(`[data-error-for="${id}"]`);
@@ -265,24 +284,38 @@ const fieldClass =
       });
     }
 
-    form.addEventListener("submit", (event) => {
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+
       const results = ["name", "email", "message"].map(validate);
       if (results.includes(false)) {
-        event.preventDefault();
         const firstInvalid = ["name", "email", "message"].find((id) => !validate(id));
         if (firstInvalid) fieldById(firstInvalid)?.focus();
-        if (status) {
-          status.textContent = "Please fix the highlighted fields.";
-          status.classList.remove("hidden");
-        }
+        setStatus("Please fix the highlighted fields.", "warning");
         return;
       }
-      // Valid input: let the browser submit to the configured endpoint. If the
-      // placeholder action is still in place, the request will simply fail —
-      // the inline note tells visitors to email directly in the meantime.
-      if (status) {
-        status.textContent = "Sending…";
-        status.classList.remove("hidden");
+
+      submitBtn?.setAttribute("disabled", "true");
+      setStatus("Sending…", "muted");
+
+      try {
+        const response = await fetch(form.action, {
+          method: "POST",
+          headers: { Accept: "application/json" },
+          body: new FormData(form),
+        });
+        const result = (await response.json().catch(() => ({}))) as { ok?: boolean };
+
+        if (response.ok && result.ok) {
+          form.reset();
+          setStatus("✓ Thanks — your message is on its way. I'll be in touch soon.", "success");
+        } else {
+          setStatus("Something went wrong. Please email me directly instead.", "warning");
+        }
+      } catch {
+        setStatus("Network error. Please check your connection or email me directly.", "warning");
+      } finally {
+        submitBtn?.removeAttribute("disabled");
       }
     });
   }

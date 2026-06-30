@@ -1,0 +1,71 @@
+---
+title: "CaseIH Build & Price — A Configurator Reused Across Regions"
+description: "A componentized, server-rendered React + GraphQL configurator built from scratch and reused across 5+ region-specific deployments, with 60% faster load times."
+summary: "A componentized, server-rendered React + GraphQL configurator built from scratch and reused across 5+ regional deployments."
+year: "2022 — 2023"
+role: "Senior Full Stack Developer"
+problemSpace: "Frontend · Configurator"
+tags: ["React", "GraphQL", "SSR", "Design System"]
+stack: ["React 18", "GraphQL", "Apollo", "Styled Components", "Storybook", "Jest"]
+metrics:
+  - { value: "5+", label: "Regional deployments" }
+  - { value: "SSR", label: "SEO + load time" }
+  - { value: "Storybook", label: "Component library" }
+relatedProject: "caseih-build-and-price"
+featured: false
+order: 6
+---
+
+import Figure from "@/components/ui/Figure.astro";
+import Callout from "@/components/ui/Callout.astro";
+import CaseIhArchitectureDiagram from "@/components/diagrams/CaseIhArchitectureDiagram.astro";
+
+## Context
+
+CaseIH Build & Price is a configurator for agricultural machinery. The interesting
+constraint wasn't a single app — it was that the same configurator had to ship to
+**5+ region-specific deployments**, each with its own catalog and theming, while
+staying fast and SEO-friendly. That makes this a frontend-architecture problem:
+build once, reuse everywhere, without forking.
+
+## Architecture
+
+Built from scratch with **React 18**, **GraphQL + Apollo** for data, **Styled
+Components** for theming, and **Storybook** as the component workbench. **Server-side
+rendering** delivers SEO and fast first paint; **Jest** covers the components; and
+**GitHub CI/CD** with custom dev environments ships it.
+
+<Figure diagram caption="A server-rendered React + Apollo app built on one shared, themeable component library that powers 5+ regional deployments.">
+  <CaseIhArchitectureDiagram />
+</Figure>
+
+## A reusable component architecture
+
+The core decision was **modularity**: a single component library, exercised in
+**Storybook** and **themed with Styled Components**, that's reused across **5+
+region-specific deployments**. New regions get a configured theme and catalog rather
+than a fork of the codebase.
+
+<Callout type="insight" title="Reuse is an architecture decision, not an afterthought">
+  Designing the component library to be theme-driven from day one is what made "ship
+  to another region" a configuration change instead of a rewrite.
+</Callout>
+
+## Rendering, performance & SEO
+
+**Server-side rendering** improves both SEO and page-load time — important for a
+public-facing product catalog. Bundle optimization and code splitting keep the
+client payload lean, and **Jest** unit tests guard the shared components that every
+region depends on.
+
+## Delivery
+
+**GitHub CI/CD** pipelines and custom dev environments standardize how the
+configurator is built and shipped, so the same workflow serves every regional
+deployment.
+
+## Outcome
+
+One configurator, built from scratch, became a themeable component library powering
+5+ regional deployments — server-rendered for SEO and speed, tested with Jest, and
+shipped through a consistent CI/CD workflow.

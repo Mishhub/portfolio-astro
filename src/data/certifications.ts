@@ -15,6 +15,18 @@ export interface Certification {
 
 export const CERTIFICATIONS: Certification[] = [
   {
+    name: "AI Engineer Core Track: LLM Engineering, RAG, QLoRA, Agents",
+    issuer: "Ed Donner",
+    issued: "2026",
+    status: "in-progress",
+  },
+  {
+    name: "One Million Prompters: Boost your knowledge in prompt engineering",
+    issuer: "Dubai Future Foundation",
+    issued: "2026",
+    status: "earned",
+  },
+  {
     name: "The Complete Web Developer in 2022: Zero to Mastery",
     issuer: "Udemy",
     issued: "2022",
@@ -23,7 +35,7 @@ export const CERTIFICATIONS: Certification[] = [
   {
     name: "The Complete Junior to Senior Web Developer Roadmap (2022)",
     issuer: "Udemy",
-    issued: "2022",
+    issued: "2023",
     status: "earned",
   },
   {
@@ -35,16 +47,13 @@ export const CERTIFICATIONS: Certification[] = [
   {
     name: "Ethereum and Solidity: The Complete Developer's Guide",
     issuer: "Udemy",
+    issued: "2024",
     status: "earned",
   },
   {
     name: "Industrial Training on C Language",
     issuer: "Fantacode Solutions",
     status: "earned",
-  },
-  {
-    name: "LLM Engineering — Master AI & Large Language Models",
-    issuer: "Ed Donner",
-    status: "in-progress",
+    issued: "2019",
   },
 ];

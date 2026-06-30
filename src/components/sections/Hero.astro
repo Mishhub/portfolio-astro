@@ -1,15 +1,18 @@
 ---
+import { Image } from "astro:assets";
 import { Icon } from "astro-icon/components";
 import Container from "@/components/ui/Container.astro";
 import Button from "@/components/ui/Button.astro";
-import Avatar from "@/components/ui/Avatar.astro";
 import Badge from "@/components/ui/Badge.astro";
 import Social from "@/components/layout/Social.astro";
 import { SITE, RESUME_PATH } from "@/config/site";
 import { DOMAINS } from "@/data/skills";
+// Drop your headshot in at src/assets/portrait.png (same filename) to replace
+// the placeholder — Astro optimizes it (responsive, webp, no layout shift).
+import portrait from "@/assets/portrait.png";
 
 const quickFacts = [
-  { icon: "lucide:git-branch", label: "6+ years shipping full-stack products" },
+  { icon: "lucide:git-branch", label: "7+ years shipping full-stack products" },
   { icon: "lucide:server", label: "Backend · distributed systems · Web3" },
   { icon: "lucide:map-pin", label: SITE.location },
 ];
@@ -24,14 +27,14 @@ const quickFacts = [
 
   <Container size="wide" class="pb-16 pt-20 sm:pb-24 sm:pt-28">
     <div class="grid items-center gap-12 lg:grid-cols-[1.5fr_1fr]">
-      <div data-reveal>
-        <Badge variant="brand" class="mb-6">
+      <div data-reveal class="order-2 lg:order-none">
+        <!-- <Badge variant="brand" class="mb-6">
           <span class="relative flex size-2">
             <span class="absolute inline-flex size-full animate-ping rounded-full bg-brand opacity-60"></span>
             <span class="relative inline-flex size-2 rounded-full bg-brand"></span>
           </span>
           {SITE.availability}
-        </Badge>
+        </Badge> -->
 
         <h1 class="text-4xl font-semibold tracking-tight text-foreground text-balance sm:text-5xl lg:text-6xl">
           {SITE.name}
@@ -43,7 +46,8 @@ const quickFacts = [
         <p class="mt-6 max-w-xl text-lg leading-relaxed text-foreground/80 text-pretty">
           I design and build <span class="text-foreground">full-stack web and Web3 platforms</span> —
           distributed backend services, authentication systems and the interfaces on top of them.
-          6+ years across FinTech, Web3 and high-traffic products.
+          7+ years across FinTech, Web3 and high-traffic products, now channelling that systems
+          experience into <span class="text-foreground">agentic AI development</span>.
         </p>
 
         <div class="mt-8 flex flex-wrap items-center gap-3">
@@ -66,26 +70,49 @@ const quickFacts = [
         </div>
       </div>
 
-      <div data-reveal style="--reveal-delay:120ms" class="lg:justify-self-end">
-        <div class="relative max-w-sm rounded-3xl border border-border bg-card/60 p-6 backdrop-blur-sm">
-          <div class="flex items-center gap-4">
-            <Avatar size="lg" />
-            <div>
-              <p class="font-semibold tracking-tight text-foreground">{SITE.name}</p>
-              <p class="text-sm text-muted-foreground">{SITE.handle}</p>
+      <div data-reveal style="--reveal-delay:120ms" class="order-1 lg:order-none lg:justify-self-end">
+        <figure class="relative mx-auto w-full max-w-xs sm:max-w-sm">
+          <!-- Soft brand glow for depth behind the portrait. -->
+          <div
+            class="pointer-events-none absolute -inset-3 -z-10 rounded-[2rem] bg-brand/10 blur-2xl"
+            aria-hidden="true"
+          >
+          </div>
+
+          <div
+            class="relative overflow-hidden rounded-3xl border border-border shadow-[0_28px_70px_-32px_rgba(0,0,0,0.65)] ring-1 ring-border"
+          >
+            <Image
+              src={portrait}
+              alt={`Portrait of ${SITE.name}, ${SITE.role}`}
+              widths={[288, 384, 576, 768]}
+              sizes="(min-width: 640px) 384px, 288px"
+              format="webp"
+              loading="eager"
+              fetchpriority="high"
+              class="relative aspect-[4/5] w-full object-cover object-center z-10"
+            />
+            <!-- Subtle scrim blends the photo into the dark surface. -->
+            <div
+              class="pointer-events-none absolute inset-x-0 bottom-0 h-1/4 bg-gradient-to-t from-card/80 to-transparent"
+              aria-hidden="true"
+            >
             </div>
           </div>
-          <ul class="mt-6 space-y-3">
-            {
-              quickFacts.map((fact) => (
-                <li class="flex items-center gap-3 text-sm text-muted-foreground">
-                  <Icon name={fact.icon} class="size-4 shrink-0 text-brand" aria-hidden="true" />
-                  <span>{fact.label}</span>
-                </li>
-              ))
-            }
-          </ul>
-        </div>
+
+          <figcaption class="mt-5 hidden lg:block">
+            <ul class="space-y-2.5">
+              {
+                quickFacts.map((fact) => (
+                  <li class="flex items-center gap-3 text-sm text-muted-foreground">
+                    <Icon name={fact.icon} class="size-4 shrink-0 text-brand" aria-hidden="true" />
+                    <span>{fact.label}</span>
+                  </li>
+                ))
+              }
+            </ul>
+          </figcaption>
+        </figure>
       </div>
     </div>
 

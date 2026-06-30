@@ -29,10 +29,10 @@ export const SKILL_GROUPS: SkillGroup[] = [
     skills: [
       { name: "TypeScript", level: "expert" },
       { name: "JavaScript", level: "expert" },
-      { name: "Python", level: "advanced" },
+      { name: "Python", level: "expert" },
       { name: "Solidity", level: "advanced" },
       { name: "Go", level: "proficient" },
-      { name: "SQL", level: "advanced" },
+      { name: "SQL", level: "expert" },
     ],
   },
   {
@@ -42,9 +42,9 @@ export const SKILL_GROUPS: SkillGroup[] = [
     skills: [
       { name: "NestJS", level: "expert" },
       { name: "Node.js", level: "expert" },
-      { name: "Django", level: "advanced", note: "+ Django REST Framework" },
-      { name: "Express", level: "advanced" },
-      { name: "Celery", level: "advanced" },
+      { name: "Django", level: "expert", note: "+ Django REST Framework" },
+      { name: "Express", level: "expert" },
+      { name: "Celery", level: "expert" },
       { name: "Gin", level: "proficient" },
     ],
   },
@@ -56,22 +56,9 @@ export const SKILL_GROUPS: SkillGroup[] = [
       { name: "React.js", level: "expert" },
       { name: "Next.js", level: "expert" },
       { name: "Angular", level: "advanced" },
-      { name: "Redux", level: "advanced" },
+      { name: "Redux", level: "expert" },
       { name: "React Native", level: "proficient" },
       { name: "Tailwind CSS", level: "advanced", note: "Material UI · Bootstrap" },
-    ],
-  },
-  {
-    id: "blockchain",
-    title: "Blockchain & Web3",
-    blurb: "Smart contracts, wallet infrastructure and on-chain integrations.",
-    skills: [
-      { name: "Solidity", level: "advanced" },
-      { name: "Ethereum", level: "advanced" },
-      { name: "Solana", level: "proficient" },
-      { name: "Account Abstraction", level: "proficient", note: "Biconomy · Alchemy" },
-      { name: "Hardhat / Truffle", level: "advanced" },
-      { name: "Metaplex", level: "proficient" },
     ],
   },
   {
@@ -80,8 +67,21 @@ export const SKILL_GROUPS: SkillGroup[] = [
     blurb: "Modelling data and keeping the hot path fast.",
     skills: [
       { name: "PostgreSQL", level: "expert" },
-      { name: "MongoDB", level: "advanced" },
-      { name: "Redis", level: "advanced", note: "caching · queues · adapters" },
+      { name: "MongoDB", level: "expert" },
+      { name: "Redis", level: "expert", note: "caching · queues · adapters" },
+    ],
+  },
+  {
+    id: "architecture",
+    title: "Architecture",
+    blurb: "Decomposing domains into services that stay correct as they scale.",
+    skills: [
+      { name: "Microservices", level: "expert" },
+      { name: "Event-Driven Design", level: "expert" },
+      { name: "gRPC", level: "advanced" },
+      { name: "OAuth2", level: "expert" },
+      { name: "OpenID Connect", level: "expert" },
+      { name: "WebSockets", level: "expert", note: "Socket.IO" },
     ],
   },
   {
@@ -98,19 +98,6 @@ export const SKILL_GROUPS: SkillGroup[] = [
     ],
   },
   {
-    id: "architecture",
-    title: "Architecture",
-    blurb: "Decomposing domains into services that stay correct as they scale.",
-    skills: [
-      { name: "Microservices", level: "advanced" },
-      { name: "Event-Driven Design", level: "advanced" },
-      { name: "gRPC", level: "advanced" },
-      { name: "OAuth2", level: "expert" },
-      { name: "OpenID Connect", level: "expert" },
-      { name: "WebSockets", level: "advanced", note: "Socket.IO" },
-    ],
-  },
-  {
     id: "ai",
     title: "AI Engineering",
     blurb: "Actively transitioning into production AI engineering — learning in public.",
@@ -121,7 +108,20 @@ export const SKILL_GROUPS: SkillGroup[] = [
       { name: "Prompt Engineering", level: "learning" },
     ],
   },
+  {
+    id: "blockchain",
+    title: "Blockchain & Web3",
+    blurb: "Smart contracts, wallet infrastructure and on-chain integrations.",
+    skills: [
+      { name: "Solidity", level: "advanced" },
+      { name: "Ethereum", level: "advanced" },
+      { name: "Solana", level: "proficient" },
+      { name: "Account Abstraction", level: "proficient", note: "Biconomy · Alchemy" },
+      { name: "Hardhat / Truffle", level: "advanced" },
+      { name: "Metaplex", level: "proficient" },
+    ],
+  },
 ];
 
 /** Domains the engineer has shipped into — used as context tags, not skills. */
-export const DOMAINS = ["FinTech & Web3", "Authentication & Identity", "Distributed Systems"] as const;
+export const DOMAINS = ["FinTech", "Gen AI", "Web3", "CMS", "Distributed Systems"] as const;
