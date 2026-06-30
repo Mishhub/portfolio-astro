@@ -1,0 +1,18 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "portfolio-astro",
+  // Server entry produced by the @astrojs/cloudflare adapter on `npm run build`.
+  "main": "./dist/_worker.js/index.js",
+  "compatibility_date": "2025-01-01",
+  // Required by the adapter so Node built-ins work in the Worker runtime.
+  "compatibility_flags": ["nodejs_compat"],
+  // Serves the prerendered static site; the Worker only runs for on-demand
+  // routes like /api/contact.
+  "assets": {
+    "binding": "ASSETS",
+    "directory": "./dist"
+  },
+  "observability": {
+    "enabled": true
+  }
+}
