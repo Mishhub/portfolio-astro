@@ -11,6 +11,16 @@ import rehypeAutolinkHeadings from "rehype-autolink-headings";
 
 import { SITE } from "./src/config/site";
 
+// React 19's server entries need different builds per runtime:
+//  - `astro dev` runs SSR in Node, where `react-dom/server.browser` works
+//    (Node provides MessageChannel) but `server.edge` (CommonJS) throws
+//    "require is not defined" under Vite's dev SSR.
+//  - `astro build` output runs on the Cloudflare Workers (workerd) runtime,
+//    which has no MessageChannel — so `server.browser` throws at deploy and we
+//    must use `server.edge` (setTimeout-based scheduling), bundled by the build.
+// So we only apply the server.edge alias for builds; dev uses the adapter default.
+const isBuild = process.argv.includes("build");
+
 // https://astro.build/config
 export default defineConfig({
   site: SITE.url,
@@ -37,10 +47,13 @@ export default defineConfig({
   ],
   vite: {
     plugins: [tailwindcss()],
-    // NOTE: don't override react-dom/server resolution here. @astrojs/cloudflare
-    // already aliases react-dom/server → react-dom/server.browser and sets
-    // ssr.noExternal = true so React is bundled for the Workers runtime. A manual
-    // alias to server.edge (CommonJS) breaks dev SSR with "require is not defined".
+    resolve: {
+      // Build only: force the Workers-safe React server entry (see note above).
+      // In dev we leave the adapter's server.browser alias in place.
+      alias: isBuild
+        ? [{ find: /^react-dom\/server$/, replacement: "react-dom/server.edge" }]
+        : [],
+    },
   },
   markdown: {
     syntaxHighlight: "shiki",
