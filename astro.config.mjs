@@ -37,14 +37,10 @@ export default defineConfig({
   ],
   vite: {
     plugins: [tailwindcss()],
-    resolve: {
-      // React 19's default server entry (react-dom/server.browser) schedules with
-      // MessageChannel, which the Cloudflare Workers runtime doesn't provide
-      // ("ReferenceError: MessageChannel is not defined"). The edge build uses
-      // setTimeout-based scheduling and runs on Workers (and in Node during dev).
-      // Anchored regex so only the bare specifier is rewritten, not *.edge/*.browser.
-      alias: [{ find: /^react-dom\/server$/, replacement: "react-dom/server.edge" }],
-    },
+    // NOTE: don't override react-dom/server resolution here. @astrojs/cloudflare
+    // already aliases react-dom/server → react-dom/server.browser and sets
+    // ssr.noExternal = true so React is bundled for the Workers runtime. A manual
+    // alias to server.edge (CommonJS) breaks dev SSR with "require is not defined".
   },
   markdown: {
     syntaxHighlight: "shiki",

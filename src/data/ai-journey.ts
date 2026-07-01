@@ -50,21 +50,21 @@ export const AI_ROADMAP: Milestone[] = [
     title: "Foundations",
     description:
       "LLM fundamentals, prompt engineering and the OpenAI SDK. Building intuition for tokens, context windows and model behaviour.",
-    status: "active",
+    status: "done",
   },
   {
     period: "Phase 2",
     title: "Retrieval & Grounding",
     description:
       "Embeddings, vector databases and RAG pipelines — with evaluation harnesses to measure retrieval quality, not vibes.",
-    status: "planned",
+    status: "done",
   },
   {
     period: "Phase 3",
     title: "Agents & Tooling",
     description:
       "Tool calling, agentic workflows and the Model Context Protocol. Comparing LangGraph, CrewAI and AutoGen on real tasks.",
-    status: "planned",
+    status: "active",
   },
   {
     period: "Phase 4",

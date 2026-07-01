@@ -3,15 +3,9 @@ import { Icon } from "astro-icon/components";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import Container from "@/components/ui/Container.astro";
 import Breadcrumbs from "@/components/layout/Breadcrumbs.astro";
-import Button from "@/components/ui/Button.astro";
-import Badge from "@/components/ui/Badge.astro";
 import { SITE, SOCIALS } from "@/config/site";
-import { EXPERIENCE, EDUCATION } from "@/data/experience";
-import { RESUME_PROJECTS } from "@/data/projects";
-import { SKILL_GROUPS } from "@/data/skills";
-import { CERTIFICATIONS } from "@/data/certifications";
+import { RESUME, RESUME_PDF, RESUME_PDF_NAME } from "@/data/resume";
 import { breadcrumbSchema } from "@/lib/seo";
-import { formatRange } from "@/lib/utils";
 
 const origin = Astro.site!.origin;
 
@@ -22,43 +16,14 @@ const jsonLd = breadcrumbSchema([
   { name: "Resume", url: `${origin}/resume` },
 ]);
 
-const title = "Resume — Senior Full Stack Software Engineer";
+const title = "Resume — Senior Full Stack Developer · Gen AI";
 const description =
-  "Print-optimised resume for a Senior Full Stack Software Engineer — experience, skills and certifications across FinTech and distributed systems.";
+  "Resume for a Senior Full Stack Software Engineer & AI Engineer — 7+ years across FinTech, Web3 and distributed systems, now shipping production Generative AI.";
 
 // Contact links surfaced in the header line (email is rendered separately as a mailto).
 const github = SOCIALS.find((s) => s.icon === "github");
 const linkedin = SOCIALS.find((s) => s.icon === "linkedin");
-
-/** Keep the resume to ~1–2 pages: the two strongest impact-or-responsibility bullets per role. */
-const bulletsFor = (entry: (typeof EXPERIENCE)[number]): string[] =>
-  [...entry.impact, ...entry.responsibilities].slice(0, 3);
-
-// The resume presents AI as completed, while the public Skills/Certifications
-// pages keep the honest "in progress / learning" framing. We override locally
-// here rather than mutating the shared data, so only this page diverges.
-const AI_COURSE_NAME = "AI Engineer Core Track: LLM Engineering, RAG, QLoRA, Agents";
-const certifications = CERTIFICATIONS.map((cert) =>
-  cert.name === AI_COURSE_NAME ? { ...cert, status: "earned" as const } : cert,
-);
-
-const skillGroups = SKILL_GROUPS.map((group) =>
-  group.id === "ai"
-    ? {
-        ...group,
-        skills: [
-          { name: "Generative AI", level: "advanced" as const },
-          { name: "LLM Engineering", level: "advanced" as const },
-          { name: "Prompt Engineering", level: "advanced" as const },
-          { name: "RAG & Vector Search", level: "advanced" as const },
-          { name: "AI Agents (MCP)", level: "proficient" as const },
-          { name: "LangGraph / CrewAI / AutoGen", level: "proficient" as const },
-          { name: "Fine-tuning (QLoRA)", level: "proficient" as const },
-          { name: "OpenAI · Claude", level: "proficient" as const },
-        ],
-      }
-    : group,
-);
+const stackoverflow = SOCIALS.find((s) => s.icon === "stackoverflow");
 ---
 
 <BaseLayout title={title} description={description} jsonLd={jsonLd} mainClass="bg-background">
@@ -69,13 +34,11 @@ const skillGroups = SKILL_GROUPS.map((group) =>
     <header class="flex flex-col gap-6 border-b border-border pb-8 sm:flex-row sm:items-end sm:justify-between">
       <div>
         <h1 class="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
-          {SITE.name}
+          {RESUME.name}
         </h1>
-        <p class="mt-1.5 text-lg text-muted-foreground">{SITE.role}</p>
+        <p class="mt-1.5 text-lg text-muted-foreground">{RESUME.headline}</p>
 
-        <ul
-          class="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-sm text-muted-foreground"
-        >
+        <ul class="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-sm text-muted-foreground">
           <li>
             <a
               href={`mailto:${SITE.email}`}
@@ -119,29 +82,55 @@ const skillGroups = SKILL_GROUPS.map((group) =>
               </li>
             )
           }
+          {
+            stackoverflow && (
+              <li>
+                <a
+                  href={stackoverflow.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="inline-flex items-center gap-1.5 transition-colors hover:text-foreground"
+                >
+                  <Icon name="lucide:code-xml" class="size-4" aria-hidden="true" />
+                  Stack Overflow
+                </a>
+              </li>
+            )
+          }
         </ul>
-
-        <p class="mt-4 inline-flex items-center gap-2 text-sm text-foreground">
-          <span class="size-2 rounded-full bg-success" aria-hidden="true"></span>
-          {SITE.availability}
-        </p>
       </div>
 
-      <Button id="print-resume" type="button" variant="primary" size="sm" class="no-print shrink-0">
-        <Icon name="lucide:printer" class="size-4" aria-hidden="true" />
-        Save as PDF
-      </Button>
+      <a
+        href={RESUME_PDF}
+        download={RESUME_PDF_NAME}
+        class="no-print inline-flex shrink-0 items-center gap-2 rounded-lg bg-foreground px-4 py-2.5 text-sm font-medium text-background transition-colors hover:bg-foreground/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      >
+        <Icon name="lucide:download" class="size-4" aria-hidden="true" />
+        Download PDF
+      </a>
     </header>
 
     {/* Summary */}
     <section class="mt-8" aria-labelledby="resume-summary">
       <h2 id="resume-summary" class="resume-h2">Summary</h2>
       <p class="mt-3 text-sm leading-relaxed text-foreground sm:text-[0.95rem]">
-        {SITE.tagline}
+        {RESUME.summary}
       </p>
-      <p class="mt-2 text-sm leading-relaxed text-muted-foreground">
-        {SITE.description}
-      </p>
+    </section>
+
+    {/* Skills */}
+    <section class="mt-8" aria-labelledby="resume-skills">
+      <h2 id="resume-skills" class="resume-h2">Skills</h2>
+      <dl class="mt-4 space-y-2.5">
+        {
+          RESUME.skills.map((group) => (
+            <div class="flex flex-col gap-0.5 sm:flex-row sm:gap-3">
+              <dt class="shrink-0 text-sm font-semibold text-foreground sm:w-40">{group.label}</dt>
+              <dd class="text-sm leading-relaxed text-muted-foreground">{group.items}</dd>
+            </div>
+          ))
+        }
+      </dl>
     </section>
 
     {/* Experience */}
@@ -149,22 +138,20 @@ const skillGroups = SKILL_GROUPS.map((group) =>
       <h2 id="resume-experience" class="resume-h2">Experience</h2>
       <ol class="mt-4 space-y-6">
         {
-          EXPERIENCE.map((entry) => (
+          RESUME.experience.map((entry) => (
             <li>
               <div class="flex flex-col gap-x-4 gap-y-0.5 sm:flex-row sm:items-baseline sm:justify-between">
                 <h3 class="text-[0.95rem] font-semibold text-foreground">
                   {entry.role}
                   <span class="font-normal text-muted-foreground"> — {entry.company}</span>
                 </h3>
-                <p class="shrink-0 font-mono text-xs text-muted-foreground">
-                  {formatRange(entry.start, entry.end)}
-                </p>
+                <p class="shrink-0 font-mono text-xs text-muted-foreground">{entry.date}</p>
               </div>
               <p class="mt-0.5 text-xs text-muted-foreground">
                 {entry.context} · {entry.location}
               </p>
               <ul class="mt-2 space-y-1.5">
-                {bulletsFor(entry).map((bullet) => (
+                {entry.bullets.map((bullet) => (
                   <li class="flex gap-2 text-sm leading-relaxed text-foreground">
                     <span class="mt-2 size-1 shrink-0 rounded-full bg-brand" aria-hidden="true" />
                     <span>{bullet}</span>
@@ -177,43 +164,6 @@ const skillGroups = SKILL_GROUPS.map((group) =>
       </ol>
     </section>
 
-    {/* Projects */}
-    <section class="mt-8" aria-labelledby="resume-projects">
-      <h2 id="resume-projects" class="resume-h2">Selected Projects</h2>
-      <ul class="mt-4 space-y-4">
-        {
-          RESUME_PROJECTS.map((project) => (
-            <li>
-              <h3 class="text-[0.95rem] font-semibold text-foreground">{project.name}</h3>
-              <p class="mt-0.5 text-sm leading-relaxed text-foreground">{project.summary}</p>
-              <p class="mt-1 font-mono text-xs text-muted-foreground">{project.stack.join(" · ")}</p>
-            </li>
-          ))
-        }
-      </ul>
-    </section>
-
-    {/* Skills */}
-    <section class="mt-8" aria-labelledby="resume-skills">
-      <h2 id="resume-skills" class="resume-h2">Skills</h2>
-      <dl class="mt-4 space-y-3">
-        {
-          skillGroups.map((group) => (
-            <div class="flex flex-col gap-1.5 sm:flex-row sm:gap-4">
-              <dt class="shrink-0 text-sm font-medium text-foreground sm:w-44">{group.title}</dt>
-              <dd class="flex flex-wrap gap-1.5">
-                {group.skills.map((skill) => (
-                  <Badge variant="outline" size="sm">
-                    {skill.name}
-                  </Badge>
-                ))}
-              </dd>
-            </div>
-          ))
-        }
-      </dl>
-    </section>
-
     {/* Education */}
     <section class="mt-8" aria-labelledby="resume-education">
       <h2 id="resume-education" class="resume-h2">Education</h2>
@@ -221,12 +171,12 @@ const skillGroups = SKILL_GROUPS.map((group) =>
         class="mt-4 flex flex-col gap-x-4 gap-y-0.5 sm:flex-row sm:items-baseline sm:justify-between"
       >
         <p class="text-sm text-foreground">
-          <span class="font-medium">{EDUCATION.degree}</span>
-          <span class="text-muted-foreground"> — {EDUCATION.school}, {EDUCATION.location}</span>
+          <span class="font-medium">{RESUME.education.degree}</span>
+          <span class="text-muted-foreground">
+            {" "}— {RESUME.education.school}, {RESUME.education.location}
+          </span>
         </p>
-        <p class="shrink-0 font-mono text-xs text-muted-foreground">
-          {EDUCATION.start} – {EDUCATION.end}
-        </p>
+        <p class="shrink-0 font-mono text-xs text-muted-foreground">{RESUME.education.date}</p>
       </div>
     </section>
 
@@ -235,17 +185,14 @@ const skillGroups = SKILL_GROUPS.map((group) =>
       <h2 id="resume-certifications" class="resume-h2">Certifications</h2>
       <ul class="mt-4 space-y-2.5">
         {
-          certifications.map((cert) => (
+          RESUME.certifications.map((cert) => (
             <li class="flex flex-col gap-x-4 gap-y-0.5 sm:flex-row sm:items-baseline sm:justify-between">
               <p class="text-sm text-foreground">
                 <span class="font-medium">{cert.name}</span>
                 <span class="text-muted-foreground"> — {cert.issuer}</span>
-                {cert.status === "in-progress" && (
-                  <span class="text-muted-foreground"> (in progress)</span>
-                )}
               </p>
-              {cert.issued && (
-                <p class="shrink-0 font-mono text-xs text-muted-foreground">{cert.issued}</p>
+              {cert.date && (
+                <p class="shrink-0 font-mono text-xs text-muted-foreground">{cert.date}</p>
               )}
             </li>
           ))
@@ -254,16 +201,6 @@ const skillGroups = SKILL_GROUPS.map((group) =>
     </section>
   </Container>
 </BaseLayout>
-
-<script>
-  // Tiny vanilla handler: open the browser print dialog (Save as PDF).
-  const trigger = () => {
-    const btn = document.getElementById("print-resume");
-    btn?.addEventListener("click", () => window.print());
-  };
-  trigger();
-  document.addEventListener("astro:after-swap", trigger);
-</script>
 
 <style is:global>
   /* Consistent compact section headings for the resume. */
@@ -295,7 +232,6 @@ const skillGroups = SKILL_GROUPS.map((group) =>
       margin: 14mm 16mm;
     }
 
-    /* Tighten vertical rhythm to keep the resume to ~1–2 pages. */
     #main {
       min-height: 0 !important;
     }
@@ -305,7 +241,6 @@ const skillGroups = SKILL_GROUPS.map((group) =>
       padding-bottom: 0 !important;
     }
 
-    /* Avoid breaking a role or its bullets across a page boundary. */
     section,
     li,
     h2,

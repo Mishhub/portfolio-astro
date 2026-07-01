@@ -34,53 +34,39 @@ mentors engineers through design reviews, code review and architecture decision 
 ## Experience
 
 ### Senior Full Stack Developer — LMNTO Performance Information Technology
-*Dubai, UAE · May 2023 – Present*
-- Architected and maintained 3 interconnected FinTech/Web3 platforms serving **1.5M+ users** on event-driven microservices communicating over gRPC.
-- Built a centralized authentication system with **OAuth2 / OpenID Connect**, enabling single sign-on (SSO) across all platforms.
-- Reduced **API response time by 45%** by introducing Redis-based caching on hot paths.
-- Achieved **99.95% uptime** running scalable Docker containers with structured logging, metrics and distributed tracing for production observability.
-- Cut **authentication support tickets by 30%** through improved login UX and error handling.
-- Built production **Generative AI** features — an **LLM-powered support chatbot** using **retrieval-augmented generation (RAG)** over internal docs, and an **automated, agent-based pull-request review system** using **tool calling** and the **Model Context Protocol (MCP)**.
-- Delivered a unified proxy admin panel for cross-platform operations; published open-source NestJS packages including `nestjs-minio-backend` and `nestjs-dynamic-filter`.
-- Drove design reviews, pair programming and architecture decision records, mentoring engineers and keeping system design decisions documented.
+*Dubai, UAE · May 2023 – Present · FinTech · Web3 Platforms*
+- Architected and operate 3 interconnected FinTech/Web3 platforms serving **1.5M+ users** on event-driven microservices over gRPC, with centralized **OAuth2 / OpenID Connect** single sign-on across all platforms (authentication support tickets **−30%**).
+- **NodeLink (DePIN rewards):** NestJS 11 + PostgreSQL with SumSub KYC/AML, BoldSign e-signatures, MinIO storage, OAuth2/OIDC (authorization code, PKCE, scopes) with JWT access/refresh/ID tokens, Redis + BullMQ jobs, Socket.IO real-time (Redis adapter for horizontal scaling), and Sentry + OpenObserve observability.
+- **Zenit World (copy-trading, 3M+ users):** Django 4.1 + PostgreSQL; Fireblocks digital-asset custody, SumSub KYC/AML, a custom ZENIT token with fiat/crypto wallets, staking, yield farming and automated copy-trading; audit logging with Redis + Celery.
+- **Web3 SSO & Wallet Platform:** Viem wallet-gateway microservice, Account Abstraction (Biconomy, Alchemy), Merkle-tree reward eligibility, referral graph, gRPC cross-platform sync, and JWT sessions with role-based access control (RBAC).
+- Reduced **API response time by 45%** with Redis caching; held **99.95% uptime** on Docker with structured logging, metrics and distributed tracing.
+- Shipped production **Generative AI**: an LLM support chatbot with **retrieval-augmented generation (RAG)** and an agent-based **pull-request review system** using tool calling and the **Model Context Protocol (MCP)**.
+- Published open-source NestJS packages (`nestjs-minio-backend`, `nestjs-dynamic-filter`); drove design reviews, ADRs and mentoring.
 
 ### Senior Full Stack Developer — Coolshop SRL
-*Dubai, UAE · Nov 2022 – May 2023*
-- Built and maintained internal configurator products (Cool-Build-and-Price, Cool-Model-Selection) with React, TypeScript, GraphQL and Apollo Server.
-- Reduced **frontend load times by 60%** via bundle optimization and code splitting.
-- Increased **development velocity by 40%** with reusable UI component libraries.
-- Cut **deployment time from 2 hours to under 10 minutes** with automated CI/CD pipelines.
+*Dubai, UAE · Nov 2022 – May 2023 · Automotive · Configurator Products*
+- Built configurator products — **CaseIH Build & Price** and Cool-Model-Selection — from scratch with React 18, TypeScript, GraphQL, Apollo, Storybook and Styled Components; server-side rendering for SEO and load time; reused across **5+ region-specific deployments**.
+- Reduced **frontend load times by 60%** via bundle optimization and code splitting; raised **development velocity by 40%** with reusable component libraries; Jest unit testing.
+- Cut **deployment time from 2 hours to under 10 minutes** with automated GitHub CI/CD.
 
 ### Full Stack Blockchain Developer — Connectopia
-*Dubai, UAE · Apr 2022 – Oct 2022*
-- Developed Ethereum smart contracts, minting pages and an NFT launchpad; built full-stack apps on the MERN stack with the Alchemy API.
-- Led an Agile team of 5, delivering **12 major features across 6 sprints**.
+*Dubai, UAE · Apr 2022 – Oct 2022 · Web3 · NFT*
+- Built Ethereum smart contracts, minting pages and an NFT launchpad (MERN stack + Alchemy API).
+- Led an Agile team of 5, delivering **12 features across 6 sprints**.
 - Processed **50K+ on-chain transactions with zero contract vulnerabilities** (internal audit).
 
 ### Full Stack Developer — Stead Technologies LLP
-*Bangalore, India · Dec 2020 – Apr 2022*
-- Built a custom CMS (Angular + Node.js) that improved client **publishing time by 70%**.
-- Delivered Spovio, a complete HR platform used by **10+ businesses managing 1,200+ employees**.
-- Launched and maintained an open-source calendar library with **100+ weekly npm downloads**.
+*Bangalore, India · Dec 2020 – Apr 2022 · Product Studio · SaaS*
+- **BoxedCMS:** plug-and-play custom CMS (Angular 11 + Node.js) with CKEditor authoring, Passport.js local/social login + 2FA, multilingual content and dynamic theme uploads — improved client **publishing time by 70%**.
+- **Spovio (HRMS):** React + Django, used by **10+ businesses managing 1,200+ employees**; time-off, attendance and payroll modules with role-based accrual, Redis + Celery, AWS S3 and email/SMS — **automated 80% of HR workflows**.
+- **Puretax:** multi-tenant Django + DRF backend with QuickBooks Online sync and Redis + Celery; **600+ reports/month** in PDF/XLSX/CSV.
+- Launched an open-source calendar library with **100+ weekly npm downloads**.
 
 ### Junior Software Developer — AgileCrew
-*Calicut, India · Aug 2019 – Dec 2020*
-- Built e-commerce and real-time meeting platforms on the MERN stack and AWS EC2.
-- Supported **up to 2,000 concurrent users** over WebSockets in the meeting platform.
-- Integrated payment and identity providers, enabling **500+ secure checkouts daily**.
+*Calicut, India · Aug 2019 – Dec 2020 · E-commerce · Real-Time*
+- Built MERN e-commerce and real-time meeting platforms on AWS EC2.
+- Supported **2,000 concurrent users** over WebSockets; enabled **500+ secure checkouts daily**.
 - Reduced **infrastructure cost by 25%** using EC2 spot instances and containerized deployments.
-
-## Key Projects
-
-- **AI Engineering — LLM Chatbot & Automated PR Review** — Production Generative AI systems: a retrieval-augmented generation (RAG) chatbot over internal documentation (embeddings + vector search) and an agent-based pull-request review system built with tool calling and the Model Context Protocol (MCP). Includes LLM evaluation harnesses, guardrails, cost control and observability. OpenAI and Claude; LangGraph / CrewAI-style agent orchestration.
-- **NodeLink** — DePIN reward ecosystem on NestJS 11 + PostgreSQL; KYC/AML (SumSub), e-signatures (BoldSign), OAuth2/OIDC with JWT access/refresh/ID tokens (authorization code, PKCE, scopes), MinIO storage, Redis + BullMQ jobs, Socket.IO real-time with a Redis adapter for horizontal scaling, Sentry + OpenObserve observability.
-- **Zenit World** — Copy-trading platform with **3M+ users** on Django 4.1 + PostgreSQL; Fireblocks custody, SumSub KYC, custom ZENIT token with fiat/crypto wallets, staking, yield farming and automated copy-trading; audit logging with Redis + Celery.
-- **Web3 SSO & Wallet Platform** — Centralized OAuth2/OIDC single sign-on; NestJS + Viem wallet gateway microservice; Account Abstraction (Biconomy, Alchemy); Merkle-tree reward eligibility; referral graph; gRPC cross-platform sync; JWT sessions + RBAC.
-- **CaseIH Build & Price** — Built from scratch with React 18, GraphQL, Apollo and Storybook; Styled Components theming; Jest unit tests; server-side rendering for SEO and load time; reused across **5+ region-specific deployments**.
-- **Spovio (HRMS)** — React + Django; time-off, attendance and payroll modules; Redis + Celery; AWS S3; email/SMS alerts; **automated 80% of HR workflows**.
-- **Puretax** — Multi-tenant Django + DRF backend; QuickBooks Online sync; Redis + Celery; **600+ reports/month** in PDF/XLSX/CSV with visual charts.
-- **BoxedCMS** — Plug-and-play CMS on Angular 11 + Node.js; CKEditor authoring; Passport.js local/social login with 2FA; multilingual content; dynamic theme uploads.
-- **Bex Educations** — React.js + Redux blog and admin CMS; modular Node.js REST API with RBAC; Vimeo API adaptive-bitrate streaming; theming and content analytics.
 
 ## Open Source
 
@@ -109,5 +95,6 @@ mentors engineers through design reviews, code review and architecture decision 
 - **Links are plain visible URLs**, not link-text, so parsers capture them whether they read anchor text or the href.
 - **Title line carries "Senior Software Engineer", "Senior Full Stack Developer" and "AI Engineer"** — Workday weights job-title match heavily; mirror the exact target title when you tailor.
 - Industry-standard keywords (incl. Generative AI, LLM, RAG, AI Agents, MCP, fine-tuning) appear naturally in Summary, Skills, Experience and Projects — not stuffed. Aim for **75–85% match on Jobscan** against each specific job description, not a mythical universal 95%.
-- This is a **master** — for any single application, trim to the most relevant projects and keep it to 1–2 pages, then tailor keywords to that posting.
+- **Company projects are folded into each role** (bolded project labels under the company) rather than a separate Projects section — this keeps every unique keyword while avoiding duplication, and holds the resume to ~2 pages.
+- This is a **master** — for any single application, trim the least-relevant bullets and tailor keywords to that posting.
 - Every metric is taken verbatim from the source resume — nothing inflated. The AI Engineering content reflects the completed *AI Engineer Core Track* and current AI work; keep it truthful to what you can discuss in an interview.

@@ -13,10 +13,18 @@ const isActive = (href: string) =>
   href === "/" ? path === "/" : path === href || path.startsWith(`${href}/`);
 ---
 
-<header
-  id="site-header"
-  class="sticky top-0 z-40 border-b border-transparent transition-colors duration-300 data-[scrolled]:border-border data-[scrolled]:bg-background/80 data-[scrolled]:backdrop-blur-md"
->
+<header id="site-header" class="group sticky top-0 z-40">
+  {/*
+    Frosted-glass background lives on this child, NOT the <header>. Putting
+    `backdrop-filter` on the header itself would make it the containing block for
+    the mobile nav's `position: fixed` drawer, trapping it in the header box.
+    Isolating the filter here keeps the drawer anchored to the viewport.
+  */}
+  <div
+    class="pointer-events-none absolute inset-0 -z-10 border-b border-transparent transition-colors duration-300 group-data-[scrolled]:border-border group-data-[scrolled]:bg-background/80 group-data-[scrolled]:backdrop-blur-md"
+    aria-hidden="true"
+  >
+  </div>
   <div class="mx-auto flex h-16 w-full max-w-7xl items-center justify-between gap-4 px-5 sm:px-6 lg:px-8">
     <Logo class="min-w-0 shrink" markOnly />
 
