@@ -1,0 +1,130 @@
+---
+import { CF_BEACON_TOKEN } from "@/config/site";
+
+/**
+ * Visitor measurement. Two independent layers, neither of which sets a cookie:
+ *
+ *  1. Cloudflare Web Analytics — aggregate dashboard (pageviews, referrers,
+ *     countries, Core Web Vitals). Zero maintenance, but no per-visit detail.
+ *     Disabled until CF_BEACON_TOKEN is filled in.
+ *
+ *  2. A first-party beacon to /api/track, which writes one row per page view
+ *     into D1. This is the layer that records city, network operator and the
+ *     order of pages in a session — read it in the D1 console (docs/ANALYTICS.md).
+ */
+---
+
+{
+  CF_BEACON_TOKEN && (
+    <script
+      is:inline
+      defer
+      src="https://static.cloudflareinsights.com/beacon.min.js"
+      data-cf-beacon={JSON.stringify({ token: CF_BEACON_TOKEN })}
+    />
+  )
+}
+
+<script>
+  // Deliberately not `is:inline`: Astro processes this script and skips
+  // re-running it after a view transition (the same reason the scroll-reveal
+  // script in BaseLayout re-arms itself on `astro:after-swap` instead of just
+  // re-executing). That once-only guarantee is what keeps the document-level
+  // listeners at the bottom from stacking up on every navigation.
+  const ENDPOINT = "/api/track";
+
+  interface Page {
+    id: string;
+    start: number;
+    sent: boolean;
+  }
+
+  let page: Page | null = null;
+
+  const uuid = (): string =>
+    typeof crypto !== "undefined" && "randomUUID" in crypto
+      ? crypto.randomUUID()
+      : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+
+  // Local development would otherwise pollute the production table. Set
+  // localStorage["track-debug"] to exercise the endpoint against local D1.
+  const skip = (): boolean =>
+    ["localhost", "127.0.0.1", "[::1]"].includes(location.hostname) &&
+    !localStorage.getItem("track-debug");
+
+  const sessionId = (): string => {
+    try {
+      let id = sessionStorage.getItem("sid");
+      if (!id) sessionStorage.setItem("sid", (id = uuid()));
+      return id;
+    } catch {
+      return "no-storage"; // private mode / storage blocked
+    }
+  };
+
+  /** Close out the current page with how long it was actually on screen. */
+  const flush = (): void => {
+    if (!page || page.sent) return;
+    page.sent = true;
+    const ms = Date.now() - page.start;
+    // Under a second is a mis-click or a bounce; not worth a write.
+    if (ms < 1000) return;
+    const body = JSON.stringify({ t: "dwell", id: page.id, ms });
+    navigator.sendBeacon(ENDPOINT, new Blob([body], { type: "application/json" }));
+  };
+
+  const view = (): void => {
+    if (skip()) return;
+
+    // `experimental.clientPrerender` (astro.config.mjs) speculation-rules a
+    // page into existence before anyone clicks the link: scripts run, but no
+    // human has seen it. Wait for activation so prerenders aren't counted.
+    const doc = document as Document & { prerendering?: boolean };
+    if (doc.prerendering) {
+      document.addEventListener("prerenderingchange", view, { once: true });
+      return;
+    }
+
+    flush(); // the previous page, when this is a view-transition navigation
+
+    const id = uuid();
+    page = { id, start: Date.now(), sent: false };
+
+    const params = new URLSearchParams(location.search);
+    // Same-site referrers are just our own nav history — only outside sources
+    // tell us anything (LinkedIn, a Google search, a recruiter's ATS).
+    const ref =
+      document.referrer && !document.referrer.startsWith(location.origin)
+        ? document.referrer
+        : null;
+
+    void fetch(ENDPOINT, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      keepalive: true,
+      body: JSON.stringify({
+        t: "view",
+        id,
+        sid: sessionId(),
+        path: location.pathname,
+        ref,
+        us: params.get("utm_source"),
+        um: params.get("utm_medium"),
+        uc: params.get("utm_campaign"),
+        screen: `${screen.width}x${screen.height}`,
+        lang: navigator.language,
+      }),
+    }).catch(() => {
+      // Ad-blocked or offline. Analytics must never break the page.
+    });
+  };
+
+  // Fires on the initial load *and* after every view transition.
+  document.addEventListener("astro:page-load", view);
+  // Navigation starting — record the outgoing page before the swap.
+  document.addEventListener("astro:before-preparation", flush);
+  // Tab hidden or closed: the only reliable "user is leaving" signal on mobile.
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "hidden") flush();
+  });
+</script>

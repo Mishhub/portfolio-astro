@@ -15,7 +15,10 @@
     "check": "astro check",
     "sync": "astro sync",
     "format": "prettier --write . --cache",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "db:create": "wrangler d1 create portfolio-analytics",
+    "db:init": "wrangler d1 execute portfolio-analytics --remote --file=./db/schema.sql",
+    "db:init:local": "wrangler d1 execute portfolio-analytics --local --file=./db/schema.sql"
   },
   "dependencies": {
     "@astrojs/cloudflare": "^12.6.13",

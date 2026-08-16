@@ -94,6 +94,13 @@ export const SOCIALS: SocialLink[] = [
 ];
 
 /**
+ * Cloudflare Web Analytics beacon token — Dashboard → Web Analytics → your
+ * site → the JS snippet. Public by design (it ships in the HTML of every page),
+ * so it belongs in source rather than in a secret. Empty string = beacon off.
+ */
+export const CF_BEACON_TOKEN: string = "";
+
+/**
  * Résumé route. Points at the print-optimised HTML résumé page (which offers a
  * "Save as PDF" action). Drop a real PDF in /public and repoint this if you
  * prefer a direct file download.

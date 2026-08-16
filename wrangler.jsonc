@@ -10,9 +10,18 @@
   // routes like /api/contact.
   "assets": {
     "binding": "ASSETS",
-    "directory": "./dist"
+    "directory": "./dist",
   },
+  // Visitor log written by /api/track. Create the database once with
+  // `npm run db:create`, then paste the returned id below.
+  "d1_databases": [
+    {
+      "binding": "ANALYTICS_DB",
+      "database_name": "portfolio-analytics",
+      "database_id": "68a0d1e1-684c-48bb-afa7-ac189353fde2",
+    },
+  ],
   "observability": {
-    "enabled": true
-  }
+    "enabled": true,
+  },
 }
