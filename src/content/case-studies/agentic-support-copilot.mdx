@@ -1,0 +1,208 @@
+---
+title: "Agentic Support Copilot — Resolving Support Cases Without Escalation"
+description: "How a LangGraph multi-agent copilot — hybrid RAG, a policy-checked text-to-SQL agent, a Redis-cached knowledge base and a tool agent — lets customer support resolve user cases without escalating to engineering."
+summary: "A LangGraph multi-agent copilot — hybrid RAG, a policy-checked SQL agent, a Redis-cached knowledge base and a tool agent — that lets support resolve user cases without escalating to engineering."
+year: "2026 — Present"
+role: "Senior Full Stack Engineer"
+problemSpace: "Agentic AI · Customer Support"
+tags: ["Agentic AI", "LangGraph", "Hybrid RAG", "Text-to-SQL", "Semantic Caching"]
+stack: ["LangGraph", "LangChain", "FastAPI", "pgvector", "SQLAlchemy", "Redis", "LangSmith"]
+metrics:
+  - { value: "4", label: "Specialist agents" }
+  - { value: "Hybrid", label: "Vector + keyword RAG" }
+  - { value: "SELECT-only", label: "Policy-checked SQL" }
+  - { value: "2-tier", label: "Redis answer cache" }
+relatedProject: "agentic-support-copilot"
+# The home page already spotlights this system through its project card, so the
+# home case-study slot goes to the next featured entry instead.
+featured: false
+order: 1
+---
+
+import Figure from "@/components/ui/Figure.astro";
+import Callout from "@/components/ui/Callout.astro";
+import SupportCopilotArchitectureDiagram from "@/components/diagrams/SupportCopilotArchitectureDiagram.astro";
+import SupportCopilotRagDiagram from "@/components/diagrams/SupportCopilotRagDiagram.astro";
+import SupportCopilotSqlAgentDiagram from "@/components/diagrams/SupportCopilotSqlAgentDiagram.astro";
+import SupportCopilotKnowledgeBaseDiagram from "@/components/diagrams/SupportCopilotKnowledgeBaseDiagram.astro";
+
+## Context
+
+Customer support at LMNTO kept hitting three kinds of question it couldn't
+answer alone:
+
+- **How is this feature implemented?**
+- **What does its PRD actually specify?**
+- **Why is this happening for this particular user?**
+
+Each answer lived somewhere different — implementation docs, product requirement
+documents, the knowledge base and the user's own data — so hard cases escalated
+to product or engineering. The goal was an internal copilot that could answer
+all three, grounded in the real sources, without ever becoming a new way to leak
+data or change it.
+
+## Architecture
+
+The copilot is a **LangGraph** graph served by **FastAPI** and built with
+**LangChain**. A question flows through query understanding and a
+planner/router to **four specialist agents** — a RAG agent, a SQL agent, a
+knowledge-base agent and a tool agent — and a response synthesizer composes
+their findings into one cited answer.
+
+<Figure diagram caption="Query understanding and a planner/router hand each question to four specialist agents; a response synthesizer composes one grounded answer — inside read-only, PII-redacting guardrails, with every run traced in LangSmith.">
+  <SupportCopilotArchitectureDiagram />
+</Figure>
+
+Modelling the copilot as a graph rather than one long prompt is what makes it
+operable: every stage is a node with a clear input and output, so each one can
+be traced, tested and improved on its own.
+
+## Understanding and planning the question
+
+**Query understanding** works out what is actually being asked — how something
+is built, what was specified, or what went wrong for one user. The
+**planner/router** then decides which specialists the question needs, one or
+several. A "what does the PRD say" question may only need retrieval; a "why is
+this user seeing this" question needs the user's data and the implementation
+docs together; a "how do we usually fix this" question starts in the knowledge
+base.
+
+Keeping planning separate from answering keeps each specialist small: none of
+them has to decide whether it's the right tool for the job.
+
+## The RAG agent: hybrid retrieval that checks its own work
+
+Implementation docs and PRDs answer "how does it work" and "what should it do" —
+but only if retrieval finds the right passage. So the RAG agent treats retrieval
+as a pipeline with a quality gate, not a single similarity lookup.
+
+<Figure diagram caption="The RAG agent rewrites the question, runs metadata-scoped vector and keyword search, fuses and reranks the results, then grades them — retrying a limited number of times before answering “not found”.">
+  <SupportCopilotRagDiagram />
+</Figure>
+
+1. **Query rewriting** turns a conversational question into a retrieval query.
+2. **Metadata filters** — such as document type or product area — scope both
+   searches to the right slice of the corpus, rather than retrieving on their own.
+3. **Hybrid search** runs vector search in **pgvector**, which catches meaning,
+   alongside keyword search, which catches the exact identifiers embeddings blur:
+   error codes, flag names, field names.
+4. **Rank fusion** merges the two result lists into a single ranking.
+5. A **reranker** reorders the fused candidates so the most relevant passages
+   come first.
+6. **Grading** checks whether the passages actually answer the question. If they
+   don't, the query is rewritten and retrieval runs again — up to a retry limit,
+   after which the agent reports "not found" instead of guessing.
+
+Every passage that survives carries its document and section, so the final
+answer cites its sources. I wrote about the retrieval side of systems like this
+— chunking, grounding and evaluation — in
+[My First Production RAG Pipeline](/articles/my-first-production-rag-pipeline).
+
+## The SQL agent: text-to-SQL with defence in depth
+
+"Why is this happening for this user?" usually lives in the data. Letting a
+model write SQL against production data is only acceptable if a generated query
+can't do harm, so every query passes a chain of independent checks before it
+runs.
+
+<Figure diagram caption="The SQL agent retrieves only approved schema, drafts a query, then parses it, applies policy and EXPLAINs it before a read-only, time-limited execution — and goes back to schema retrieval when validation or execution fails.">
+  <SupportCopilotSqlAgentDiagram />
+</Figure>
+
+1. **Schema retrieval** gives the model only the relevant slice of the approved
+   schema.
+2. **SQL generation** drafts a query from that context.
+3. **Parsing to an AST** rejects anything other than a single read-only `SELECT`
+   — no `INSERT`, `UPDATE` or `DELETE`, no DDL, no stacked statements.
+4. The **policy engine** lets through only allowlisted tables and columns,
+   blocks or masks PII columns, and enforces a row `LIMIT`.
+5. **Validation** runs an `EXPLAIN` dry run and rejects invalid or
+   too-expensive queries before anything executes.
+6. **Execution** goes through the **SQLAlchemy** data-access layer under a
+   read-only database role with a statement timeout.
+
+When validation or execution fails, the agent goes back to schema retrieval and
+tries again, so a wrong guess about the schema becomes another attempt rather
+than a dead end.
+
+<Callout type="insight" title="Never trust generated SQL">
+  Each layer assumes the one before it failed: the parser doesn't trust the
+  model, the policy engine doesn't trust the parser, and the database role
+  doesn't trust any of them. The worst case is a rejected query, not a changed
+  record.
+</Callout>
+
+## The knowledge-base agent: a two-tier Redis cache
+
+Many of support's questions have been answered before — in a help-center
+article, a resolved ticket, a runbook or a known-issues note. The
+knowledge-base agent searches all four, behind a two-tier **Redis** cache so a
+repeated question doesn't pay for the search twice.
+
+<Figure diagram caption="Questions are normalized into a cache key and checked against an exact-match tier, then a semantic tier in Redis; only a miss in both searches the knowledge base. Fresh answers are written back with a TTL and cleared when an article changes; user-specific questions never touch the cache.">
+  <SupportCopilotKnowledgeBaseDiagram />
+</Figure>
+
+1. **Normalization** turns the question into a cache key. Questions about a
+   specific user skip the cache entirely — only general answers are ever cached,
+   so one customer's case can never be served to another.
+2. The **exact-match tier** looks the key up in Redis, where entries expire
+   after a TTL.
+3. On a miss, the **semantic tier** matches the question's embedding by
+   similarity in Redis, so a reworded question can still hit.
+4. Only a miss in both tiers **searches the knowledge base**: help-center and
+   FAQ articles, resolved support tickets, internal runbooks and known issues.
+5. Fresh answers are **written back** to the cache with a TTL, and when an
+   article changes, its cached answers are **cleared** — so the cache never
+   serves an answer the knowledge base has already corrected.
+
+The semantic tier is what makes the cache earn its keep — support rarely
+phrases the same question the same way twice — while the exact tier keeps the
+common case to a single key lookup.
+
+## The tool agent
+
+Some questions need a lookup that isn't a document or a query. The **tool
+agent** selects a tool, executes it, looks at the result and decides whether it
+needs another — looping until it has what the planner asked for. Its tools are
+read-only and scoped, like every other agent's.
+
+## Synthesis, errors and fallback routing
+
+A **response synthesizer** merges what the specialists found into one answer,
+with citations back to the source documents. Agents fail — a tool errors, a
+lookup comes back empty, a model call times out — so the graph has explicit
+**error handling and fallback routing**: when an agent fails, the run is routed
+around it rather than abandoned, and support still gets the best answer the
+remaining sources allow.
+
+## Guardrails
+
+The copilot sits close to real user data, so the guardrails are part of the
+architecture rather than an afterthought:
+
+- **Read-only, scoped permissions everywhere** — the SQL agent's parser, policy
+  engine and read-only role, and the tool agent's scoped tools: nothing can
+  write.
+- **PII redaction** — PII columns are masked before results leave the SQL agent,
+  personal data is redacted so the copilot can reason about a case without
+  exposing it, and user-specific answers are never cached.
+- **Prompt-injection guardrails** — retrieved documents and user-supplied text
+  are treated as untrusted input that can't redirect an agent.
+
+## Observability with LangSmith
+
+Multi-agent systems fail in ways a stack trace won't show: the code ran fine,
+but the plan was wrong. Every run is traced in **LangSmith**, and **LangSmith
+Studio** is where the graph gets debugged — stepping through the router's
+decision, each agent's tool calls and the synthesizer's inputs to see exactly
+where an answer went off course.
+
+## Outcome
+
+Customer support now resolves user cases with the copilot instead of
+escalating them to product or engineering. What made that safe is the same
+discipline I'd apply to any production system, adapted to the ways LLMs fail:
+retrieval that grades itself and abstains, generated SQL that can't do harm, a
+cache that never serves stale or someone else's answer, and every run traceable
+end to end.

@@ -54,6 +54,7 @@ export const AI_TOPICS: Topic[] = [
   { name: "Fine-tuning (QLoRA)", stage: "foundations" },
   { name: "RAG", stage: "core", featured: true },
   { name: "Vector Databases", stage: "core" },
+  { name: "Hybrid Search", stage: "core" },
   { name: "pgvector", stage: "core", featured: true },
   { name: "Qdrant", stage: "core" },
   { name: "Cross-Encoder Reranking", stage: "core" },
@@ -65,6 +66,7 @@ export const AI_TOPICS: Topic[] = [
   { name: "LangGraph", stage: "agents", featured: true },
   { name: "LangChain", stage: "agents", featured: true },
   { name: "SQL Agents", stage: "agents" },
+  { name: "Text-to-SQL", stage: "agents" },
   { name: "Model Context Protocol (MCP)", stage: "agents", featured: true },
   { name: "OpenAI Agents SDK", stage: "agents" },
   { name: "CrewAI", stage: "agents" },
@@ -73,6 +75,7 @@ export const AI_TOPICS: Topic[] = [
   { name: "LangSmith", stage: "applied", featured: true },
   { name: "LangSmith Studio", stage: "applied" },
   { name: "Guardrails & PII Redaction", stage: "applied" },
+  { name: "Semantic Caching", stage: "applied" },
   { name: "LiteLLM", stage: "applied" },
   { name: "Gradio", stage: "applied" },
   { name: "AI Workflows", stage: "applied" },
@@ -115,7 +118,7 @@ export const AI_ROADMAP: Milestone[] = [
     period: "Phase 4",
     title: "Production AI",
     description:
-      "Engineering rigour applied to agents in production: a multi-agent LangGraph assistant with read-only scoped tools, PII redaction, prompt-injection guardrails, fallback routing and LangSmith tracing.",
+      "Engineering rigour applied to agents in production: a multi-agent LangGraph support copilot with self-grading hybrid RAG, policy-checked text-to-SQL, a semantic cache, read-only scoped tools, PII redaction, prompt-injection guardrails and LangSmith tracing.",
     status: "done",
   },
 ];
@@ -131,10 +134,10 @@ export interface ShippedWork {
 /** AI systems that have actually shipped. */
 export const AI_SHIPPED: ShippedWork[] = [
   {
-    title: "Multi-agent AI assistant",
+    title: "Agentic Support Copilot",
     description:
-      "LangGraph planner/router, pgvector RAG over implementation docs and PRDs, and a SQL-agent subgraph — customer support resolves user cases without escalating to engineering.",
-    href: "/case-studies/multi-agent-ai-assistant",
+      "A LangGraph planner/router over four specialists — hybrid RAG, a policy-checked SQL agent, a Redis-cached knowledge base and a tool agent — so support resolves user cases without escalating to engineering.",
+    href: "/case-studies/agentic-support-copilot",
     linkLabel: "Read the case study",
   },
   {

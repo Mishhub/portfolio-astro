@@ -1,7 +1,7 @@
 /**
  * Skill matrix, grouped by discipline. Sourced directly from the resume —
  * nothing here is invented. `level` is a self-assessment: "advanced" marks
- * what has shipped to production (e.g. the LangGraph assistant, the Kafka /
+ * what has shipped to production (e.g. the LangGraph support copilot, the Kafka /
  * Citus ledger); "proficient" marks hands-on and course-level depth (e.g.
  * Kubernetes, OpenTelemetry, CrewAI) the resume lists without a production
  * system behind it.
@@ -61,7 +61,8 @@ export const SKILL_GROUPS: SkillGroup[] = [
     blurb: "Multi-agent systems in production — orchestrated, tool-using and fenced in by guardrails.",
     skills: [
       { name: "LangGraph", level: "advanced", note: "multi-agent orchestration" },
-      { name: "AI Agents & Tool Calling", level: "advanced", note: "planner/router · SQL agents" },
+      { name: "AI Agents & Tool Calling", level: "advanced", note: "planner/router · tool loops" },
+      { name: "Text-to-SQL Agents", level: "advanced", note: "AST + policy-checked" },
       { name: "Model Context Protocol", level: "advanced", note: "MCP PR-review agent" },
       { name: "Agent Guardrails", level: "advanced", note: "scoped tools · PII redaction" },
       { name: "LangChain", level: "advanced" },
@@ -74,10 +75,11 @@ export const SKILL_GROUPS: SkillGroup[] = [
     title: "Generative AI & LLMs",
     blurb: "Grounded generation — retrieval, ranking, prompting and the tracing to prove it works.",
     skills: [
-      { name: "RAG", level: "advanced", note: "pgvector · Qdrant" },
+      { name: "RAG", level: "advanced", note: "hybrid · pgvector · Qdrant" },
       { name: "Embeddings & Reranking", level: "advanced", note: "cross-encoder" },
       { name: "Prompt Engineering", level: "advanced" },
       { name: "LangSmith", level: "advanced", note: "tracing · LangSmith Studio" },
+      { name: "Semantic Caching", level: "advanced", note: "Redis" },
       { name: "LLM Evaluation", level: "proficient" },
       { name: "LlamaIndex · LiteLLM", level: "proficient" },
       { name: "Fine-tuning (QLoRA)", level: "proficient", note: "Hugging Face · Gradio" },

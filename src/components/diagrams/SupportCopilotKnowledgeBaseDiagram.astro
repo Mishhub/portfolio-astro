@@ -1,0 +1,122 @@
+---
+/**
+ * Knowledge-base agent (two-tier Redis cache) for the Agentic Support Copilot
+ * case study.
+ *
+ * Diagrams live as standalone .astro components (not inline in MDX) so they can
+ * use scoped styles, stay zero-JS, and adapt to light/dark via currentColor.
+ */
+---
+
+<svg
+  viewBox="0 0 880 432"
+  class="diagram mx-auto h-auto w-full max-w-3xl text-foreground"
+  role="img"
+  aria-label="Knowledge-base agent: a question from the planner is normalized into a cache key; questions about a specific user skip the cache. The exact-match tier in Redis is checked first, with a TTL; on a miss, the semantic tier in Redis matches by vector similarity. A hit in either tier returns the cached answer with its sources. Only a miss in both tiers searches the knowledge base — help-center and FAQ articles, resolved support tickets, internal runbooks and known issues — and the fresh answer is returned and written back to the cache with a TTL. When a knowledge-base article is updated, its cached answers are cleared."
+>
+  <defs>
+    <marker id="sck-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0 0L10 5L0 10z" fill="currentColor" fill-opacity="0.5"></path>
+    </marker>
+  </defs>
+
+  <!-- Lookup path -->
+  <rect class="box" x="180" y="24" width="260" height="56" rx="10"></rect>
+  <text class="lbl" x="310" y="47" text-anchor="middle">Normalize question</text>
+  <text class="sub" x="310" y="64" text-anchor="middle">user-specific → skip cache</text>
+
+  <rect class="store" x="180" y="112" width="260" height="56" rx="9"></rect>
+  <text class="lbl" x="310" y="135" text-anchor="middle">Exact cache · Redis</text>
+  <text class="sub" x="310" y="152" text-anchor="middle">normalized key · TTL</text>
+
+  <rect class="store" x="180" y="200" width="260" height="56" rx="9"></rect>
+  <text class="lbl" x="310" y="223" text-anchor="middle">Semantic cache · Redis</text>
+  <text class="sub" x="310" y="240" text-anchor="middle">vector similarity</text>
+
+  <rect class="box" x="180" y="288" width="260" height="56" rx="10"></rect>
+  <text class="lbl" x="310" y="311" text-anchor="middle">Knowledge-base search</text>
+  <text class="sub" x="310" y="328" text-anchor="middle">only on a cache miss</text>
+
+  <!-- Answer + sources -->
+  <rect class="box accent" x="560" y="112" width="296" height="144" rx="10"></rect>
+  <text class="lbl" x="708" y="172" text-anchor="middle">Answer + sources</text>
+  <text class="sub" x="708" y="190" text-anchor="middle">cached or fresh</text>
+  <text class="sub" x="708" y="206" text-anchor="middle">→ response synthesizer</text>
+
+  <rect class="store" x="560" y="288" width="296" height="112" rx="9"></rect>
+  <text class="lbl" x="708" y="312" text-anchor="middle">Knowledge base</text>
+  <text class="sub" x="708" y="332" text-anchor="middle">help-center &amp; FAQ articles</text>
+  <text class="sub" x="708" y="348" text-anchor="middle">resolved support tickets</text>
+  <text class="sub" x="708" y="364" text-anchor="middle">internal runbooks</text>
+  <text class="sub" x="708" y="380" text-anchor="middle">known issues</text>
+
+  <!-- Flow -->
+  <path class="edge" d="M24 52H178" marker-end="url(#sck-arrow)"></path>
+  <text class="sub" x="30" y="44">from planner</text>
+
+  <path class="edge" d="M310 80V110" marker-end="url(#sck-arrow)"></path>
+  <path class="edge" d="M310 168V198" marker-end="url(#sck-arrow)"></path>
+  <text class="sub" x="318" y="189">miss</text>
+  <path class="edge" d="M310 256V286" marker-end="url(#sck-arrow)"></path>
+  <text class="sub" x="318" y="277">miss</text>
+
+  <path class="edge" d="M440 140H558" marker-end="url(#sck-arrow)"></path>
+  <text class="sub" x="499" y="132" text-anchor="middle">hit</text>
+  <path class="edge" d="M440 228H558" marker-end="url(#sck-arrow)"></path>
+  <text class="sub" x="499" y="220" text-anchor="middle">similar enough</text>
+
+  <path class="edge" d="M440 316H558" marker-end="url(#sck-arrow)"></path>
+  <path class="edge" d="M708 288V258" marker-end="url(#sck-arrow)"></path>
+  <text class="sub" x="716" y="276">fresh answer</text>
+
+  <!-- Cache maintenance: write-back and clearing -->
+  <path class="edge dashed" d="M180 316H150V140H178" marker-end="url(#sck-arrow)"></path>
+  <path class="edge dashed" d="M150 228H178" marker-end="url(#sck-arrow)"></path>
+  <text class="sub" x="142" y="300" text-anchor="end">write back</text>
+  <text class="sub" x="142" y="314" text-anchor="end">with TTL</text>
+
+  <path class="edge dashed" d="M708 400V420H150V318"></path>
+  <text class="sub" x="430" y="414" text-anchor="middle">article updated → cached answers cleared</text>
+</svg>
+
+<style>
+  .box {
+    fill: color-mix(in oklch, currentColor 6%, transparent);
+    stroke: currentColor;
+    stroke-opacity: 0.35;
+    stroke-width: 1.5;
+  }
+  .box.accent {
+    fill: color-mix(in oklch, var(--brand) 12%, transparent);
+    stroke: var(--brand);
+    stroke-opacity: 0.5;
+  }
+  .store {
+    fill: color-mix(in oklch, currentColor 10%, transparent);
+    stroke: currentColor;
+    stroke-opacity: 0.4;
+    stroke-width: 1.5;
+  }
+  .lbl {
+    fill: currentColor;
+    font:
+      600 13px ui-sans-serif,
+      system-ui;
+  }
+  .sub {
+    fill: currentColor;
+    fill-opacity: 0.6;
+    font:
+      11px ui-monospace,
+      monospace;
+  }
+  .edge {
+    stroke: currentColor;
+    stroke-opacity: 0.4;
+    stroke-width: 1.5;
+    fill: none;
+  }
+  .edge.dashed {
+    stroke-dasharray: 5 4;
+  }
+</style>

@@ -11,10 +11,10 @@ reference. Replace `https://mishhub.com` with the real production origin (`SITE.
 | Home | Mohammed Mishhub — Senior Full Stack Engineer | Senior Full Stack Engineer (7+ yrs): NestJS, Django, FastAPI & React platforms for 3M+ users — now shipping production agentic AI with LangGraph, RAG & MCP. |
 | About | About | A senior full-stack engineer (7+ yrs) across FinTech and Web3 — distributed systems, authentication and identity, and production agentic AI. |
 | Experience | Experience | 7+ years across LMNTO, Coolshop, Connectopia, Stead and AgileCrew — event-driven microservices, auth/identity, Web3 and real-time systems. |
-| Projects | Projects | Selected engineering work — a multi-agent AI assistant, a payouts settlement & double-entry ledger, NodeLink, Zenit World, a Web3 SSO & wallet platform, a RAG chatbot and more. |
+| Projects | Projects | Selected engineering work — an agentic support copilot, a payouts settlement & double-entry ledger, NodeLink, Zenit World, a Web3 SSO & wallet platform, a RAG chatbot and more. |
 | Case Studies | Case Studies | In-depth engineering case studies on multi-agent AI, payouts and ledgers, compliance, identity, copy-trading, RAG and multi-tenant reporting. |
 | Articles | Articles | Notes on authentication, NestJS, event-driven systems, Redis/BullMQ, Web3 and AI engineering. |
-| AI Engineering | AI Engineering — Agentic & Generative AI | Production agentic and generative AI: a multi-agent LangGraph assistant, an MCP-based PR-review agent and a RAG chatbot — after Ed Donner's AI Engineer tracks. |
+| AI Engineering | AI Engineering — Agentic & Generative AI | Production agentic and generative AI: a multi-agent support copilot, an MCP-based PR-review agent and a RAG chatbot — after Ed Donner's AI Engineer tracks. |
 | Skills | Skills — Full Stack, Distributed Systems & AI | A grouped skill matrix across backend, frontend, architecture, data, messaging, cloud, observability and agentic & generative AI, each rated on a four-level scale. |
 | Open Source | Open Source | Open-source work: the production RAG chatbot behind this site and published NestJS and JavaScript packages on npm. |
 | Certifications | Certifications & Courses | Certifications led by Ed Donner's AI Engineer Core and Agentic tracks, alongside full-stack web, Ethereum & Solidity and React Native. |

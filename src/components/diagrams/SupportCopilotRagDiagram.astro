@@ -1,0 +1,134 @@
+---
+/**
+ * RAG agent pipeline for the Agentic Support Copilot case study.
+ *
+ * Diagrams live as standalone .astro components (not inline in MDX) so they can
+ * use scoped styles, stay zero-JS, and adapt to light/dark via currentColor.
+ */
+---
+
+<svg
+  viewBox="0 0 880 376"
+  class="diagram mx-auto h-auto w-full max-w-3xl text-foreground"
+  role="img"
+  aria-label="RAG agent pipeline: the planner routes a question to query rewriting, which produces a retrieval query. Metadata filters such as document type and product area scope two searches — vector search in pgvector for meaning and keyword search for exact identifiers. Rank fusion merges both result lists into one ranking, a reranker puts the best passages first, and grading checks whether they answer the question. Relevant passages go to the synthesizer with citations; if not relevant, the query is rewritten and retried a limited number of times, after which the agent returns not found to the planner."
+>
+  <defs>
+    <marker id="scr-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0 0L10 5L0 10z" fill="currentColor" fill-opacity="0.5"></path>
+    </marker>
+  </defs>
+
+  <!-- Rewrite -->
+  <rect class="box" x="24" y="120" width="132" height="60" rx="10"></rect>
+  <text class="lbl" x="90" y="146" text-anchor="middle">Query rewriting</text>
+  <text class="sub" x="90" y="163" text-anchor="middle">retrieval query</text>
+
+  <!-- Metadata-scoped hybrid search -->
+  <rect class="guard" x="188" y="40" width="184" height="228" rx="12"></rect>
+  <text class="tag" x="204" y="62">metadata filters</text>
+
+  <rect class="box" x="204" y="80" width="152" height="56" rx="10"></rect>
+  <text class="lbl" x="280" y="104" text-anchor="middle">Vector search</text>
+  <text class="sub" x="280" y="121" text-anchor="middle">pgvector · meaning</text>
+
+  <rect class="box" x="204" y="168" width="152" height="56" rx="10"></rect>
+  <text class="lbl" x="280" y="192" text-anchor="middle">Keyword search</text>
+  <text class="sub" x="280" y="209" text-anchor="middle">exact identifiers</text>
+
+  <text class="sub" x="280" y="252" text-anchor="middle">doc type · product area</text>
+
+  <!-- Fuse, rerank, grade -->
+  <rect class="box" x="404" y="120" width="120" height="60" rx="10"></rect>
+  <text class="lbl" x="464" y="146" text-anchor="middle">Rank fusion</text>
+  <text class="sub" x="464" y="163" text-anchor="middle">one ranking</text>
+
+  <rect class="box" x="556" y="120" width="120" height="60" rx="10"></rect>
+  <text class="lbl" x="616" y="146" text-anchor="middle">Reranker</text>
+  <text class="sub" x="616" y="163" text-anchor="middle">best first</text>
+
+  <rect class="box accent" x="708" y="120" width="148" height="60" rx="10"></rect>
+  <text class="lbl" x="782" y="146" text-anchor="middle">Grading</text>
+  <text class="sub" x="782" y="163" text-anchor="middle">answers it?</text>
+
+  <!-- Entry and exits -->
+  <rect class="box" x="24" y="300" width="132" height="56" rx="10"></rect>
+  <text class="lbl" x="90" y="324" text-anchor="middle">Planner</text>
+  <text class="sub" x="90" y="341" text-anchor="middle">routes here</text>
+
+  <rect class="box" x="540" y="300" width="140" height="56" rx="10"></rect>
+  <text class="lbl" x="610" y="324" text-anchor="middle">Not found</text>
+  <text class="sub" x="610" y="341" text-anchor="middle">→ planner</text>
+
+  <rect class="box accent" x="708" y="300" width="148" height="56" rx="10"></rect>
+  <text class="lbl" x="782" y="324" text-anchor="middle">Cited passages</text>
+  <text class="sub" x="782" y="341" text-anchor="middle">→ synthesizer</text>
+
+  <!-- Flow -->
+  <path class="edge" d="M90 300V182" marker-end="url(#scr-arrow)"></path>
+  <path class="edge" d="M156 140C176 140 182 108 202 108" marker-end="url(#scr-arrow)"></path>
+  <path class="edge" d="M156 160C176 160 182 196 202 196" marker-end="url(#scr-arrow)"></path>
+  <path class="edge" d="M356 108C380 108 384 140 402 140" marker-end="url(#scr-arrow)"></path>
+  <path class="edge" d="M356 196C380 196 384 160 402 160" marker-end="url(#scr-arrow)"></path>
+  <path class="edge" d="M524 150H554" marker-end="url(#scr-arrow)"></path>
+  <path class="edge" d="M676 150H706" marker-end="url(#scr-arrow)"></path>
+
+  <path class="edge" d="M782 180V298" marker-end="url(#scr-arrow)"></path>
+  <text class="sub" x="790" y="244">relevant</text>
+
+  <path class="edge dashed" d="M740 180C740 240 610 250 610 298" marker-end="url(#scr-arrow)"></path>
+  <text class="sub" x="658" y="240" text-anchor="end">retries used up</text>
+
+  <path class="edge dashed" d="M770 120V28H90V118" marker-end="url(#scr-arrow)"></path>
+  <text class="sub" x="430" y="22" text-anchor="middle">not relevant → rewrite &amp; retry (limited)</text>
+</svg>
+
+<style>
+  .box {
+    fill: color-mix(in oklch, currentColor 6%, transparent);
+    stroke: currentColor;
+    stroke-opacity: 0.35;
+    stroke-width: 1.5;
+  }
+  .box.accent {
+    fill: color-mix(in oklch, var(--brand) 12%, transparent);
+    stroke: var(--brand);
+    stroke-opacity: 0.5;
+  }
+  .guard {
+    fill: color-mix(in oklch, var(--brand) 6%, transparent);
+    stroke: var(--brand);
+    stroke-opacity: 0.45;
+    stroke-width: 1.2;
+    stroke-dasharray: 4 4;
+  }
+  .tag {
+    fill: var(--brand);
+    font:
+      600 12px ui-monospace,
+      monospace;
+    letter-spacing: 0.04em;
+  }
+  .lbl {
+    fill: currentColor;
+    font:
+      600 13px ui-sans-serif,
+      system-ui;
+  }
+  .sub {
+    fill: currentColor;
+    fill-opacity: 0.6;
+    font:
+      11px ui-monospace,
+      monospace;
+  }
+  .edge {
+    stroke: currentColor;
+    stroke-opacity: 0.4;
+    stroke-width: 1.5;
+    fill: none;
+  }
+  .edge.dashed {
+    stroke-dasharray: 5 4;
+  }
+</style>

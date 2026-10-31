@@ -25,6 +25,10 @@ const isBuild = process.argv.includes("build");
 export default defineConfig({
   site: SITE.url,
   trailingSlash: "never",
+  // Redirects for renamed pages live in public/_redirects (Cloudflare syntax),
+  // not in Astro's `redirects`: with trailingSlash "never" Astro can't express
+  // the `…/slug/` form Cloudflare served, which visitors copied and shared.
+  // Keep that file comment-free — the adapter parses every line as a rule.
   // Static by default — every page is prerendered to the CDN. Only routes that
   // opt out with `export const prerender = false` (e.g. src/pages/api/contact.ts)
   // run on-demand as Cloudflare Pages Functions.

@@ -1,0 +1,76 @@
+---
+title: "Agentic Support Copilot"
+summary: "An internal multi-agent copilot that answers how a feature is implemented, what its PRD specifies and why an issue is happening for a specific user — so customer support resolves cases without escalating to engineering."
+description: "Agentic Support Copilot — a LangGraph, LangChain and FastAPI multi-agent system: a planner/router over hybrid RAG, a policy-checked text-to-SQL agent, a Redis-cached knowledge-base agent and a tool agent, letting customer support resolve user cases without escalation."
+year: "2026 — Present"
+role: "Senior Full Stack Engineer"
+status: "internal"
+featured: true
+order: 1
+domain: "Agentic AI · Customer Support"
+problem: "Customer support kept hitting three kinds of question it couldn't answer alone: how a feature is actually implemented, what its PRD specifies, and why an issue is happening for one specific user. Each answer lived somewhere different — implementation docs, product requirement documents, the knowledge base and the user's own data — so hard cases escalated to product or engineering. Automating that is harder than a chatbot demo: answers must be grounded in the real sources, user-specific questions touch personal data, and an agent that can query production data is a liability unless every query is fenced in."
+solution: "An internal multi-agent copilot built with LangGraph, LangChain and FastAPI. Query understanding interprets each question and a planner/router sends it to one or more of four specialists: a RAG agent with hybrid, self-grading retrieval over implementation docs and PRDs; a text-to-SQL agent whose every query is parsed, policy-checked and EXPLAINed before it runs read-only; a knowledge-base agent behind a two-tier Redis cache; and a tool agent. A response synthesizer composes one cited answer. Agents run with read-only, scoped permissions, PII redaction and prompt-injection guardrails; fallback routing keeps a run alive when an agent fails; and every run is traced in LangSmith."
+architecture: "A FastAPI service hosts a LangGraph graph: query understanding → planner/router → four specialist agents → response synthesizer. The RAG agent rewrites the query, runs metadata-scoped vector (pgvector) and keyword search, fuses and reranks the results, then grades them — retrying up to a limit before answering “not found”. The SQL agent chains schema retrieval → SQL generation → AST parse (single SELECT only) → policy engine (allowlisted tables and columns, PII masked, forced LIMIT) → EXPLAIN dry run → read-only, time-limited execution through a SQLAlchemy data-access layer. The knowledge-base agent checks an exact-match and then a semantic Redis cache before searching help-center articles, resolved tickets, runbooks and known issues. The tool agent loops tool selection and execution. LangSmith and LangSmith Studio trace and debug each run."
+contributions:
+  - "Architected the copilot with LangGraph, LangChain and FastAPI as a graph of clear stages: query understanding → planner/router → four specialist agents → response synthesizer."
+  - "Built the RAG agent's hybrid retrieval: query rewriting, metadata-scoped vector (pgvector) and keyword search fused into one ranking, a reranker, and a grading step that retries up to a limit before answering “not found” — with source citations on every passage."
+  - "Built the text-to-SQL agent as defence in depth: schema retrieval → SQL generation → AST parse rejecting anything but a single SELECT → policy engine (allowlisted tables and columns, PII columns blocked or masked, forced row LIMIT) → EXPLAIN dry run → execution through a SQLAlchemy data-access layer under a read-only role with a statement timeout."
+  - "Built the knowledge-base agent behind a two-tier Redis cache — exact match, then semantic similarity — over help-center and FAQ articles, resolved tickets, internal runbooks and known issues, with TTLs, clearing on article updates and no caching of user-specific answers."
+  - "Added a tool agent that selects and executes read-only, scoped tools in a loop until it has what the planner asked for."
+  - "Designed error handling and fallback routing so a failing agent degrades the answer instead of breaking the run."
+  - "Ran every agent with read-only, scoped permissions, PII redaction and prompt-injection guardrails."
+  - "Traced and debugged multi-step agent runs with LangSmith and LangSmith Studio."
+technologies:
+  - "LangGraph"
+  - "LangChain"
+  - "FastAPI"
+  - "Python"
+  - "pgvector"
+  - "PostgreSQL"
+  - "SQLAlchemy"
+  - "Redis"
+  - "LangSmith"
+  - "LangSmith Studio"
+challenges:
+  - "Routing three very different kinds of question — implementation, product intent and user-specific diagnosis — to the right specialists."
+  - "Letting a model write SQL against production data without any generated query being able to write, reach beyond approved tables or expose PII."
+  - "Retrieving the right passage when questions mix meaning with exact identifiers — and knowing when nothing relevant exists."
+  - "Caching answers without ever serving a stale answer, or one customer's answer to another."
+  - "Treating retrieved documents and user-supplied text as untrusted input, so prompt injection can't steer an agent."
+  - "Debugging non-deterministic, multi-agent runs where the bug is often in the plan rather than the code."
+impact:
+  - "Customer support now resolves user cases without escalating to product or engineering."
+  - "Answers are grounded in implementation docs, PRDs and the knowledge base, with citations — and the RAG agent says “not found” rather than guessing."
+  - "Generated SQL is parsed, policy-checked and EXPLAINed before it runs read-only, so the worst case is a rejected query, not a changed record."
+  - "Repeat questions are answered from a two-tier Redis cache instead of re-running the knowledge-base search."
+  - "Every run is traceable end to end in LangSmith, so a wrong answer can be debugged step by step."
+metrics:
+  - { value: "4", label: "Specialist agents" }
+  - { value: "Hybrid", label: "Vector + keyword RAG" }
+  - { value: "SELECT-only", label: "Policy-checked SQL" }
+  - { value: "2-tier", label: "Redis answer cache" }
+lessons:
+  - "Least privilege applies to agents too: an agent that can only read, inside a narrow scope, is an agent you can put in front of support."
+  - "Never trust generated SQL — each layer should assume the one before it failed."
+  - "Retrieval needs a quality gate: grade the passages, retry a bounded number of times, and abstain rather than guess."
+  - "Cache answers, never people: user-specific questions skip the cache entirely."
+  - "Traces are the debugger for agents; without them, a bad answer is just a mystery."
+links:
+  caseStudy: "agentic-support-copilot"
+---
+
+This is an internal copilot built for customer support at LMNTO. It answers the
+questions that used to escalate to product or engineering: how a feature is
+implemented, what its PRD specifies, and why an issue is happening for a
+specific user.
+
+Under the hood it's a **LangGraph** graph served by **FastAPI**: query
+understanding and a **planner/router** hand each question to four specialist
+agents — a **RAG agent** with hybrid, self-grading retrieval over implementation
+docs and PRDs; a **text-to-SQL agent** whose queries are parsed, policy-checked
+and EXPLAINed before they run read-only; a **knowledge-base agent** behind a
+two-tier **Redis** cache; and a **tool agent** — and a response synthesizer
+composes one cited answer. Every run is traced in **LangSmith**.
+
+The linked case study walks through each agent's pipeline, the fallback routing
+and the guardrails that make it safe to put in front of support.

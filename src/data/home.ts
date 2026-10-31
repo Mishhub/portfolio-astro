@@ -28,7 +28,7 @@ export const VALUE_PROPS: ValueProp[] = [
   {
     title: "Production agentic AI",
     description:
-      "A multi-agent LangGraph assistant — planner/router, pgvector RAG, a SQL-agent subgraph — and an MCP-based PR-review agent, with scoped tools and PII redaction.",
+      "A multi-agent LangGraph support copilot — hybrid RAG, policy-checked text-to-SQL, a Redis semantic cache — and an MCP-based PR-review agent, with scoped tools and PII redaction.",
     icon: "brain-circuit",
   },
   {
@@ -88,7 +88,7 @@ export const HIGHLIGHTS: Highlight[] = [
   {
     title: "Ships production agentic AI",
     description:
-      "A multi-agent assistant that lets customer support resolve user cases without escalating to engineering — backed by Ed Donner's AI Engineer Core and Agentic tracks.",
+      "An agentic copilot that lets customer support resolve user cases without escalating to engineering — backed by Ed Donner's AI Engineer Core and Agentic tracks.",
   },
   {
     title: "Owns systems end to end",

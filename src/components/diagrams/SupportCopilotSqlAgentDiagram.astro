@@ -1,0 +1,114 @@
+---
+/**
+ * SQL agent pipeline for the Agentic Support Copilot case study.
+ *
+ * Diagrams live as standalone .astro components (not inline in MDX) so they can
+ * use scoped styles, stay zero-JS, and adapt to light/dark via currentColor.
+ */
+---
+
+<svg
+  viewBox="0 0 880 340"
+  class="diagram mx-auto h-auto w-full max-w-3xl text-foreground"
+  role="img"
+  aria-label="SQL agent pipeline: a question from the planner goes to schema retrieval, which returns only approved tables. SQL generation drafts a query, which is parsed to an AST and rejected unless it is a single SELECT. A policy engine enforces a table and column allowlist, masks PII and forces a row LIMIT. Validation runs an EXPLAIN dry run and rejects costly plans, then execution runs through the SQLAlchemy data-access layer under a read-only role with a statement timeout, returning PII-masked rows to the synthesizer. If validation or execution fails, the agent goes back to schema retrieval and retries."
+>
+  <defs>
+    <marker id="scs-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0 0L10 5L0 10z" fill="currentColor" fill-opacity="0.5"></path>
+    </marker>
+  </defs>
+
+  <!-- Draft the query -->
+  <rect class="box" x="24" y="48" width="180" height="64" rx="10"></rect>
+  <text class="lbl" x="114" y="73" text-anchor="middle">Schema retrieval</text>
+  <text class="sub" x="114" y="90" text-anchor="middle">approved tables only</text>
+
+  <rect class="box" x="240" y="48" width="180" height="64" rx="10"></rect>
+  <text class="lbl" x="330" y="73" text-anchor="middle">SQL generation</text>
+  <text class="sub" x="330" y="90" text-anchor="middle">LLM drafts a query</text>
+
+  <!-- Check it -->
+  <rect class="box" x="456" y="48" width="180" height="64" rx="10"></rect>
+  <text class="lbl" x="546" y="73" text-anchor="middle">Parse to AST</text>
+  <text class="sub" x="546" y="90" text-anchor="middle">single SELECT only</text>
+
+  <rect class="box accent" x="672" y="48" width="184" height="64" rx="10"></rect>
+  <text class="lbl" x="764" y="70" text-anchor="middle">Policy engine</text>
+  <text class="sub" x="764" y="87" text-anchor="middle">table/column allowlist</text>
+  <text class="sub" x="764" y="101" text-anchor="middle">PII masked · LIMIT</text>
+
+  <rect class="box" x="672" y="200" width="184" height="64" rx="10"></rect>
+  <text class="lbl" x="764" y="224" text-anchor="middle">Validation</text>
+  <text class="sub" x="764" y="241" text-anchor="middle">EXPLAIN dry run</text>
+  <text class="sub" x="764" y="255" text-anchor="middle">rejects costly plans</text>
+
+  <!-- Run it -->
+  <rect class="box accent" x="456" y="200" width="180" height="64" rx="10"></rect>
+  <text class="lbl" x="546" y="224" text-anchor="middle">Execution</text>
+  <text class="sub" x="546" y="241" text-anchor="middle">SQLAlchemy DAL</text>
+  <text class="sub" x="546" y="255" text-anchor="middle">read-only · timeout</text>
+
+  <rect class="store" x="240" y="200" width="180" height="64" rx="9"></rect>
+  <text class="lbl" x="330" y="224" text-anchor="middle">Results</text>
+  <text class="sub" x="330" y="241" text-anchor="middle">PII-masked rows</text>
+  <text class="sub" x="330" y="255" text-anchor="middle">→ synthesizer</text>
+
+  <!-- Flow -->
+  <path class="edge" d="M114 12V46" marker-end="url(#scs-arrow)"></path>
+  <text class="sub" x="124" y="30">from planner</text>
+
+  <path class="edge" d="M204 80H238" marker-end="url(#scs-arrow)"></path>
+  <path class="edge" d="M420 80H454" marker-end="url(#scs-arrow)"></path>
+  <path class="edge" d="M636 80H670" marker-end="url(#scs-arrow)"></path>
+  <path class="edge" d="M764 112V198" marker-end="url(#scs-arrow)"></path>
+  <path class="edge" d="M672 232H638" marker-end="url(#scs-arrow)"></path>
+  <path class="edge" d="M456 232H422" marker-end="url(#scs-arrow)"></path>
+
+  <!-- Failure loop -->
+  <path class="edge dashed" d="M764 264V300H114V114" marker-end="url(#scs-arrow)"></path>
+  <path class="edge dashed" d="M546 264V300"></path>
+  <text class="sub" x="430" y="320" text-anchor="middle">validation or execution failed → retry</text>
+</svg>
+
+<style>
+  .box {
+    fill: color-mix(in oklch, currentColor 6%, transparent);
+    stroke: currentColor;
+    stroke-opacity: 0.35;
+    stroke-width: 1.5;
+  }
+  .box.accent {
+    fill: color-mix(in oklch, var(--brand) 12%, transparent);
+    stroke: var(--brand);
+    stroke-opacity: 0.5;
+  }
+  .store {
+    fill: color-mix(in oklch, currentColor 10%, transparent);
+    stroke: currentColor;
+    stroke-opacity: 0.4;
+    stroke-width: 1.5;
+  }
+  .lbl {
+    fill: currentColor;
+    font:
+      600 13px ui-sans-serif,
+      system-ui;
+  }
+  .sub {
+    fill: currentColor;
+    fill-opacity: 0.6;
+    font:
+      11px ui-monospace,
+      monospace;
+  }
+  .edge {
+    stroke: currentColor;
+    stroke-opacity: 0.4;
+    stroke-width: 1.5;
+    fill: none;
+  }
+  .edge.dashed {
+    stroke-dasharray: 5 4;
+  }
+</style>

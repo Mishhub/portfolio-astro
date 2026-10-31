@@ -1,0 +1,157 @@
+---
+/**
+ * Architecture diagram for the Agentic Support Copilot case study — the
+ * top-level graph. Each specialist agent has its own detailed diagram.
+ *
+ * Diagrams live as standalone .astro components (not inline in MDX) so they can
+ * use scoped styles, stay zero-JS, and adapt to light/dark via currentColor.
+ */
+---
+
+<svg
+  viewBox="0 0 880 440"
+  class="diagram mx-auto h-auto w-full max-w-3xl text-foreground"
+  role="img"
+  aria-label="Agentic Support Copilot architecture: a support team member asks a question into a LangGraph graph served by FastAPI. Query understanding feeds a planner/router, which routes the question to one or more of four specialist agents — a RAG agent with hybrid, self-grading retrieval; a SQL agent that only runs policy-checked SELECT queries; a knowledge-base agent behind a two-tier Redis cache; and a tool agent — with fallbacks when an agent fails. A response synthesizer returns one cited answer to support. Read-only scoped tools, PII redaction and prompt-injection guardrails wrap the agents, and LangSmith traces every run."
+>
+  <defs>
+    <marker id="asc-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0 0L10 5L0 10z" fill="currentColor" fill-opacity="0.5"></path>
+    </marker>
+  </defs>
+
+  <!-- Entry -->
+  <rect class="box" x="24" y="60" width="128" height="56" rx="10"></rect>
+  <text class="lbl" x="88" y="84" text-anchor="middle">Support team</text>
+  <text class="sub" x="88" y="101" text-anchor="middle">asks a question</text>
+
+  <!-- FastAPI-hosted LangGraph graph -->
+  <rect class="region" x="176" y="24" width="564" height="392" rx="14"></rect>
+  <text class="tag" x="192" y="46">FastAPI · LangGraph</text>
+
+  <rect class="box" x="200" y="60" width="184" height="56" rx="10"></rect>
+  <text class="lbl" x="292" y="84" text-anchor="middle">Query understanding</text>
+  <text class="sub" x="292" y="101" text-anchor="middle">what is being asked</text>
+
+  <rect class="box accent" x="416" y="60" width="188" height="56" rx="10"></rect>
+  <text class="lbl" x="510" y="84" text-anchor="middle">Planner / router</text>
+  <text class="sub" x="510" y="101" text-anchor="middle">routes · fallbacks</text>
+
+  <!-- Specialist agents -->
+  <rect class="box" x="200" y="168" width="118" height="64" rx="10"></rect>
+  <text class="lbl" x="259" y="191" text-anchor="middle">RAG agent</text>
+  <text class="sub" x="259" y="208" text-anchor="middle">hybrid · rerank</text>
+  <text class="sub" x="259" y="222" text-anchor="middle">self-grading</text>
+
+  <rect class="box" x="335" y="168" width="118" height="64" rx="10"></rect>
+  <text class="lbl" x="394" y="191" text-anchor="middle">SQL agent</text>
+  <text class="sub" x="394" y="208" text-anchor="middle">SELECT-only</text>
+  <text class="sub" x="394" y="222" text-anchor="middle">policy-checked</text>
+
+  <rect class="box" x="470" y="168" width="118" height="64" rx="10"></rect>
+  <text class="lbl" x="529" y="191" text-anchor="middle">KB agent</text>
+  <text class="sub" x="529" y="208" text-anchor="middle">2-tier Redis</text>
+  <text class="sub" x="529" y="222" text-anchor="middle">cache + search</text>
+
+  <rect class="box" x="605" y="168" width="118" height="64" rx="10"></rect>
+  <text class="lbl" x="664" y="191" text-anchor="middle">Tool agent</text>
+  <text class="sub" x="664" y="208" text-anchor="middle">tool loop</text>
+  <text class="sub" x="664" y="222" text-anchor="middle">read-only</text>
+
+  <!-- Synthesis -->
+  <rect class="box accent" x="362" y="286" width="200" height="56" rx="10"></rect>
+  <text class="lbl" x="462" y="310" text-anchor="middle">Response synthesizer</text>
+  <text class="sub" x="462" y="327" text-anchor="middle">one cited answer</text>
+
+  <!-- Guardrails -->
+  <rect class="guard" x="200" y="360" width="524" height="36" rx="8"></rect>
+  <text class="sub" x="462" y="382" text-anchor="middle">read-only scoped tools · PII redaction · prompt-injection guardrails</text>
+
+  <!-- Tracing -->
+  <rect class="store" x="760" y="188" width="104" height="64" rx="9"></rect>
+  <text class="lbl" x="812" y="211" text-anchor="middle">LangSmith</text>
+  <text class="sub" x="812" y="228" text-anchor="middle">traces</text>
+  <text class="sub" x="812" y="242" text-anchor="middle">+ Studio</text>
+
+  <!-- Flow -->
+  <path class="edge" d="M152 88H198" marker-end="url(#asc-arrow)"></path>
+  <path class="edge" d="M384 88H414" marker-end="url(#asc-arrow)"></path>
+
+  <path class="edge" d="M486 116C486 146 259 140 259 166" marker-end="url(#asc-arrow)"></path>
+  <path class="edge" d="M502 116C502 146 394 140 394 166" marker-end="url(#asc-arrow)"></path>
+  <path class="edge" d="M518 116C518 146 529 140 529 166" marker-end="url(#asc-arrow)"></path>
+  <path class="edge" d="M534 116C534 146 664 140 664 166" marker-end="url(#asc-arrow)"></path>
+
+  <path class="edge" d="M259 232C259 262 410 258 410 284" marker-end="url(#asc-arrow)"></path>
+  <path class="edge" d="M394 232C394 260 446 258 446 284" marker-end="url(#asc-arrow)"></path>
+  <path class="edge" d="M529 232C529 260 478 258 478 284" marker-end="url(#asc-arrow)"></path>
+  <path class="edge" d="M664 232C664 262 514 258 514 284" marker-end="url(#asc-arrow)"></path>
+
+  <path class="edge" d="M362 314H88V118" marker-end="url(#asc-arrow)"></path>
+  <text class="sub" x="262" y="306" text-anchor="middle">grounded answer</text>
+
+  <path class="edge dashed" d="M740 220H758" marker-end="url(#asc-arrow)"></path>
+</svg>
+
+<style>
+  .box {
+    fill: color-mix(in oklch, currentColor 6%, transparent);
+    stroke: currentColor;
+    stroke-opacity: 0.35;
+    stroke-width: 1.5;
+  }
+  .box.accent {
+    fill: color-mix(in oklch, var(--brand) 12%, transparent);
+    stroke: var(--brand);
+    stroke-opacity: 0.5;
+  }
+  .store {
+    fill: color-mix(in oklch, currentColor 10%, transparent);
+    stroke: currentColor;
+    stroke-opacity: 0.4;
+    stroke-width: 1.5;
+  }
+  .region {
+    fill: color-mix(in oklch, currentColor 2%, transparent);
+    stroke: currentColor;
+    stroke-opacity: 0.25;
+    stroke-width: 1.5;
+    stroke-dasharray: 6 5;
+  }
+  .guard {
+    fill: color-mix(in oklch, var(--brand) 8%, transparent);
+    stroke: var(--brand);
+    stroke-opacity: 0.45;
+    stroke-width: 1.2;
+    stroke-dasharray: 4 4;
+  }
+  .tag {
+    fill: var(--brand);
+    font:
+      600 12px ui-monospace,
+      monospace;
+    letter-spacing: 0.04em;
+  }
+  .lbl {
+    fill: currentColor;
+    font:
+      600 13px ui-sans-serif,
+      system-ui;
+  }
+  .sub {
+    fill: currentColor;
+    fill-opacity: 0.6;
+    font:
+      11px ui-monospace,
+      monospace;
+  }
+  .edge {
+    stroke: currentColor;
+    stroke-opacity: 0.4;
+    stroke-width: 1.5;
+    fill: none;
+  }
+  .edge.dashed {
+    stroke-dasharray: 5 4;
+  }
+</style>
