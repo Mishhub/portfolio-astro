@@ -12,79 +12,106 @@ import Reveal from "@/components/ui/Reveal.astro";
 import RoadmapTimeline from "@/components/ai/RoadmapTimeline.astro";
 import TopicGroup from "@/components/ai/TopicGroup.astro";
 import { breadcrumbSchema } from "@/lib/seo";
-import { AI_COURSE, AI_TOPICS, AI_ROADMAP, AI_OUTPUTS } from "@/data/ai-journey";
+import { AI_COURSES, AI_TOPICS, AI_ROADMAP, AI_SHIPPED } from "@/data/ai-journey";
 import type { Topic } from "@/data/ai-journey";
 
 const origin = Astro.site!.origin;
 
 const crumbs = [
   { name: "Home", href: "/" },
-  { name: "AI Journey" },
+  { name: "AI Engineering" },
 ];
 
 const jsonLd = breadcrumbSchema([
   { name: "Home", url: origin },
-  { name: "AI Journey", url: `${origin}/ai-engineering` },
+  { name: "AI Engineering", url: `${origin}/ai-engineering` },
 ]);
 
-/** Topics grouped by stage, in learning-arc order. */
+/** Topics grouped by stage, from fundamentals to production. */
 const stages: { key: Topic["stage"]; label: string }[] = [
-  { key: "foundations", label: "Foundations" },
-  { key: "core", label: "Core" },
-  { key: "agents", label: "Agents" },
-  { key: "applied", label: "Applied" },
+  { key: "foundations", label: "LLM foundations" },
+  { key: "core", label: "Retrieval & grounding" },
+  { key: "agents", label: "Agents & orchestration" },
+  { key: "applied", label: "Production & tooling" },
 ];
 
 const topicsByStage = stages
   .map((s) => ({ ...s, topics: AI_TOPICS.filter((t) => t.stage === s.key) }))
   .filter((s) => s.topics.length > 0);
+
+const isExternal = (href: string) => /^https?:\/\//.test(href);
 ---
 
 <BaseLayout
-  title="AI Engineering Journey"
-  description="An honest, living log of my transition into production AI engineering — what I'm studying, a phased roadmap, and the projects and write-ups it will produce."
+  title="AI Engineering — Agentic & Generative AI"
+  description="Production agentic and generative AI: a multi-agent LangGraph assistant, an MCP-based PR-review agent and a RAG chatbot — after Ed Donner's AI Engineer tracks."
   jsonLd={jsonLd}
 >
   <PageHeader
     eyebrow="AI Engineering"
-    title="AI Engineering Journey"
-    lead="A living log of my move into production AI engineering. This documents what I'm actively studying, the roadmap I'm following, and the hands-on work it produces — bringing the same rigour I apply to backend systems."
+    title="Agentic & generative AI, in production"
+    lead="I build AI systems the way I build distributed systems — scoped, observable and tested. Here's the training behind that work, the stack I use, how I got here and what has shipped."
   >
     <Breadcrumbs slot="breadcrumbs" items={crumbs} class="mb-4" />
   </PageHeader>
 
-  {/* (a) Currently studying */}
-  <Section eyebrow="Currently studying" title="The course I'm working through" size="wide" spacing="compact">
-    <Reveal>
-      <Card class="p-7 sm:p-8">
-        <div class="flex flex-wrap items-start justify-between gap-4">
-          <div class="flex items-center gap-3">
-            <span
-              class="flex size-10 shrink-0 items-center justify-center rounded-xl border border-border bg-subtle text-brand"
-              aria-hidden="true"
-            >
-              <Icon name="lucide:graduation-cap" class="size-5" />
-            </span>
-            <div>
-              <h3 class="text-lg font-semibold tracking-tight text-foreground">{AI_COURSE.title}</h3>
-              <p class="mt-0.5 text-sm text-muted-foreground">{AI_COURSE.instructor}</p>
-            </div>
-          </div>
-          <Badge variant="brand" size="md">
-            <span class="size-1.5 rounded-full bg-brand" aria-hidden="true"></span>
-            {AI_COURSE.status}
-          </Badge>
-        </div>
-        <p class="mt-5 max-w-2xl leading-relaxed text-muted-foreground">{AI_COURSE.blurb}</p>
-      </Card>
-    </Reveal>
+  {/* (a) Training */}
+  <Section
+    eyebrow="Training"
+    title="Ed Donner's AI Engineer programme — both tracks completed"
+    size="wide"
+    spacing="compact"
+  >
+    <div class="grid gap-5 lg:grid-cols-2">
+      {
+        AI_COURSES.map((course, i) => (
+          <Reveal delay={i * 80}>
+            <Card class="flex h-full flex-col p-7 sm:p-8">
+              <div class="flex flex-wrap items-start justify-between gap-4">
+                <div class="flex items-center gap-3">
+                  <span
+                    class="flex size-10 shrink-0 items-center justify-center rounded-xl border border-border bg-subtle text-brand"
+                    aria-hidden="true"
+                  >
+                    <Icon name="lucide:graduation-cap" class="size-5" />
+                  </span>
+                  <p class="text-sm text-muted-foreground">
+                    {course.instructor} · {course.provider} · {course.year}
+                  </p>
+                </div>
+                <Badge variant="success" size="md">
+                  <Icon name="lucide:circle-check" class="size-3.5" aria-hidden="true" />
+                  Completed
+                </Badge>
+              </div>
+              <h3 class="mt-5 text-lg font-semibold tracking-tight text-foreground text-balance">
+                {course.title}
+              </h3>
+              <p class="mt-3 leading-relaxed text-muted-foreground">{course.blurb}</p>
+              <div class="mt-6 flex grow items-end">
+                <Button
+                  href={course.credentialUrl}
+                  external
+                  variant="outline"
+                  size="sm"
+                  aria-label={`View certificate for ${course.title}`}
+                >
+                  View certificate
+                  <Icon name="lucide:external-link" aria-hidden="true" />
+                </Button>
+              </div>
+            </Card>
+          </Reveal>
+        ))
+      }
+    </div>
   </Section>
 
-  {/* (b) What I am learning */}
+  {/* (b) Stack */}
   <Section
-    eyebrow="Curriculum"
-    title="What I am learning"
-    description="The topics I'm working through, grouped by where they sit in the learning arc — from fundamentals to production-grade agents."
+    eyebrow="Stack"
+    title="What I work with"
+    description="The tools and techniques behind the work, grouped from LLM fundamentals to production tooling."
     size="wide"
     spacing="compact"
   >
@@ -99,11 +126,11 @@ const topicsByStage = stages
     </div>
   </Section>
 
-  {/* (c) Roadmap */}
+  {/* (c) Path */}
   <Section
-    eyebrow="Roadmap"
-    title="The path to production"
-    description="A phased plan, not a checklist of claims. Each phase builds on the last toward shipping a real AI system."
+    eyebrow="Path"
+    title="From fundamentals to production"
+    description="Each phase built on the last — ending with agents running in production, held to the same bar as any other system I operate."
     size="wide"
     spacing="compact"
   >
@@ -112,47 +139,70 @@ const topicsByStage = stages
     </Container>
   </Section>
 
-  {/* (d) What this will produce */}
+  {/* (d) Shipped */}
   <Section
-    eyebrow="Outputs"
-    title="What this will produce"
-    description="Learning is the input. These are the artefacts it's meant to create — and they'll grow over time."
+    eyebrow="Shipped"
+    title="What I've shipped"
+    description="AI systems running for real users — not demos."
     size="wide"
     spacing="compact"
   >
     <ul class="grid gap-px overflow-hidden rounded-2xl border border-border sm:grid-cols-3">
       {
-        AI_OUTPUTS.map((output, i) => (
-          <Reveal as="li" delay={i * 80} class="flex gap-3 bg-card p-6">
-            <Icon name="lucide:arrow-up-right" class="mt-0.5 size-5 shrink-0 text-brand" aria-hidden="true" />
-            <span class="text-sm leading-relaxed text-foreground">{output}</span>
+        AI_SHIPPED.map((item, i) => (
+          <Reveal as="li" delay={i * 80} class="flex flex-col gap-3 bg-card p-6">
+            <div class="flex items-start gap-3">
+              <Icon
+                name="lucide:arrow-up-right"
+                class="mt-0.5 size-5 shrink-0 text-brand"
+                aria-hidden="true"
+              />
+              <div>
+                <h3 class="font-semibold tracking-tight text-foreground">{item.title}</h3>
+                <p class="mt-1.5 text-sm leading-relaxed text-muted-foreground">
+                  {item.description}
+                </p>
+              </div>
+            </div>
+            {item.href && (
+              <a
+                href={item.href}
+                target={isExternal(item.href) ? "_blank" : undefined}
+                rel={isExternal(item.href) ? "noopener noreferrer" : undefined}
+                class="mt-auto inline-flex items-center gap-1.5 pl-8 text-sm font-medium text-foreground/70 transition-colors hover:text-foreground"
+              >
+                {item.linkLabel ?? "Learn more"}
+                <Icon name="lucide:arrow-right" class="size-4" aria-hidden="true" />
+              </a>
+            )}
           </Reveal>
         ))
       }
     </ul>
   </Section>
 
-  {/* (e) Honest framing + CTAs */}
+  {/* (e) Engineering stance + CTAs */}
   <Section size="wide" spacing="compact">
     <Reveal>
       <div class="rounded-3xl border border-border bg-card p-8 sm:p-12">
         <h2 class="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
-          An honest work in progress
+          Same rigour, new failure modes
         </h2>
         <p class="mt-4 max-w-2xl leading-relaxed text-muted-foreground">
-          This page documents an active transition into production AI engineering — not claimed
-          mastery. It's deliberately a living artefact: as I work through the roadmap, it will keep
-          growing with hands-on projects, experiments, technical write-ups and open-source
-          contributions. The goal is to learn in public and let the work speak for itself.
+          I treat AI systems like any other production system: least-privilege access,
+          observability, graceful degradation and tests. What changes is how they fail —
+          hallucination, prompt injection, leaked personal data, runaway cost — so grounding,
+          guardrails, PII redaction and tracing are designed in from the first commit, not bolted on
+          after the demo.
         </p>
         <div class="mt-8 flex flex-wrap items-center gap-3">
-          <Button href="/articles" variant="brand" size="md">
-            <Icon name="lucide:pen-line" />
-            Read the write-ups
+          <Button href="/case-studies/multi-agent-ai-assistant" variant="brand" size="md">
+            <Icon name="lucide:layers" />
+            Read the AI case study
           </Button>
-          <Button href="/open-source" variant="outline" size="md">
+          <Button href="https://github.com/Mishhub/chatbot-api" external variant="outline" size="md">
             <Icon name="lucide:github" />
-            Browse open-source
+            Browse the chatbot source
           </Button>
         </div>
       </div>

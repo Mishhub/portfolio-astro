@@ -6,14 +6,15 @@ year: "2022 — 2023"
 role: "Senior Full Stack Developer"
 problemSpace: "Frontend · Configurator"
 tags: ["React", "GraphQL", "SSR", "Design System"]
-stack: ["React 18", "GraphQL", "Apollo", "Styled Components", "Storybook", "Jest"]
+stack: ["React 18", "TypeScript", "GraphQL", "Apollo", "Styled Components", "Storybook", "Jest", "Docker", "GitHub Actions"]
 metrics:
   - { value: "5+", label: "Regional deployments" }
+  - { value: "60%", label: "Faster frontend loads" }
   - { value: "SSR", label: "SEO + load time" }
   - { value: "Storybook", label: "Component library" }
 relatedProject: "caseih-build-and-price"
 featured: false
-order: 6
+order: 9
 ---
 
 import Figure from "@/components/ui/Figure.astro";
@@ -30,10 +31,11 @@ build once, reuse everywhere, without forking.
 
 ## Architecture
 
-Built from scratch with **React 18**, **GraphQL + Apollo** for data, **Styled
-Components** for theming, and **Storybook** as the component workbench. **Server-side
-rendering** delivers SEO and fast first paint; **Jest** covers the components; and
-**GitHub CI/CD** with custom dev environments ships it.
+Built from scratch with **React 18** and TypeScript, GraphQL and REST APIs consumed
+through **Apollo Client**, **Styled Components** for theming, and **Storybook** as the
+component workbench. **Server-side rendering** delivers SEO and fast first paint;
+**Jest** covers the components; and **GitHub Actions** CI/CD with custom dev
+environments ships it.
 
 <Figure diagram caption="A server-rendered React + Apollo app built on one shared, themeable component library that powers 5+ regional deployments.">
   <CaseIhArchitectureDiagram />
@@ -55,14 +57,18 @@ than a fork of the codebase.
 
 **Server-side rendering** improves both SEO and page-load time — important for a
 public-facing product catalog. Bundle optimization and code splitting keep the
-client payload lean, and **Jest** unit tests guard the shared components that every
-region depends on.
+client payload lean — part of the work that cut frontend load times by 60% — and
+**Jest** unit tests guard the shared components that every region depends on.
+The UIs are fully responsive and accessible, and performance monitoring tracks
+**Core Web Vitals** and runtime regressions, so speed stays a measured property
+rather than a launch-day snapshot.
 
 ## Delivery
 
-**GitHub CI/CD** pipelines and custom dev environments standardize how the
-configurator is built and shipped, so the same workflow serves every regional
-deployment.
+Frontend services are **containerized with Docker**, and **GitHub Actions** CI/CD
+pipelines with custom dev environments standardize how the configurator is built
+and shipped — the same automation that cut deployment time from 2 hours to under
+10 minutes — so one workflow serves every regional deployment.
 
 ## Outcome
 

@@ -16,9 +16,16 @@ const jsonLd = breadcrumbSchema([
   { name: "Resume", url: `${origin}/resume` },
 ]);
 
-const title = "Resume — Senior Full Stack Developer · Gen AI";
+const title = "Resume — Senior Full Stack Engineer · Agentic AI";
 const description =
-  "Resume for a Senior Full Stack Software Engineer & AI Engineer — 7+ years across FinTech, Web3 and distributed systems, now shipping production Generative AI.";
+  "Resume for a Senior Full Stack Engineer — 7+ years building FinTech and Web3 platforms for 3M+ users, shipping production agentic AI with LangGraph, RAG and MCP.";
+
+/** Bare host for display, e.g. "mishhub.com". */
+const websiteLabel = new URL(RESUME.website).host;
+
+// "Senior Full Stack Engineer | React · Node.js · Python · AI" — keep the stack
+// half on one line so narrow widths break after the bar, not mid-list.
+const [headlineRole, headlineStack] = RESUME.headline.split(" | ");
 
 // Contact links surfaced in the header line (email is rendered separately as a mailto).
 const github = SOCIALS.find((s) => s.icon === "github");
@@ -36,7 +43,15 @@ const stackoverflow = SOCIALS.find((s) => s.icon === "stackoverflow");
         <h1 class="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
           {RESUME.name}
         </h1>
-        <p class="mt-1.5 text-lg text-muted-foreground">{RESUME.headline}</p>
+        <p class="mt-1.5 text-lg text-muted-foreground">
+          {headlineRole}
+          {headlineStack && (
+            <>
+              {" | "}
+              <span class="whitespace-nowrap">{headlineStack}</span>
+            </>
+          )}
+        </p>
 
         <ul class="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-sm text-muted-foreground">
           <li>
@@ -51,6 +66,15 @@ const stackoverflow = SOCIALS.find((s) => s.icon === "stackoverflow");
           <li class="inline-flex items-center gap-1.5">
             <Icon name="lucide:map-pin" class="size-4" aria-hidden="true" />
             {SITE.location}
+          </li>
+          <li>
+            <a
+              href={RESUME.website}
+              class="inline-flex items-center gap-1.5 transition-colors hover:text-foreground"
+            >
+              <Icon name="lucide:globe" class="size-4" aria-hidden="true" />
+              {websiteLabel}
+            </a>
           </li>
           {
             github && (
@@ -125,7 +149,7 @@ const stackoverflow = SOCIALS.find((s) => s.icon === "stackoverflow");
         {
           RESUME.skills.map((group) => (
             <div class="flex flex-col gap-0.5 sm:flex-row sm:gap-3">
-              <dt class="shrink-0 text-sm font-semibold text-foreground sm:w-40">{group.label}</dt>
+              <dt class="shrink-0 text-sm font-semibold text-foreground sm:w-48">{group.label}</dt>
               <dd class="text-sm leading-relaxed text-muted-foreground">{group.items}</dd>
             </div>
           ))
@@ -143,12 +167,26 @@ const stackoverflow = SOCIALS.find((s) => s.icon === "stackoverflow");
               <div class="flex flex-col gap-x-4 gap-y-0.5 sm:flex-row sm:items-baseline sm:justify-between">
                 <h3 class="text-[0.95rem] font-semibold text-foreground">
                   {entry.role}
-                  <span class="font-normal text-muted-foreground"> — {entry.company}</span>
+                  <span class="font-normal text-muted-foreground">
+                    {" "}—{" "}
+                    {entry.url ? (
+                      <a
+                        href={entry.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="underline-offset-4 transition-colors hover:text-foreground hover:underline"
+                      >
+                        {entry.company}
+                      </a>
+                    ) : (
+                      entry.company
+                    )}
+                  </span>
                 </h3>
                 <p class="shrink-0 font-mono text-xs text-muted-foreground">{entry.date}</p>
               </div>
               <p class="mt-0.5 text-xs text-muted-foreground">
-                {entry.context} · {entry.location}
+                {entry.context ? `${entry.context} · ${entry.location}` : entry.location}
               </p>
               <ul class="mt-2 space-y-1.5">
                 {entry.bullets.map((bullet) => (
@@ -188,7 +226,18 @@ const stackoverflow = SOCIALS.find((s) => s.icon === "stackoverflow");
           RESUME.certifications.map((cert) => (
             <li class="flex flex-col gap-x-4 gap-y-0.5 sm:flex-row sm:items-baseline sm:justify-between">
               <p class="text-sm text-foreground">
-                <span class="font-medium">{cert.name}</span>
+                {cert.url ? (
+                  <a
+                    href={cert.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="font-medium underline-offset-4 hover:underline"
+                  >
+                    {cert.name}
+                  </a>
+                ) : (
+                  <span class="font-medium">{cert.name}</span>
+                )}
                 <span class="text-muted-foreground"> — {cert.issuer}</span>
               </p>
               {cert.date && (

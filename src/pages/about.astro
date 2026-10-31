@@ -61,7 +61,7 @@ const principles: Principle[] = [
     icon: "book-open",
     title: "Continuous learning",
     description:
-      "I read source, not just docs, and prototype unfamiliar tech before it lands in a roadmap. Lately that means going deep on AI engineering.",
+      "I read source, not just docs, and prototype unfamiliar tech before it lands in a roadmap. Lately that means AI engineering — two completed Ed Donner tracks and an assistant running in production.",
   },
 ];
 
@@ -69,7 +69,7 @@ const principles: Principle[] = [
 const howIWork: string[] = [
   "Write the design doc first; consensus is cheaper before the code exists.",
   "Make the right thing the easy thing — types, lint and CI catch what reviews shouldn't.",
-  "Instrument as I build: logs, metrics and traces are part of the feature, not an afterthought.",
+  "Instrument as I build: logs, metrics and traces are part of the feature — for AI agents too, where a LangSmith trace beats guessing.",
   "Optimise for the reader of the code six months from now, including future me.",
   "Ship in small, reversible increments behind flags rather than big-bang releases.",
   "Disagree in the review, commit once it's merged — and write down why.",
@@ -78,14 +78,14 @@ const howIWork: string[] = [
 
 <BaseLayout
   title="About — Engineering Philosophy & How I Work"
-  description="A senior full-stack engineer (7+ yrs) across FinTech and Web3 — backend architecture, distributed systems, authentication and identity."
+  description="A senior full-stack engineer (7+ yrs) across FinTech and Web3 — distributed systems, authentication and identity, and production agentic AI."
   type="profile"
   jsonLd={jsonLd}
 >
   <PageHeader
     eyebrow="About"
     title="How I think about building software"
-    lead="A senior full-stack engineer with 7+ years across FinTech and Web3 — backend architecture, distributed systems and authentication, and the interfaces on top of them."
+    lead="A senior full-stack engineer with 7+ years across FinTech and Web3 — backend architecture, distributed systems and authentication, the interfaces on top of them, and now production agentic AI."
   >
     <Breadcrumbs
       slot="breadcrumbs"
@@ -100,23 +100,35 @@ const howIWork: string[] = [
         India in 2019, shipping e-commerce and real-time platforms on the MERN stack at AgileCrew,
         then a custom CMS and a full HR platform at Stead Technologies. In 2022 I moved to Dubai —
         building Ethereum smart contracts and an NFT launchpad at Connectopia, then configurator
-        products at Coolshop. Today I own backend architecture for FinTech and Web3 platforms at
-        LMNTO, where the systems I work on serve 1.5M+ users. Lately I've been moving deeper into AI
-        engineering — building an AI engineering chatbot and an automated PR review system.
+        products at Coolshop. Today I architect and operate three interconnected FinTech and Web3
+        platforms at LMNTO, serving 3M+ users — and I ship production agentic AI there too: a
+        multi-agent assistant that lets customer support resolve user cases without escalating to
+        engineering, and an MCP-based PR-review agent.
       </p>
       <p>
         I'm happiest at the boundary where backend architecture meets a clean interface. My depth is
-        in <span class="text-foreground">NestJS, Node.js and Django</span> — event-driven
-        microservices that talk over gRPC, OAuth2 / OpenID Connect authentication and identity, and
-        the PostgreSQL and Redis underneath. I've spent real time in FinTech and Web3, where KYC/AML,
-        digital-asset custody and token lifecycles aren't footnotes — they're the product — so I
-        treat correctness and security as features, designed in from the first commit.
+        in <span class="text-foreground">NestJS, Node.js, Django and FastAPI</span> — event-driven
+        microservices that talk over gRPC and Kafka, OAuth2 / OpenID Connect authentication and
+        identity, and the PostgreSQL and Redis underneath, scaled with read replicas, monthly
+        partitioning, Citus sharding and restore-tested point-in-time recovery. I've spent real time
+        in FinTech and Web3, where KYC/AML, digital-asset custody, payouts and ledgers aren't
+        footnotes — they're the product — so I treat correctness and security as features, designed
+        in from the first commit.
+      </p>
+      <p>
+        AI engineering is the newest layer of that work, not a detour from it. I've completed Ed
+        Donner's <span class="text-foreground">AI Engineer Core and Agentic tracks</span>, and I
+        build agents the way I build distributed systems: LangGraph orchestration with fallback
+        routing, retrieval grounded in real documentation, read-only and scoped tool permissions,
+        PII redaction, and LangSmith traces to debug from.
       </p>
       <p>
         I like the problems other people find tedious: authentication that has to be exactly right,
-        third-party compliance integrations, scaling a service that's outgrowing its assumptions,
-        real-time systems that can't drop a message. What follows isn't a résumé — it's the set of
-        principles I keep coming back to, whatever the stack or the org chart.
+        third-party compliance integrations, a ledger that must always balance, scaling a service
+        that's outgrowing its assumptions, real-time systems that can't drop a message — and AI
+        agents that have to be useful without ever being allowed to do harm. What follows isn't a
+        résumé — it's the set of principles I keep coming back to, whatever the stack or the org
+        chart.
       </p>
     </div>
   </Section>

@@ -1,0 +1,135 @@
+---
+/**
+ * Architecture diagram for the Payouts Settlement & Ledger case study.
+ *
+ * Diagrams live as standalone .astro components (not inline in MDX) so they can
+ * use scoped <style>, stay zero-JS, and adapt to light/dark via currentColor.
+ */
+---
+
+<svg
+  viewBox="0 0 880 392"
+  class="diagram mx-auto h-auto w-full max-w-3xl text-foreground"
+  role="img"
+  aria-label="Payouts settlement and ledger architecture: reward and bonus inputs are frozen into an immutable, versioned snapshot; payout intents are derived from it and settled at 100+ payouts per second into a double-entry ledger. Versioned runs are auditable, resumable and recomputable. The ledger commits its entries together with an outbox row in one database transaction, and a relay publishes ledger events to Kafka for consumer services. The ledger runs on PostgreSQL sharded with Citus and partitioned by month, replicating to a read replica and backed up with restore-tested Barman point-in-time recovery."
+>
+  <defs>
+    <marker id="psl-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0 0L10 5L0 10z" fill="currentColor" fill-opacity="0.5"></path>
+    </marker>
+  </defs>
+
+  <!-- Pipeline: snapshot → intent → settlement -->
+  <rect class="box" x="24" y="40" width="128" height="60" rx="10"></rect>
+  <text class="lbl" x="88" y="66" text-anchor="middle">Reward &amp; bonus</text>
+  <text class="sub" x="88" y="84" text-anchor="middle">inputs</text>
+
+  <rect class="box" x="188" y="40" width="150" height="60" rx="10"></rect>
+  <text class="lbl" x="263" y="62" text-anchor="middle">Snapshot</text>
+  <text class="sub" x="263" y="78" text-anchor="middle">immutable</text>
+  <text class="sub" x="263" y="92" text-anchor="middle">versioned</text>
+
+  <rect class="box" x="374" y="40" width="130" height="60" rx="10"></rect>
+  <text class="lbl" x="439" y="66" text-anchor="middle">Payout intents</text>
+  <text class="sub" x="439" y="84" text-anchor="middle">derived per run</text>
+
+  <rect class="box accent" x="550" y="40" width="130" height="60" rx="10"></rect>
+  <text class="lbl" x="615" y="66" text-anchor="middle">Settlement</text>
+  <text class="sub" x="615" y="84" text-anchor="middle">100+ payouts/sec</text>
+
+  <!-- What versioning buys -->
+  <rect class="guard" x="130" y="150" width="270" height="56" rx="10"></rect>
+  <text class="lbl" x="265" y="173" text-anchor="middle">Versioned runs</text>
+  <text class="sub" x="265" y="191" text-anchor="middle">auditable · resumable · recomputable</text>
+
+  <!-- Ledger + outbox → Kafka -->
+  <rect class="box accent" x="520" y="160" width="190" height="72" rx="10"></rect>
+  <text class="lbl" x="615" y="186" text-anchor="middle">Double-entry ledger</text>
+  <text class="sub" x="615" y="203" text-anchor="middle">entries + outbox row</text>
+  <text class="sub" x="615" y="219" text-anchor="middle">one DB transaction</text>
+
+  <rect class="box" x="742" y="160" width="118" height="72" rx="10"></rect>
+  <text class="lbl" x="801" y="192" text-anchor="middle">Kafka</text>
+  <text class="sub" x="801" y="209" text-anchor="middle">ledger events</text>
+
+  <rect class="box" x="742" y="272" width="118" height="60" rx="10"></rect>
+  <text class="lbl" x="801" y="297" text-anchor="middle">Consumers</text>
+  <text class="sub" x="801" y="314" text-anchor="middle">other services</text>
+
+  <!-- Data layer -->
+  <rect class="store" x="520" y="272" width="190" height="80" rx="9"></rect>
+  <text class="lbl" x="615" y="298" text-anchor="middle">PostgreSQL</text>
+  <text class="sub" x="615" y="316" text-anchor="middle">Citus-sharded</text>
+  <text class="sub" x="615" y="332" text-anchor="middle">monthly partitions</text>
+
+  <rect class="store" x="330" y="264" width="150" height="50" rx="9"></rect>
+  <text class="lbl" x="405" y="285" text-anchor="middle">Read replica</text>
+  <text class="sub" x="405" y="302" text-anchor="middle">read traffic</text>
+
+  <rect class="store" x="330" y="326" width="150" height="50" rx="9"></rect>
+  <text class="lbl" x="405" y="347" text-anchor="middle">Barman PITR</text>
+  <text class="sub" x="405" y="364" text-anchor="middle">restore-tested</text>
+
+  <!-- Flow -->
+  <path class="edge" d="M152 70H186" marker-end="url(#psl-arrow)"></path>
+  <path class="edge" d="M338 70H372" marker-end="url(#psl-arrow)"></path>
+  <path class="edge" d="M504 70H548" marker-end="url(#psl-arrow)"></path>
+  <path class="edge dashed" d="M263 100V150"></path>
+
+  <path class="edge" d="M615 100V158" marker-end="url(#psl-arrow)"></path>
+  <path class="edge" d="M710 196H740" marker-end="url(#psl-arrow)"></path>
+  <path class="edge" d="M801 232V270" marker-end="url(#psl-arrow)"></path>
+
+  <path class="edge" d="M615 232V270" marker-end="url(#psl-arrow)"></path>
+  <path class="edge" d="M520 290H482" marker-end="url(#psl-arrow)"></path>
+  <path class="edge" d="M520 344H482" marker-end="url(#psl-arrow)"></path>
+</svg>
+
+<style>
+  .box {
+    fill: color-mix(in oklch, currentColor 6%, transparent);
+    stroke: currentColor;
+    stroke-opacity: 0.35;
+    stroke-width: 1.5;
+  }
+  .box.accent {
+    fill: color-mix(in oklch, var(--brand) 12%, transparent);
+    stroke: var(--brand);
+    stroke-opacity: 0.5;
+  }
+  .store {
+    fill: color-mix(in oklch, currentColor 10%, transparent);
+    stroke: currentColor;
+    stroke-opacity: 0.4;
+    stroke-width: 1.5;
+  }
+  .guard {
+    fill: color-mix(in oklch, var(--brand) 8%, transparent);
+    stroke: var(--brand);
+    stroke-opacity: 0.45;
+    stroke-width: 1.2;
+    stroke-dasharray: 4 4;
+  }
+  .lbl {
+    fill: currentColor;
+    font:
+      600 13px ui-sans-serif,
+      system-ui;
+  }
+  .sub {
+    fill: currentColor;
+    fill-opacity: 0.6;
+    font:
+      11px ui-monospace,
+      monospace;
+  }
+  .edge {
+    stroke: currentColor;
+    stroke-opacity: 0.4;
+    stroke-width: 1.5;
+    fill: none;
+  }
+  .edge.dashed {
+    stroke-dasharray: 5 4;
+  }
+</style>

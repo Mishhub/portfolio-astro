@@ -1,0 +1,66 @@
+---
+title: "Payouts Settlement & Ledger"
+summary: "An immutable snapshot → intent → settlement pipeline processing 100+ reward and bonus payouts a second, settling into a double-entry ledger on Citus-sharded PostgreSQL."
+description: "Payouts Settlement & Ledger — versioned snapshots make every payout run auditable, resumable and recomputable; settlement posts into a double-entry ledger that publishes to Kafka through a transactional outbox, on Citus-sharded, monthly-partitioned PostgreSQL with restore-tested Barman PITR."
+year: "2025 — Present"
+role: "Senior Full Stack Engineer"
+status: "live"
+featured: true
+order: 2
+domain: "FinTech · Distributed Systems"
+problem: "High-volume reward and bonus payouts are unforgiving. A run that dies halfway must resume without paying anyone twice or skipping anyone; when an input changes after the fact, the run has to be recomputable; and every payout must be explainable later, line by line. The money also has to land in books that always balance, other services need to hear about every ledger transaction reliably, and the database keeps growing — on backups that must be proven to restore, not assumed to."
+solution: "A three-stage pipeline — immutable snapshot → payout intent → settlement — where every run is pinned to a versioned snapshot of its inputs, making it auditable, resumable and recomputable when inputs change. Settlement posts into a double-entry ledger that publishes its transactions to Kafka through a transactional outbox. The ledger runs on PostgreSQL sharded with Citus, partitioned by month, replicated to a read replica and backed up with Barman point-in-time recovery — with the restore tested."
+architecture: "Payout runs read an immutable, versioned snapshot of their inputs, derive payout intents from it, then settle them into a double-entry ledger. The ledger commits each transaction's balanced entries together with an outbox record in one local database transaction, and a relay publishes the outbox to Kafka for other services. The ledger lives on PostgreSQL sharded with Citus and partitioned by month, with a read replica and Barman PITR backups that are restore-tested."
+contributions:
+  - "Designed the immutable snapshot → intent → settlement data pipeline for high-volume reward and bonus payments, handling 100+ payouts/sec."
+  - "Versioned the snapshots so every run is auditable, resumable after a failure and recomputable when inputs change."
+  - "Built the double-entry ledger that payouts settle into, where every transaction posts balanced debits and credits."
+  - "Published ledger transactions to Kafka through a transactional outbox, so the ledger's state and the events other services consume can't disagree."
+  - "Scaled the ledger on PostgreSQL with Citus sharding and monthly partitioning, replicated to a read replica."
+  - "Set up Barman point-in-time recovery for the ledger — and tested the restore."
+technologies:
+  - "Apache Kafka"
+  - "PostgreSQL"
+  - "Citus"
+  - "Barman"
+  - "Transactional Outbox"
+  - "Double-Entry Ledger"
+challenges:
+  - "Resuming a payout run after a mid-run failure without paying anyone twice or skipping anyone."
+  - "Recomputing a run when its inputs change, while keeping the record of what the original run did."
+  - "Publishing every ledger transaction to other services without a dual-write gap between the database and Kafka."
+  - "Keeping fast-growing ledger tables quick to write and query."
+  - "Knowing the backups actually restore — before the day they're needed."
+impact:
+  - "Processes 100+ payouts/sec for high-volume reward and bonus payments."
+  - "Every payout run is auditable, resumable and recomputable from its versioned snapshot."
+  - "Ledger transactions reach Kafka through a transactional outbox, so database state and published events stay consistent."
+  - "Ledger data is sharded with Citus, partitioned by month, replicated to a read replica and protected by restore-tested Barman PITR."
+metrics:
+  - { value: "100+/sec", label: "Payouts processed" }
+  - { value: "Double-entry", label: "Ledger model" }
+  - { value: "Citus", label: "Sharded PostgreSQL" }
+  - { value: "PITR", label: "Restore-tested backups" }
+lessons:
+  - "Snapshot inputs, never mutate them: an immutable, versioned input is what makes a run auditable, resumable and recomputable."
+  - "A transactional outbox is the simplest honest answer to “write to the database and publish an event” — one local transaction, no dual-write gap."
+  - "At-least-once delivery makes idempotent consumers a requirement, not an optimisation."
+  - "A backup you haven't restored is a hope, not a backup."
+links:
+  caseStudy: "payouts-settlement-ledger"
+---
+
+Reward and bonus payouts at LMNTO run through a three-stage pipeline: an
+**immutable, versioned snapshot** of the inputs, **payout intents** derived from
+it, and **settlement**. Pinning every run to a snapshot is what makes it
+auditable, resumable after a failure and recomputable when inputs change — at
+100+ payouts a second.
+
+Settlement posts into a **double-entry ledger**, which commits each transaction
+together with an outbox record and relays it to **Kafka** for other services.
+Underneath, the ledger runs on **PostgreSQL sharded with Citus**, partitioned by
+month, replicated to a read replica and backed up with **Barman PITR** — with the
+restore actually tested.
+
+The linked case study walks through the snapshot model, the ledger and its
+outbox, and how the data layer scales and recovers.

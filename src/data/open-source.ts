@@ -1,8 +1,9 @@
 /**
  * Pinned repositories + contribution summary for the Open Source page.
- * Real published npm packages: nestjs-minio-backend, scheduler-calendar
- * (100+ weekly downloads) and nestjs-dynamic-filter. No repos or stats are
- * invented; URLs point at the live npm packages.
+ * Real projects only: the public chatbot-api repo (the RAG backend behind this
+ * site's chat widget) and three published npm packages — nestjs-minio-backend,
+ * scheduler-calendar (100+ weekly downloads) and nestjs-dynamic-filter. No
+ * repos or stats are invented; URLs point at the live repo and npm packages.
  */
 
 export interface Repo {
@@ -18,6 +19,15 @@ export interface Repo {
 }
 
 export const PINNED_REPOS: Repo[] = [
+  {
+    name: "chatbot-api",
+    description:
+      "The RAG chatbot behind this site — FastAPI, Gemini and hand-rolled two-stage retrieval (NumPy cosine recall → FlashRank cross-encoder rerank) with a refusal floor, SSE streaming and abuse protection, running at $0/month on Hugging Face Spaces.",
+    language: "Python",
+    languageColor: "#3572a5",
+    url: "https://github.com/Mishhub/chatbot-api",
+    topics: ["rag", "fastapi", "llm", "reranking", "gemini"],
+  },
   {
     name: "nestjs-minio-backend",
     description:

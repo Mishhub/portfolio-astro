@@ -3,9 +3,9 @@ import { Icon } from "astro-icon/components";
 import Section from "@/components/ui/Section.astro";
 import Button from "@/components/ui/Button.astro";
 import Tag from "@/components/ui/Tag.astro";
-import { AI_COURSE, AI_TOPICS } from "@/data/ai-journey";
+import { AI_TOPICS } from "@/data/ai-journey";
 
-const topics = AI_TOPICS.slice(0, 10);
+const topics = AI_TOPICS.filter((t) => t.featured);
 ---
 
 <Section size="wide" spacing="compact">
@@ -20,20 +20,20 @@ const topics = AI_TOPICS.slice(0, 10);
           class="inline-flex items-center gap-2 text-xs font-medium uppercase tracking-[0.16em] text-brand"
         >
           <Icon name="lucide:sparkles" class="size-4" aria-hidden="true" />
-          Currently learning
+          AI engineering
         </span>
         <h2 class="mt-4 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
-          Transitioning into production AI engineering
+          Shipping agentic AI to production
         </h2>
         <p class="mt-4 max-w-xl leading-relaxed text-muted-foreground">
-          I'm working through <span class="text-foreground">{AI_COURSE.title}</span> by {
-            AI_COURSE.instructor
-          } alongside my own experiments — building real LLM applications with the same engineering
-          rigour I bring to backend systems.
+          I completed Ed Donner's <span class="text-foreground">AI Engineer Core and Agentic tracks</span>
+          and now ship multi-agent systems in production — a LangGraph assistant that lets customer
+          support resolve user cases without escalating to engineering, an MCP-based PR-review agent,
+          and the RAG chatbot on this site.
         </p>
         <div class="mt-7">
           <Button href="/ai-engineering" variant="brand" size="md">
-            Follow the journey
+            Explore my AI work
             <Icon name="lucide:arrow-right" />
           </Button>
         </div>

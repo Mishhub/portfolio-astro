@@ -1,0 +1,120 @@
+---
+title: "Portfolio RAG Chatbot — Production-Grade RAG at $0/month"
+description: "How the assistant on this site answers from the portfolio's own content with hand-rolled two-stage retrieval, refuses instead of hallucinating, and survives a public endpoint on free tiers — FastAPI, Gemini, FlashRank and a Cloudflare Worker proxy."
+summary: "Hand-rolled two-stage retrieval, a refusal floor and free-tier engineering — a production-grade RAG service that costs nothing to run."
+year: "2026"
+role: "Sole Engineer"
+problemSpace: "Generative AI · RAG"
+tags: ["RAG", "FastAPI", "Reranking", "LLM Ops"]
+stack: ["FastAPI", "Gemini", "FlashRank", "NumPy", "Docker", "Hugging Face Spaces", "Cloudflare Workers"]
+metrics:
+  - { value: "$0/month", label: "Running cost" }
+  - { value: "Top-20 → 4", label: "Two-stage retrieval" }
+  - { value: "0 LLM calls", label: "On ungrounded questions" }
+  - { value: "42", label: "Tests, no network" }
+relatedProject: "portfolio-rag-chatbot"
+featured: false
+order: 6
+---
+
+import Figure from "@/components/ui/Figure.astro";
+import Callout from "@/components/ui/Callout.astro";
+import RagChatbotArchitectureDiagram from "@/components/diagrams/RagChatbotArchitectureDiagram.astro";
+
+## Context
+
+The chat widget on this site answers questions about my work. That raises the
+bar above a typical demo: it speaks about a real person's career, so it must
+never invent an employer, a date or a metric. It also sits on a public endpoint
+backed by a free-tier model quota, so it has to withstand abuse and quota
+exhaustion, hide free-tier cold starts — and cost nothing to run.
+
+## Architecture
+
+Two halves: an **ingestion** step that runs at build time, and a **FastAPI**
+service that answers at request time. The site never calls the backend
+directly — a same-origin **Cloudflare Worker** route sits in between.
+
+<Figure diagram caption="The widget calls a Cloudflare Worker proxy; the FastAPI service rewrites follow-ups, recalls the top 20 chunks, reranks to 4, refuses below a score floor and streams a Gemini answer over SSE. The index is built and committed at build time.">
+  <RagChatbotArchitectureDiagram />
+</Figure>
+
+Ingestion turns the portfolio's MDX content and résumé into section-aware
+chunks, embeds them and commits a small **NumPy** index to git — so deploys are
+reproducible and make zero embedding calls. At this corpus size, a matrix
+multiply over an in-memory index beats any network hop to a vector database.
+
+## Recall, then precision
+
+Retrieval runs in two stages, each optimised for a different job:
+
+1. **Recall** — the query is embedded and a cosine search over the index keeps
+   the **top 20** chunks. Fast and broad.
+2. **Precision** — a **FlashRank cross-encoder** (TinyBERT, ONNX) reads the
+   query and each candidate together and keeps the **top 4**. It runs off the
+   event loop, so concurrent requests keep streaming.
+
+I wrote about learning these lessons the hard way in
+[My First Production RAG Pipeline](/articles/my-first-production-rag-pipeline).
+
+## Refusing instead of hallucinating
+
+If no chunk clears the **rerank score floor**, the service answers with a polite
+refusal and makes **no LLM call at all**. When something does clear it, the
+system prompt confines the model to the retrieved context, and every answer
+streams back over **Server-Sent Events** with its sources first.
+
+<Callout type="insight" title="The cheapest LLM call is the one you don't make">
+  A score floor and a smalltalk short-circuit do two jobs at once: they stop the
+  model from guessing about a real person's career, and they save free-tier
+  quota for questions that can actually be answered.
+</Callout>
+
+## Follow-up questions
+
+Retrieval is stateless, but conversations aren't: "tell me more" carries no
+topical signal on its own. On follow-ups, a **lite model rewrites the question
+into a standalone query** before retrieval — and flags smalltalk, which gets a
+canned reply with no retrieval or generation. If the rewrite fails, retrieval
+uses the raw question — and, if that grounds nothing, retries with the visitor's
+recent questions prepended — so the path degrades instead of breaking.
+
+## Running production on free tiers
+
+Free tiers are a constraint to engineer around, not a reason to cut corners:
+
+- **Model fallback with a circuit breaker** — when the primary model's free
+  quota returns a 429, it's skipped for ten minutes and answers come from a
+  lite model with a much larger quota.
+- **Cold starts, hidden** — the widget pings a health endpoint when the chat
+  opens, a scheduled GitHub Action keeps the Space warm, and the Worker proxy
+  retries through a cold boot while the widget shows that the assistant is
+  waking up.
+- **Lean images** — a two-stage Docker build with the reranker model baked in,
+  running as a non-root user.
+
+## Abuse protection on a public endpoint
+
+- **Per-IP rate limits** keyed on a spoofing-resistant client IP — counted from
+  the right of `X-Forwarded-For`, because the leftmost entry is
+  attacker-controlled. The Worker forwards the visitor's real IP so this works
+  through Cloudflare.
+- **A global daily cap**, because per-IP limits can't stop rotating attackers
+  and the model quota is shared.
+- **A body-size guard and input caps** on message length and history.
+- **Prompt-injection hardening** — retrieved context and client-supplied history
+  are sanitised and framed as data, never replayed as real model turns.
+
+## Engineering hygiene
+
+**42 tests** run against injected fakes with no network access. CI checks
+formatting, linting and types, runs the tests and smoke-tests the Docker image's
+startup. Settings are typed and environment-driven, and a small provider
+interface means swapping the LLM vendor is a one-file change.
+
+## Outcome
+
+The assistant answers visitors' questions on every page of this site, grounded
+in the portfolio's own content and honest when it can't answer. It costs
+nothing to run, keeps answering past the free quota, and hides cold starts —
+built with the same production discipline as any system I'd ship at work.

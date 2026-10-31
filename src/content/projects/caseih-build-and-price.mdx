@@ -6,7 +6,7 @@ year: "2022 — 2023"
 role: "Senior Full Stack Developer"
 status: "live"
 featured: false
-order: 4
+order: 7
 domain: "Frontend · Configurator"
 problem: "A product configurator for agricultural machinery has to render fast, rank well in search, and serve several regions — each with its own catalogue, branding and rules — without forking the codebase per market. Building that as a one-off SPA leaves SEO and per-region maintenance as expensive afterthoughts."
 solution: "A React 18 application built from scratch as a modular component library — documented in Storybook, themed with Styled Components, fed by a GraphQL/Apollo data layer and rendered server-side for SEO and first-paint. The same components are composed into 5+ region-specific deployments rather than duplicated per market."
@@ -14,18 +14,23 @@ architecture: "React 18 with server-side rendering for SEO and faster page loads
 contributions:
   - "Built the configurator from scratch in React 18, structured as a reusable component library documented in Storybook."
   - "Used Styled Components for theme management and responsive UI, so region-specific branding is a theme rather than a fork."
-  - "Modelled the data layer in GraphQL with Apollo Client for typed, declarative queries against the configurator catalogue."
+  - "Modelled the data layer in GraphQL with Apollo Client for typed, declarative queries against the configurator catalogue, and designed and consumed the REST APIs alongside it."
+  - "Built fully responsive, accessible UIs, translating business requirements into features with product and design teams in a fast-paced Agile environment."
+  - "Containerized the frontend services with Docker and integrated performance monitoring to track Core Web Vitals and runtime regressions."
   - "Implemented server-side rendering to improve SEO and reduce page-load time on a content- and image-heavy product surface."
   - "Designed components for modularity and reuse across 5+ region-specific deployments."
   - "Added Jest unit tests and optimized bundle performance to keep the configurator fast as it grew."
   - "Configured GitHub CI/CD workflows and custom, reproducible developer environments for the build pipeline."
 technologies:
   - "React 18"
+  - "TypeScript"
   - "GraphQL"
   - "Apollo Client"
+  - "REST"
   - "Storybook"
   - "Styled Components"
   - "Jest"
+  - "Docker"
   - "GitHub Actions"
   - "SSR"
 challenges:
@@ -36,8 +41,10 @@ impact:
   - "One Storybook-driven component library is reused across 5+ region-specific deployments instead of duplicated per market."
   - "Server-side rendering improved SEO and page-load time on a heavy product surface."
   - "Jest coverage and CI/CD on GitHub kept the component library releasable and regressions visible."
+  - "Core Web Vitals monitoring made performance a measured property, so runtime regressions surfaced before users felt them."
 metrics:
   - { value: "5+", label: "Region deployments" }
+  - { value: "60%", label: "Faster frontend loads" }
   - { value: "SSR", label: "SEO & first paint" }
   - { value: "Storybook", label: "Component library" }
 lessons:

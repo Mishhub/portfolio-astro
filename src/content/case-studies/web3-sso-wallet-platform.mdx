@@ -3,7 +3,7 @@ title: "A Web3 SSO & Wallet Platform"
 description: "A centralized OAuth2/OIDC single sign-on, KYC-gated access tiers, and a NestJS wallet gateway with Account Abstraction and Merkle-tree reward eligibility."
 summary: "Centralized identity, a NestJS wallet gateway with Account Abstraction, and Merkle-tree reward eligibility for a confidential Web3 ecosystem."
 year: "2023 — 2024"
-role: "Senior Full Stack Developer"
+role: "Senior Full Stack Engineer"
 problemSpace: "Web3 · Identity"
 tags: ["OAuth2 / OIDC", "Account Abstraction", "Merkle Trees", "gRPC"]
 stack: ["NestJS", "OAuth2 / OIDC", "Viem", "Biconomy", "Alchemy", "gRPC", "JWT"]
@@ -13,7 +13,7 @@ metrics:
   - { value: "Merkle", label: "Reward eligibility" }
 relatedProject: "web3-sso-wallet-platform"
 featured: true
-order: 3
+order: 5
 ---
 
 import Figure from "@/components/ui/Figure.astro";
@@ -49,9 +49,9 @@ access levels** — what a verified user can do differs from an unverified one �
 ## The wallet gateway
 
 A dedicated **NestJS + Viem** microservice fronts all blockchain interactions, so
-products never touch RPC details directly. **Account Abstraction** via **Biconomy**
-and **Alchemy** makes the wallet experience smoother — smart-account flows instead of
-raw externally-owned-account friction.
+products never touch RPC details directly. **ERC-4337 Account Abstraction** via
+**Biconomy** and **Alchemy** makes the wallet experience smoother — smart-account
+flows instead of raw externally-owned-account friction.
 
 <Callout type="insight" title="A wallet gateway is an anti-corruption layer">
   Putting every chain interaction behind one NestJS service means RPC providers,

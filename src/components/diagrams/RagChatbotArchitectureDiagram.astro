@@ -1,0 +1,152 @@
+---
+/**
+ * Architecture diagram for the Portfolio RAG Chatbot case study.
+ *
+ * Diagrams live as standalone .astro components (not inline in MDX) so they can
+ * use scoped <style>, stay zero-JS, and adapt to light/dark via currentColor.
+ */
+---
+
+<svg
+  viewBox="0 0 880 408"
+  class="diagram mx-auto h-auto w-full max-w-3xl text-foreground"
+  role="img"
+  aria-label="Portfolio RAG chatbot architecture: the site's chat widget calls a Cloudflare Worker proxy at /api/chat, which forwards to a FastAPI service on Hugging Face Spaces. The service rewrites follow-up questions with a lite model, embeds the query with Gemini, recalls the top 20 chunks by cosine similarity from an in-memory NumPy index, reranks them to the top 4 with a FlashRank cross-encoder, refuses if nothing clears the score floor, and otherwise streams a Gemini answer back over server-sent events. At build time, an ingestion step chunks the portfolio's MDX content and résumé, embeds the chunks and commits the index, which the service loads at startup."
+>
+  <defs>
+    <marker id="rag-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0 0L10 5L0 10z" fill="currentColor" fill-opacity="0.5"></path>
+    </marker>
+  </defs>
+
+  <!-- Request path: site side -->
+  <rect class="box" x="24" y="52" width="120" height="64" rx="10"></rect>
+  <text class="lbl" x="84" y="80" text-anchor="middle">Chat widget</text>
+  <text class="sub" x="84" y="97" text-anchor="middle">Astro island</text>
+
+  <rect class="box" x="176" y="52" width="136" height="64" rx="10"></rect>
+  <text class="lbl" x="244" y="76" text-anchor="middle">Worker proxy</text>
+  <text class="sub" x="244" y="92" text-anchor="middle">Cloudflare</text>
+  <text class="sub" x="244" y="106" text-anchor="middle">/api/chat</text>
+
+  <!-- Request path: FastAPI service -->
+  <rect class="region" x="344" y="24" width="512" height="202" rx="14"></rect>
+  <text class="tag" x="360" y="46">FastAPI · Hugging Face Spaces</text>
+
+  <rect class="box" x="360" y="56" width="148" height="56" rx="10"></rect>
+  <text class="lbl" x="434" y="80" text-anchor="middle">Rewrite query</text>
+  <text class="sub" x="434" y="97" text-anchor="middle">follow-ups · lite</text>
+
+  <rect class="box" x="526" y="56" width="148" height="56" rx="10"></rect>
+  <text class="lbl" x="600" y="80" text-anchor="middle">Embed query</text>
+  <text class="sub" x="600" y="97" text-anchor="middle">Gemini embeddings</text>
+
+  <rect class="box" x="692" y="56" width="148" height="56" rx="10"></rect>
+  <text class="lbl" x="766" y="80" text-anchor="middle">Cosine top-20</text>
+  <text class="sub" x="766" y="97" text-anchor="middle">NumPy · in-memory</text>
+
+  <rect class="box" x="692" y="150" width="148" height="56" rx="10"></rect>
+  <text class="lbl" x="766" y="174" text-anchor="middle">Rerank top-4</text>
+  <text class="sub" x="766" y="191" text-anchor="middle">FlashRank ONNX</text>
+
+  <rect class="box accent" x="526" y="150" width="148" height="56" rx="10"></rect>
+  <text class="lbl" x="600" y="174" text-anchor="middle">Score floor</text>
+  <text class="sub" x="600" y="191" text-anchor="middle">refuse if weak</text>
+
+  <rect class="box accent" x="360" y="150" width="148" height="56" rx="10"></rect>
+  <text class="lbl" x="434" y="174" text-anchor="middle">Gemini answer</text>
+  <text class="sub" x="434" y="191" text-anchor="middle">streamed · SSE</text>
+
+  <!-- Build time -->
+  <rect class="region" x="24" y="262" width="832" height="130" rx="14"></rect>
+  <text class="tag" x="40" y="284">Build time · ingestion</text>
+
+  <rect class="box" x="40" y="300" width="150" height="56" rx="10"></rect>
+  <text class="lbl" x="115" y="324" text-anchor="middle">Portfolio content</text>
+  <text class="sub" x="115" y="341" text-anchor="middle">MDX + résumé</text>
+
+  <rect class="box" x="226" y="300" width="140" height="56" rx="10"></rect>
+  <text class="lbl" x="296" y="324" text-anchor="middle">Chunk</text>
+  <text class="sub" x="296" y="341" text-anchor="middle">section-aware</text>
+
+  <rect class="box" x="402" y="300" width="150" height="56" rx="10"></rect>
+  <text class="lbl" x="477" y="324" text-anchor="middle">Embed chunks</text>
+  <text class="sub" x="477" y="341" text-anchor="middle">Gemini embeddings</text>
+
+  <rect class="store" x="588" y="300" width="180" height="56" rx="9"></rect>
+  <text class="lbl" x="678" y="324" text-anchor="middle">Committed index</text>
+  <text class="sub" x="678" y="341" text-anchor="middle">index.npz · chunks.json</text>
+
+  <!-- Flow -->
+  <path class="edge" d="M146 84H174" marker-start="url(#rag-arrow)" marker-end="url(#rag-arrow)"></path>
+  <path class="edge" d="M312 84H358" marker-end="url(#rag-arrow)"></path>
+  <path class="edge" d="M508 84H524" marker-end="url(#rag-arrow)"></path>
+  <path class="edge" d="M674 84H690" marker-end="url(#rag-arrow)"></path>
+  <path class="edge" d="M766 112V148" marker-end="url(#rag-arrow)"></path>
+  <path class="edge" d="M692 178H676" marker-end="url(#rag-arrow)"></path>
+  <path class="edge" d="M526 178H510" marker-end="url(#rag-arrow)"></path>
+  <path class="edge" d="M360 178H244V118" marker-end="url(#rag-arrow)"></path>
+  <text class="sub" x="294" y="170" text-anchor="middle">answer · SSE</text>
+
+  <path class="edge" d="M190 328H224" marker-end="url(#rag-arrow)"></path>
+  <path class="edge" d="M366 328H400" marker-end="url(#rag-arrow)"></path>
+  <path class="edge" d="M552 328H586" marker-end="url(#rag-arrow)"></path>
+  <path class="edge dashed" d="M720 300V228" marker-end="url(#rag-arrow)"></path>
+  <text class="sub" x="728" y="249">loaded at startup</text>
+</svg>
+
+<style>
+  .box {
+    fill: color-mix(in oklch, currentColor 6%, transparent);
+    stroke: currentColor;
+    stroke-opacity: 0.35;
+    stroke-width: 1.5;
+  }
+  .box.accent {
+    fill: color-mix(in oklch, var(--brand) 12%, transparent);
+    stroke: var(--brand);
+    stroke-opacity: 0.5;
+  }
+  .store {
+    fill: color-mix(in oklch, currentColor 10%, transparent);
+    stroke: currentColor;
+    stroke-opacity: 0.4;
+    stroke-width: 1.5;
+  }
+  .region {
+    fill: color-mix(in oklch, currentColor 2%, transparent);
+    stroke: currentColor;
+    stroke-opacity: 0.25;
+    stroke-width: 1.5;
+    stroke-dasharray: 6 5;
+  }
+  .tag {
+    fill: var(--brand);
+    font:
+      600 12px ui-monospace,
+      monospace;
+    letter-spacing: 0.04em;
+  }
+  .lbl {
+    fill: currentColor;
+    font:
+      600 13px ui-sans-serif,
+      system-ui;
+  }
+  .sub {
+    fill: currentColor;
+    fill-opacity: 0.6;
+    font:
+      11px ui-monospace,
+      monospace;
+  }
+  .edge {
+    stroke: currentColor;
+    stroke-opacity: 0.4;
+    stroke-width: 1.5;
+    fill: none;
+  }
+  .edge.dashed {
+    stroke-dasharray: 5 4;
+  }
+</style>

@@ -3,7 +3,7 @@ title: "NodeLink — A Compliant DePIN Reward Ecosystem"
 description: "How NodeLink composes KYC/AML, e-signatures, OAuth2/OIDC identity, BullMQ background jobs and real-time updates into one compliant, observable NestJS backend."
 summary: "Composing KYC/AML, e-signatures, OAuth2/OIDC identity, durable queues and real-time updates into one compliant NestJS backend."
 year: "2025 — Present"
-role: "Senior Full Stack Developer"
+role: "Senior Full Stack Engineer"
 problemSpace: "FinTech · Web3 (DePIN)"
 tags: ["NestJS", "OAuth2 / OIDC", "Compliance", "Real-Time"]
 stack: ["NestJS", "PostgreSQL", "Redis", "BullMQ", "Socket.IO", "MinIO", "SumSub", "BoldSign"]
@@ -13,7 +13,7 @@ metrics:
   - { value: "Horizontal", label: "Real-time scaling" }
 relatedProject: "nodelink"
 featured: true
-order: 1
+order: 3
 ---
 
 import Figure from "@/components/ui/Figure.astro";
@@ -66,6 +66,11 @@ Onboarding is a sequence of asynchronous, independently-retryable steps:
    compliance requirements.
 5. Uploaded documents are stored in **MinIO** with configurable buckets and
    signed URLs.
+
+Both providers sit behind **rate-limited connectors with retries**, so a
+provider's limits or a transient failure slows a step down instead of failing
+it — the platform never hammers a compliance API, and a blip never strands a
+user mid-onboarding.
 
 <Callout type="insight" title="Webhooks are the real integration surface">
   KYC and e-signature providers are asynchronous by nature. The reliability of

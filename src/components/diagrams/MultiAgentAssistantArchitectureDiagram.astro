@@ -1,0 +1,153 @@
+---
+/**
+ * Architecture diagram for the Multi-Agent AI Assistant case study.
+ *
+ * Diagrams live as standalone .astro components (not inline in MDX) so they can
+ * use scoped <style>, stay zero-JS, and adapt to light/dark via currentColor.
+ */
+---
+
+<svg
+  viewBox="0 0 880 424"
+  class="diagram mx-auto h-auto w-full max-w-3xl text-foreground"
+  role="img"
+  aria-label="Multi-agent AI assistant architecture: a support team member asks a question through a FastAPI service into a LangGraph graph. Query understanding feeds a planner/router, which routes the question to specialist agents — docs and PRD retrieval over pgvector, a SQL-agent subgraph over a SQLAlchemy data-access layer, and knowledge-base tools — with fallbacks when an agent fails. A response synthesizer returns one grounded answer to support. Read-only scoped tools, PII redaction and prompt-injection guardrails wrap the agents, and LangSmith traces every run."
+>
+  <defs>
+    <marker id="maa-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0 0L10 5L0 10z" fill="currentColor" fill-opacity="0.5"></path>
+    </marker>
+  </defs>
+
+  <!-- LangGraph boundary -->
+  <rect class="region" x="330" y="24" width="410" height="388" rx="14"></rect>
+  <text class="tag" x="346" y="46">LangGraph</text>
+
+  <!-- Entry -->
+  <rect class="box" x="24" y="64" width="124" height="56" rx="10"></rect>
+  <text class="lbl" x="86" y="88" text-anchor="middle">Support team</text>
+  <text class="sub" x="86" y="105" text-anchor="middle">asks a question</text>
+
+  <rect class="box" x="184" y="64" width="112" height="56" rx="10"></rect>
+  <text class="lbl" x="240" y="88" text-anchor="middle">FastAPI</text>
+  <text class="sub" x="240" y="105" text-anchor="middle">API service</text>
+
+  <!-- Understand + plan -->
+  <rect class="box" x="346" y="64" width="168" height="56" rx="10"></rect>
+  <text class="lbl" x="430" y="88" text-anchor="middle">Query understanding</text>
+  <text class="sub" x="430" y="105" text-anchor="middle">what is being asked</text>
+
+  <rect class="box accent" x="546" y="64" width="160" height="56" rx="10"></rect>
+  <text class="lbl" x="626" y="88" text-anchor="middle">Planner / router</text>
+  <text class="sub" x="626" y="105" text-anchor="middle">routes · fallbacks</text>
+
+  <!-- Specialist agents -->
+  <rect class="box" x="346" y="176" width="118" height="64" rx="10"></rect>
+  <text class="lbl" x="405" y="203" text-anchor="middle">Docs &amp; PRDs</text>
+  <text class="sub" x="405" y="220" text-anchor="middle">pgvector RAG</text>
+
+  <rect class="box" x="476" y="176" width="118" height="64" rx="10"></rect>
+  <text class="lbl" x="535" y="198" text-anchor="middle">SQL agent</text>
+  <text class="sub" x="535" y="214" text-anchor="middle">subgraph</text>
+  <text class="sub" x="535" y="229" text-anchor="middle">SQLAlchemy DAL</text>
+
+  <rect class="box" x="606" y="176" width="118" height="64" rx="10"></rect>
+  <text class="lbl" x="665" y="203" text-anchor="middle">KB tools</text>
+  <text class="sub" x="665" y="220" text-anchor="middle">knowledge base</text>
+
+  <!-- Synthesis -->
+  <rect class="box accent" x="440" y="300" width="190" height="56" rx="10"></rect>
+  <text class="lbl" x="535" y="324" text-anchor="middle">Response synthesizer</text>
+  <text class="sub" x="535" y="341" text-anchor="middle">one grounded answer</text>
+
+  <!-- Guardrails -->
+  <rect class="guard" x="346" y="366" width="378" height="32" rx="8"></rect>
+  <text class="sub" x="535" y="386" text-anchor="middle">read-only tools · PII redaction · injection guardrails</text>
+
+  <!-- Tracing -->
+  <rect class="store" x="760" y="180" width="104" height="64" rx="9"></rect>
+  <text class="lbl" x="812" y="203" text-anchor="middle">LangSmith</text>
+  <text class="sub" x="812" y="220" text-anchor="middle">traces</text>
+  <text class="sub" x="812" y="234" text-anchor="middle">+ Studio</text>
+
+  <!-- Flow -->
+  <path class="edge" d="M148 92H182" marker-end="url(#maa-arrow)"></path>
+  <path class="edge" d="M296 92H344" marker-end="url(#maa-arrow)"></path>
+  <path class="edge" d="M514 92H544" marker-end="url(#maa-arrow)"></path>
+
+  <path class="edge" d="M612 120C612 152 405 144 405 174" marker-end="url(#maa-arrow)"></path>
+  <path class="edge" d="M626 120C626 150 535 146 535 174" marker-end="url(#maa-arrow)"></path>
+  <path class="edge" d="M640 120C640 150 665 146 665 174" marker-end="url(#maa-arrow)"></path>
+
+  <path class="edge" d="M405 240C405 272 480 270 480 298" marker-end="url(#maa-arrow)"></path>
+  <path class="edge" d="M535 240V298" marker-end="url(#maa-arrow)"></path>
+  <path class="edge" d="M665 240C665 272 590 270 590 298" marker-end="url(#maa-arrow)"></path>
+
+  <path class="edge" d="M440 328H86V122" marker-end="url(#maa-arrow)"></path>
+  <text class="sub" x="263" y="320" text-anchor="middle">grounded answer</text>
+
+  <path class="edge dashed" d="M740 212H758" marker-end="url(#maa-arrow)"></path>
+</svg>
+
+<style>
+  .box {
+    fill: color-mix(in oklch, currentColor 6%, transparent);
+    stroke: currentColor;
+    stroke-opacity: 0.35;
+    stroke-width: 1.5;
+  }
+  .box.accent {
+    fill: color-mix(in oklch, var(--brand) 12%, transparent);
+    stroke: var(--brand);
+    stroke-opacity: 0.5;
+  }
+  .store {
+    fill: color-mix(in oklch, currentColor 10%, transparent);
+    stroke: currentColor;
+    stroke-opacity: 0.4;
+    stroke-width: 1.5;
+  }
+  .region {
+    fill: color-mix(in oklch, currentColor 2%, transparent);
+    stroke: currentColor;
+    stroke-opacity: 0.25;
+    stroke-width: 1.5;
+    stroke-dasharray: 6 5;
+  }
+  .guard {
+    fill: color-mix(in oklch, var(--brand) 8%, transparent);
+    stroke: var(--brand);
+    stroke-opacity: 0.45;
+    stroke-width: 1.2;
+    stroke-dasharray: 4 4;
+  }
+  .tag {
+    fill: var(--brand);
+    font:
+      600 12px ui-monospace,
+      monospace;
+    letter-spacing: 0.04em;
+  }
+  .lbl {
+    fill: currentColor;
+    font:
+      600 13px ui-sans-serif,
+      system-ui;
+  }
+  .sub {
+    fill: currentColor;
+    fill-opacity: 0.6;
+    font:
+      11px ui-monospace,
+      monospace;
+  }
+  .edge {
+    stroke: currentColor;
+    stroke-opacity: 0.4;
+    stroke-width: 1.5;
+    fill: none;
+  }
+  .edge.dashed {
+    stroke-dasharray: 5 4;
+  }
+</style>

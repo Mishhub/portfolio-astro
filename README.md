@@ -9,7 +9,7 @@ amount of JavaScript shipped only where it earns its place.
 - **[Astro 5](https://astro.build)** — static output, View Transitions, content collections
 - **[Tailwind CSS v4](https://tailwindcss.com)** — CSS-first config, OKLCH design tokens
 - **TypeScript** (strict) · **MDX** for articles & case studies
-- **React 19** islands — only the theme toggle and mobile nav are hydrated
+- **React 19** islands — only the theme toggle, mobile nav and chat widget are hydrated
 - **astro-icon** (Lucide) — icons inlined as SVG at build time, zero runtime JS
 - **@astrojs/sitemap**, **@astrojs/rss**, **sharp** (image + asset generation)
 
@@ -38,18 +38,14 @@ Almost everything personal lives in a few files:
 | Skills + levels | `src/data/skills.ts` |
 | Certifications | `src/data/certifications.ts` |
 | Pinned repos / OSS stats | `src/data/open-source.ts` |
-| AI learning topics & roadmap | `src/data/ai-journey.ts` |
+| AI courses, stack, path & shipped work | `src/data/ai-journey.ts` |
 | Home value-props, tech list, highlights | `src/data/home.ts` |
+| Print résumé (mirrors `public/resume.pdf`) | `src/data/resume.ts` |
 | Colours, fonts, radii (design tokens) | `src/styles/global.css` |
 
-**Placeholders to replace** (intentionally bracketed or `#`):
-
-- Company names in `src/data/experience.ts`
-- Certification names / credential URLs in `src/data/certifications.ts`
-- Repository URLs in `src/data/open-source.ts`
-- Social URLs + display name in `src/config/site.ts`
-- A real headshot: pass `src` to `<Avatar />` (e.g. an image in `src/assets`)
-- The contact form `action` in `src/pages/contact.astro` (wire to Formspree / Resend / etc.)
+The ATS-friendly résumé lives in `docs/RESUME-ATS.md`; it and the MDX content are also the
+knowledge base for the site's RAG chatbot ([chatbot-api](https://github.com/Mishhub/chatbot-api)),
+so re-run its ingestion after changing them.
 
 ## Writing content
 
@@ -66,7 +62,7 @@ field fails fast. Import foundation components inside MDX, e.g.
 **Diagrams** are authored as standalone `.astro` components in
 `src/components/diagrams/` (inline SVG + scoped styles, theme-aware via `currentColor`)
 and imported into MDX — this keeps them crisp and ships zero JavaScript. See
-`EventDrivenPaymentsDiagram.astro` for the pattern.
+`NodeLinkArchitectureDiagram.astro` for the pattern.
 
 ## Brand assets
 
@@ -106,8 +102,10 @@ production origin before deploying.
 
 ## Deploy
 
-It's a static site — deploy `dist/` anywhere (Vercel, Netlify, Cloudflare Pages, GitHub
-Pages). No server required.
+Deployed on **Cloudflare Workers** via `@astrojs/cloudflare`: every page is prerendered and
+served as a static asset, and the Worker only runs the on-demand API routes — `/api/chat`
+(same-origin proxy to the chatbot backend), `/api/contact` and `/api/track` (first-party
+visitor log in D1; see `docs/ANALYTICS.md`).
 
 ---
 

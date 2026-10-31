@@ -3,10 +3,10 @@ title: "NodeLink"
 summary: "An infrastructure-based reward ecosystem (DePIN-style) with compliant onboarding, e-signatures and real-time reward tracking."
 description: "NodeLink — a NestJS reward ecosystem for decentralized physical infrastructure networks, with KYC/AML, e-signatures, OAuth2/OIDC identity and real-time updates."
 year: "2025 — Present"
-role: "Senior Full Stack Developer"
+role: "Senior Full Stack Engineer"
 status: "wip"
 featured: true
-order: 1
+order: 3
 domain: "FinTech · Web3 (DePIN)"
 problem: "Decentralized physical-infrastructure (DePIN) reward ecosystems need fully compliant onboarding — KYC/AML and legally-binding e-signatures — alongside secure identity and real-time reward tracking. Stitching those third-party compliance flows into one reliable, auditable, horizontally-scalable backend is the hard part."
 solution: "A NestJS 11 backend that composes KYC (SumSub), e-signatures (BoldSign), S3-compatible storage (MinIO), a centralized OAuth2/OIDC identity layer, durable background jobs (BullMQ) and real-time updates (Socket.IO) into a compliant reward platform — instrumented end to end for observability and audit."
@@ -15,6 +15,7 @@ contributions:
   - "Built the NestJS 11 + TypeScript + PostgreSQL backend for a DePIN-style reward ecosystem."
   - "Integrated SumSub for KYC/AML — applicant status, access tokens, webhook callbacks, and scheduled document-expiry re-checks via BullMQ."
   - "Integrated BoldSign for e-signatures — template-based documents, embedded signing links (Redis-cached), webhook handling and document status sync for compliance and pool requirements."
+  - "Wrapped the third-party services (SumSub, BoldSign) in rate-limited connectors with retries, so provider limits and transient failures slow a step down instead of failing it."
   - "Implemented OAuth2 / OpenID Connect (authorization code + PKCE, scopes) issuing JWT access, refresh and ID tokens."
   - "Used MinIO (S3-compatible) for file storage with configurable buckets and signed URLs."
   - "Built background processing on Redis + BullMQ, with Bull Board for queue monitoring."

@@ -19,9 +19,9 @@ const jsonLd = breadcrumbSchema([
   { name: "Skills", url: `${origin}/skills` },
 ]);
 
-const title = "Skills — Backend, Architecture & Cloud Stack";
+const title = "Skills — Full Stack, Distributed Systems & AI";
 const description =
-  "A grouped skill matrix across backend, architecture, databases, cloud, DevOps and AI engineering, each rated on a four-level scale.";
+  "A grouped skill matrix across backend, frontend, architecture, data, messaging, cloud, observability and agentic & generative AI, each rated on a four-level scale.";
 
 /** The legend explaining the four meter levels, ordered high to low. */
 const LEGEND: { level: SkillLevel; label: string; hint: string }[] = [
@@ -36,7 +36,7 @@ const LEGEND: { level: SkillLevel; label: string; hint: string }[] = [
   <PageHeader
     eyebrow="Skills"
     title="The stack I build with"
-    lead="A grouped, honest skill matrix — rated on a four-level scale rather than a vanity percentage. Strongest in backend, architecture and the systems that move money and trust."
+    lead="A grouped, honest skill matrix — rated on a four-level scale rather than a vanity percentage. Strongest in backend, architecture and the systems that move money and trust — and now shipping agentic AI in production."
   >
     <Breadcrumbs slot="breadcrumbs" items={[{ name: "Home", href: "/" }, { name: "Skills" }]} />
   </PageHeader>

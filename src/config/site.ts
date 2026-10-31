@@ -30,14 +30,14 @@ export const SITE = {
   handle: "mishhub",
   initials: "MM",
 
-  role: "Senior Full Stack Software Engineer",
+  role: "Senior Full Stack Engineer",
   /** One-line value proposition (used in <title> templates + OG). */
   tagline:
-    "I design and scale full-stack web & Web3 platforms — distributed backends and the interfaces on top — now moving into agentic AI development.",
+    "I design and scale full-stack FinTech & Web3 platforms — distributed backends and the interfaces on top — and ship production agentic AI.",
 
   /** Default meta description (overridable per page). Kept under 160 chars. */
   description:
-    "Senior Full Stack Engineer, 7+ yrs — NestJS, Node.js, React, Django, distributed systems & Web3, now building agentic AI: LLMs, RAG and AI agents.",
+    "Senior Full Stack Engineer (7+ yrs): NestJS, Django, FastAPI & React platforms for 3M+ users — now shipping production agentic AI with LangGraph, RAG & MCP.",
 
   email: "mishhub@gmail.com",
   location: "Dubai, UAE",
@@ -58,7 +58,7 @@ export const NAV: NavItem[] = [
   { label: "Projects", href: "/projects" },
   { label: "Case Studies", href: "/case-studies" },
   { label: "Articles", href: "/articles" },
-  { label: "AI Journey", href: "/ai-engineering" },
+  { label: "AI Engineering", href: "/ai-engineering" },
   { label: "Skills", href: "/skills", secondary: true },
   { label: "Open Source", href: "/open-source", secondary: true },
   { label: "Certifications", href: "/certifications", secondary: true },

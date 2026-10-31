@@ -1,0 +1,114 @@
+---
+title: "Payouts Settlement & Double-Entry Ledger — 100+ Payouts/sec, Fully Auditable"
+description: "An immutable snapshot → intent → settlement pipeline for 100+ reward and bonus payouts a second, settling into a double-entry ledger that publishes through a transactional outbox to Kafka, on Citus-sharded PostgreSQL with restore-tested PITR."
+summary: "Versioned snapshots make every payout run auditable, resumable and recomputable; a double-entry ledger on Citus-sharded PostgreSQL keeps the books balanced."
+year: "2025 — Present"
+role: "Senior Full Stack Engineer"
+problemSpace: "FinTech · Distributed Systems"
+tags: ["Payments", "Double-Entry Ledger", "Kafka", "PostgreSQL at Scale"]
+stack: ["Apache Kafka", "PostgreSQL", "Citus", "Barman", "Transactional Outbox"]
+metrics:
+  - { value: "100+/sec", label: "Payouts processed" }
+  - { value: "Versioned", label: "Immutable snapshots" }
+  - { value: "Citus", label: "Sharded PostgreSQL" }
+  - { value: "PITR", label: "Restore-tested backups" }
+relatedProject: "payouts-settlement-ledger"
+featured: true
+order: 2
+---
+
+import Figure from "@/components/ui/Figure.astro";
+import Callout from "@/components/ui/Callout.astro";
+import PayoutsLedgerArchitectureDiagram from "@/components/diagrams/PayoutsLedgerArchitectureDiagram.astro";
+
+## Context
+
+Reward and bonus payments are where a platform's promises turn into money. At
+**100+ payouts a second**, the failure modes are expensive: a run that dies
+halfway must not pay anyone twice or skip anyone, an input that changes after
+the fact must be correctable, and every payout has to be explainable long after
+it happened. The money also has to land in books that always balance.
+
+## Architecture
+
+Payouts move through three stages — **snapshot → intent → settlement** — and
+settle into a **double-entry ledger**. The ledger publishes its transactions to
+**Kafka** through a **transactional outbox**, and runs on **PostgreSQL** sharded
+with **Citus**.
+
+<Figure diagram caption="Runs read a versioned snapshot, derive intents and settle into a double-entry ledger, which commits its entries with an outbox row and relays them to Kafka — on Citus-sharded PostgreSQL with a read replica and Barman PITR.">
+  <PayoutsLedgerArchitectureDiagram />
+</Figure>
+
+## Snapshot → intent → settlement
+
+Each stage has one job:
+
+1. **Snapshot** — freeze a run's inputs as an **immutable, versioned snapshot**.
+2. **Intent** — derive the payouts that snapshot entitles, as explicit intents.
+3. **Settlement** — carry the intents out and post them to the ledger.
+
+Separating *what should be paid* from *paying it* means the decision can be
+inspected before any money moves — and re-derived from the same snapshot at any
+time.
+
+## Why immutable, versioned snapshots
+
+Versioned snapshots are what make every run **auditable, resumable and
+recomputable**:
+
+- **Auditable** — any payout traces back to the exact inputs it was computed
+  from.
+- **Resumable** — a run that fails midway picks up from the same snapshot, so it
+  works from exactly the inputs the original run saw.
+- **Recomputable** — when inputs change, a new snapshot version is taken and the
+  run recomputed, while the original version still records what was paid and
+  why.
+
+<Callout type="insight" title="Recompute, don't mutate">
+  Editing a run's inputs in place destroys the evidence of what happened. Taking
+  a new snapshot version keeps both the correction and the history — the
+  property finance, auditors and on-call engineers all end up needing.
+</Callout>
+
+## The double-entry ledger
+
+Settlement posts into a **double-entry ledger**: every transaction is recorded
+as balanced debits and credits, so the books always balance and any imbalance
+is a detectable bug rather than silent drift. That discipline is what keeps
+settlement and reconciliation tractable at volume.
+
+## Outbox → Kafka
+
+Other services need to hear about every ledger transaction — but writing to the
+database and publishing to Kafka as two separate steps leaves a gap where one
+can succeed without the other. The ledger closes that gap with a
+**transactional outbox**: each transaction's entries and its outbox record
+commit in the **same local database transaction**, and a relay publishes the
+outbox to **Kafka**. Nothing is published that wasn't committed, and nothing
+committed goes unpublished.
+
+Delivery from an outbox is at-least-once, so consumers must be idempotent — the
+pattern I wrote about in
+[Designing Idempotent Event Consumers](/articles/designing-idempotent-event-consumers).
+
+## Scaling PostgreSQL: Citus, monthly partitions, a read replica
+
+A ledger only grows. It runs on **PostgreSQL sharded with Citus**, spreading
+data and write load across nodes; its tables are **partitioned by month**, so
+recent data stays hot and older partitions stay cheap to manage; and a **read
+replica** takes read traffic off the primary.
+
+## Backups you have actually restored
+
+The ledger is backed up with **Barman point-in-time recovery** — and the restore
+has been tested. For financial data, a backup that has never been restored is an
+assumption; exercised PITR means the ledger can be rebuilt to any moment before
+an incident.
+
+## Outcome
+
+Payouts run at **100+ a second**, and every run is auditable, resumable and
+recomputable from its snapshot. The ledger keeps the books balanced, publishes
+every transaction reliably through its outbox, scales out on Citus, and can be
+restored to a point in time — because the restore has been proven.

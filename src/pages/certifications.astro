@@ -19,9 +19,9 @@ const jsonLd = breadcrumbSchema([
   { name: "Certifications", url: `${origin}/certifications` },
 ]);
 
-const title = "Certifications & Courses — Web, Blockchain & AI";
+const title = "Certifications & Courses — AI Engineering, Web & Blockchain";
 const description =
-  "Professional courses and certifications spanning full-stack web development, Ethereum & Solidity, React Native and AI engineering.";
+  "Certifications led by Ed Donner's AI Engineer Core and Agentic tracks, alongside courses in full-stack web development, Ethereum & Solidity and React Native.";
 
 /** Map a credential's status to the right Badge variant + label. */
 const statusMeta: Record<
@@ -41,7 +41,7 @@ const hasCredentialLink = (cert: Certification): boolean =>
   <PageHeader
     eyebrow="Certifications"
     title="Courses & credentials"
-    lead="Courses and certifications I've completed or am actively working through — spanning full-stack web development, Ethereum & Solidity, React Native and, currently, AI engineering."
+    lead="Courses and certifications I've completed — led by Ed Donner's AI Engineer Core and Agentic tracks, alongside full-stack web development, Ethereum & Solidity and React Native."
   >
     <Breadcrumbs
       slot="breadcrumbs"

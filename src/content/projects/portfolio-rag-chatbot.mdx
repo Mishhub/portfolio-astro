@@ -1,0 +1,75 @@
+---
+title: "Portfolio RAG Chatbot"
+summary: "The assistant on this site — a production-grade RAG service that answers questions about my work from the portfolio's own content, and refuses rather than guesses, at $0/month."
+description: "Portfolio RAG Chatbot — FastAPI, Gemini and hand-rolled two-stage retrieval (NumPy cosine recall → FlashRank cross-encoder rerank) with a refusal floor, SSE streaming, abuse protection and CI, on Hugging Face Spaces behind a Cloudflare Worker proxy."
+year: "2026"
+role: "Sole Engineer"
+status: "live"
+featured: false
+order: 6
+domain: "Generative AI · RAG"
+problem: "A chatbot on a portfolio answers questions about a real person's career, so it can't be allowed to make things up: every answer has to come from the site's own content, and a question it can't ground should get an honest refusal. It also sits on a public endpoint with a free-tier model quota, so it has to survive abuse and quota exhaustion, stay fast despite free-tier cold starts — and cost nothing to run."
+solution: "A FastAPI service with hand-rolled two-stage retrieval: Gemini embeddings and a NumPy cosine search recall the top 20 chunks, a FlashRank cross-encoder reranks them to the top 4, and a score floor refuses — without calling the LLM — when nothing is relevant enough. Follow-up questions are rewritten into standalone queries by a lite model, answers stream over Server-Sent Events with their sources, and a model fallback chain with a circuit breaker keeps it answering when the primary model's free quota runs out. It runs on Hugging Face Spaces behind a same-origin Cloudflare Worker proxy."
+architecture: "At build time, an ingestion script turns the portfolio's MDX content and résumé into chunks, embeds them and commits a small NumPy index to git. At request time the FastAPI service rewrites follow-ups (lite model), embeds the query, takes the cosine top-20, reranks to the top 4 with a FlashRank cross-encoder (ONNX, baked into the Docker image) and applies a score floor before streaming a Gemini answer over SSE. The site's chat widget talks to a Cloudflare Worker route that hides the backend URL, forwards the real client IP for rate limiting and retries through free-tier cold starts."
+contributions:
+  - "Designed and built the service end to end in FastAPI, with typed settings, an app factory and a provider seam that makes swapping the LLM vendor a one-file change."
+  - "Hand-rolled two-stage retrieval — NumPy cosine recall (top 20) → FlashRank cross-encoder rerank (top 4) — instead of adopting a RAG framework or a vector database."
+  - "Added a rerank score floor that answers with a canned refusal and zero LLM calls when retrieval finds nothing relevant."
+  - "Implemented conversational query rewriting on follow-ups with a lite model, with smalltalk short-circuited and a heuristic fallback when the rewrite fails."
+  - "Streamed answers and their sources over Server-Sent Events, with an in-band error event if generation fails mid-stream."
+  - "Built a model fallback chain with a circuit breaker: after a quota 429 the primary model is skipped for 10 minutes and answers come from the lite tier."
+  - "Hardened the public endpoint: spoof-resistant per-IP limits, a global daily cap, a body-size guard, input caps and prompt-injection-resistant prompt assembly."
+  - "Wrote 42 tests with injected fakes (no network), plus CI for formatting, linting, type checks, tests and a Docker startup smoke test."
+  - "Built the site side: an Astro chat-widget island and a same-origin Cloudflare Worker proxy that retries through cold starts."
+technologies:
+  - "FastAPI"
+  - "Python"
+  - "Gemini"
+  - "FlashRank"
+  - "NumPy"
+  - "Server-Sent Events"
+  - "Docker"
+  - "Hugging Face Spaces"
+  - "Cloudflare Workers"
+  - "GitHub Actions"
+  - "pytest"
+challenges:
+  - "Keeping a bot about a real person strictly grounded — refusing rather than inventing employers, dates or metrics."
+  - "Making follow-ups like “tell me more” retrievable when retrieval itself is stateless."
+  - "Protecting a shared free-tier quota on a public endpoint from rotating, spoofed and oversized requests."
+  - "Hiding free-tier cold starts from visitors without paying for always-on hosting."
+impact:
+  - "Answers visitors' questions about my experience, projects and writing on every page of this site, citing source pages."
+  - "Ungrounded questions are refused with zero LLM calls — no hallucinated career facts and no wasted quota."
+  - "Runs at $0/month, keeps answering past the primary model's daily quota, and wakes from cold starts behind a retrying proxy."
+metrics:
+  - { value: "$0/month", label: "Running cost" }
+  - { value: "Top-20 → 4", label: "Two-stage retrieval" }
+  - { value: "0 LLM calls", label: "On ungrounded questions" }
+  - { value: "42", label: "Tests, no network" }
+lessons:
+  - "The cheapest LLM call is the one you don't make — a score floor and a smalltalk short-circuit save quota and prevent hallucinations at the same time."
+  - "Recall and precision are different jobs: a fast bi-encoder casts the net, a cross-encoder picks what's actually relevant."
+  - "For a small corpus, frameworks and vector databases are overhead; owning ~150 lines of pipeline keeps every failure debuggable."
+  - "Every layer should degrade rather than fail — rewrite errors, quota limits and cold starts all have a fallback path."
+links:
+  github: "https://github.com/Mishhub/chatbot-api"
+  demo: "https://mishhub-portfolio-chatbot.hf.space/docs"
+  caseStudy: "portfolio-rag-chatbot"
+---
+
+This is the assistant in the corner of every page on this site. Ask it about my
+experience, projects or writing and it answers from the portfolio's own content
+— or tells you it doesn't know. It's deliberately small, deliberately
+framework-free, and runs at **$0/month**.
+
+The backend is a **FastAPI** service on Hugging Face Spaces with hand-rolled
+two-stage retrieval: **NumPy** cosine recall, a **FlashRank** cross-encoder
+rerank and a score floor that refuses without calling the model. Answers stream
+over **Server-Sent Events**, follow-ups are rewritten into standalone queries,
+and a model fallback chain keeps it answering when the free quota runs out. The
+site reaches it through a same-origin **Cloudflare Worker** proxy.
+
+The source is public on GitHub, and the linked case study walks through the
+retrieval design, the refusal path, the free-tier engineering and the abuse
+protection.
