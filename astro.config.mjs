@@ -58,6 +58,14 @@ export default defineConfig({
         ? [{ find: /^react-dom\/server$/, replacement: "react-dom/server.edge" }]
         : [],
     },
+    build: {
+      rollupOptions: {
+        // lucide-react's barrel re-exports ~2,000 icon modules. Rollup's default of 1,000
+        // parallel file reads exceeds the Cloudflare build container's open-file limit and
+        // fails the client build with EMFILE; 256 keeps well under it.
+        maxParallelFileOps: 256,
+      },
+    },
   },
   markdown: {
     syntaxHighlight: "shiki",
