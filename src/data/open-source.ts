@@ -34,7 +34,7 @@ export const PINNED_REPOS: Repo[] = [
       "A NestJS module for MinIO / S3-compatible object storage — configurable buckets, signed URLs and a clean injectable client. Published to npm and used in production.",
     language: "TypeScript",
     languageColor: "#3178c6",
-    url: "https://www.npmjs.com/package/nestjs-minio-backend",
+    url: "https://github.com/UtilKit/nestjs-minio-backend",
     topics: ["nestjs", "minio", "s3", "storage"],
   },
   {
@@ -52,7 +52,7 @@ export const PINNED_REPOS: Repo[] = [
       "A flexible, database-agnostic filtering system for NestJS — decorator-driven filterable fields, rich operators (exact, contains, gte/lte, in), built-in pagination and auto Swagger docs, with MongoDB/Mongoose and PostgreSQL/TypeORM support. Published to npm.",
     language: "TypeScript",
     languageColor: "#3178c6",
-    url: "https://www.npmjs.com/package/nestjs-dynamic-filter",
+    url: "https://github.com/UtilKit/nestjs-dynamic-filter",
     topics: ["nestjs", "filter", "mongodb", "postgres", "typeorm"],
   },
 ];

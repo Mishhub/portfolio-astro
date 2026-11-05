@@ -1,8 +1,29 @@
-# Engineering Portfolio
+# mishhub.com
 
-A fast, accessible, SEO-complete portfolio for a senior software engineer — built with
-Astro, Tailwind CSS and TypeScript. Dark-mode first, light-mode supported, with a small
-amount of JavaScript shipped only where it earns its place.
+[![Live site](https://img.shields.io/badge/live-mishhub.com-0969da.svg)](https://mishhub.com/)
+
+The source of [mishhub.com](https://mishhub.com/): the portfolio, case studies and writing of
+Mohammed Mishhub, a senior software engineer working on distributed systems, FinTech platforms
+and production agentic AI.
+
+It's engineered like a small product: static-first Astro on Cloudflare Workers, typed content,
+zero-JS system diagrams, complete SEO, a RAG chat assistant and first-party analytics.
+
+## Highlights
+
+- **Static-first:** every page is prerendered and served as a static asset; React 19 islands
+  hydrate only the theme toggle, mobile nav and chat widget.
+- **Zero-JS system diagrams:** case-study architecture diagrams are inline-SVG Astro
+  components, theme-aware via `currentColor`.
+- **RAG chat assistant:** the chat widget streams answers from
+  [chatbot-api](https://github.com/Mishhub/chatbot-api) through `/api/chat`, a same-origin
+  Worker proxy that retries through Hugging Face Space cold starts.
+- **First-party analytics:** `/api/track` writes a visitor log to Cloudflare D1
+  (see `docs/ANALYTICS.md`).
+- **SEO-complete:** canonical URLs, Open Graph and Twitter cards, JSON-LD (`Person`,
+  `WebSite`, `ProfilePage`, `TechArticle`, `BreadcrumbList`), sitemap, RSS and `robots.txt`.
+- **Typed content:** MDX collections are validated against schemas, so a bad frontmatter field
+  fails the build.
 
 ## Stack
 
@@ -12,10 +33,9 @@ amount of JavaScript shipped only where it earns its place.
 - **React 19** islands — only the theme toggle, mobile nav and chat widget are hydrated
 - **astro-icon** (Lucide) — icons inlined as SVG at build time, zero runtime JS
 - **@astrojs/sitemap**, **@astrojs/rss**, **sharp** (image + asset generation)
+- **@astrojs/cloudflare** — Cloudflare Workers + D1
 
-> **Node version**: Astro 7 requires Node ≥ 22.12. This project targets the installed
-> Node 20.17 and is therefore pinned to the latest **Astro 5.x**, which is fully featured
-> and stable. Bump to Astro 7 after upgrading Node if you wish.
+> Pinned to Astro 5.x for Node 20 compatibility; Astro 7 requires Node ≥ 22.12.
 
 ## Getting started
 
@@ -27,9 +47,9 @@ npm run preview    # serve the production build
 npm run format     # prettier
 ```
 
-## Make it yours
+## Where things live
 
-Almost everything personal lives in a few files:
+Identity and content are data-driven, so pages never hardcode personal details:
 
 | What | Where |
 | --- | --- |
@@ -93,13 +113,6 @@ src/
 └─ styles/        global.css (tokens, prose theme, view transitions)
 ```
 
-## SEO
-
-Per-page titles & descriptions, canonical URLs, Open Graph + Twitter cards, JSON-LD
-(`Person`, `WebSite`, `ProfilePage`, `TechArticle`, `BreadcrumbList`), a sitemap, an RSS
-feed and `robots.txt` are all wired up. Update `SITE.url` in `src/config/site.ts` to your
-production origin before deploying.
-
 ## Deploy
 
 Deployed on **Cloudflare Workers** via `@astrojs/cloudflare`: every page is prerendered and
@@ -109,4 +122,4 @@ visitor log in D1; see `docs/ANALYTICS.md`).
 
 ---
 
-Built with [Astro](https://astro.build).
+Built by [Mohammed Mishhub](https://mishhub.com/) with [Astro](https://astro.build).

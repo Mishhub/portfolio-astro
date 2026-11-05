@@ -45,7 +45,7 @@ Multi-Agent Systems · LangGraph · LangChain · LLM Engineering · RAG · MCP �
   "sameAs": [
     "https://github.com/mishhub",
     "https://www.linkedin.com/in/mishhub",
-    "https://stackoverflow.com/users/8920915/mishhubmohammed"
+    "https://stackoverflow.com/users/8920915/mishhub-mohammed"
   ],
   "knowsAbout": ["Full Stack Development","NestJS","Node.js","React","Next.js","Python","Django","FastAPI","Distributed Systems","Microservices","Event-Driven Architecture","Apache Kafka","OAuth2","OpenID Connect","Authentication","PostgreSQL","Redis","Kubernetes","Blockchain","Web3","Solidity","FinTech","AI Engineering","Agentic AI","Generative AI","Multi-Agent Systems","LangGraph","LangChain","Retrieval-Augmented Generation","Model Context Protocol"]
 }

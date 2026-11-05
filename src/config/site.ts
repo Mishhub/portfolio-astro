@@ -81,7 +81,7 @@ export const SOCIALS: SocialLink[] = [
   },
   {
     label: "Stack Overflow",
-    href: "https://stackoverflow.com/users/8920915/mishhubmohammed",
+    href: "https://stackoverflow.com/users/8920915/mishhub-mohammed",
     icon: "stackoverflow",
     handle: "Stack Overflow",
   },

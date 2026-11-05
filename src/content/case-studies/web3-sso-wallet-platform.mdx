@@ -46,6 +46,10 @@ and every product trusts the same identity. **KYC (via SumSub)** feeds **dynamic
 access levels** — what a verified user can do differs from an unverified one — and
 **JWT** sessions plus **RBAC** enforce that consistently across services.
 
+The same sign-on spans all **three web applications**: authorization code flow with
+**PKCE**, scopes, and JWT access, refresh and ID tokens. Centralizing it cut
+authentication-related support tickets by **30%**.
+
 ## The wallet gateway
 
 A dedicated **NestJS + Viem** microservice fronts all blockchain interactions, so
